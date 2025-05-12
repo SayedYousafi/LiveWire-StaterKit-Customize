@@ -4,7 +4,10 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Auth\Login;
-use App\Livewire\Item;
+use App\Livewire\Categories;
+use App\Livewire\Items;
+use App\Livewire\Post;
+use App\Livewire\Suppliers;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -13,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 
 //directly calling the login page.
 Route::get('/', Login::class)->name('home');
+Route::get('categories', Categories::class )->name('categories');
+Route::get('items', Items::class )->name('items');
+Route::get('suppliers', Suppliers::class )->name('suppliers');
+
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -21,8 +28,6 @@ Route::view('dashboard', 'dashboard')
 Route::view('orders', 'orders')
     ->middleware(['auth', 'verified'])
     ->name('orders');
-
-Route::get('items', Item::class )->name('items');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

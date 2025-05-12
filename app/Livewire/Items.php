@@ -4,16 +4,16 @@ namespace App\Livewire;
 
 use Flux\Flux;
 use Livewire\Component;
-use App\Models\Item as Items;
+use App\Models\Item;
 use Illuminate\Validation\Rules;
 
-class Item extends Component
+class Items extends Component
 {
-    public $name, $price, $itemId;
+    public $name, $price, $itemId, $update;
     public function render()
     {
-        return view('livewire.item')->with([
-            'items' => Items::all(),
+        return view('livewire.items')->with([
+            'items' => Item::all(),
         ]);
     }
     public function addItem()
@@ -23,37 +23,38 @@ class Item extends Component
             'price' => 'required',
         ]);
 
-        Items::create([
+        Item::create([
             'name' => $this->name,
             'price' => $this->price
         ]);
         session()->flash('success','Item added successfully !.');
-        Flux::modal('add-item')->close();
+        Flux::modal('itemModal')->close();
         $this->reset();
     }
-    public function editItem($id)
+    public function edit($id)
     {
         $this->itemId = $id;
-        $item = Items::findOrFail($id);
+        $this->update = true;
+        $item = Item::findOrFail($id);
         $this->name = $item->name;
         $this->price = $item->price;
-        Flux::modal('edit-item')->show();
+        Flux::modal('itemModal')->show();
     }
 
     public function updateItem()
     {
-        Items::where('id', $this->itemId )->update([
+        Item::where('id', $this->itemId )->update([
             'name' => $this->name,
             'price' => $this->price
         ]);
         session()->flash('success','Item updated successfully !.');
-        Flux::modal('edit-item')->close();
+        Flux::modal('itemModal')->close();
         $this->reset();
     }
 
-    public function deleteItem($id)
+    public function delete($id)
     {
-        $item = Items::findOrFail($id);
+        $item = Item::findOrFail($id);
         $item->delete();
         session()->flash('success','Item deleted successfully !.');
     }
