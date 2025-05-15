@@ -1,44 +1,51 @@
 <div>
-    <flux:modal.trigger name="categoryModal">
-        <flux:button
-        wire:click='cancel'
-        class=" bg-blue-800! text-white! hover:bg-blue-700!"
-        icon='plus-circle'>New category</flux:button>
+    <flux:modal.trigger name="myModal" class=" mb-2">
+        <flux:button wire:click='cancel' class=" bg-blue-800! text-white! hover:bg-blue-700!" icon='plus-circle'>New
+            category</flux:button>
     </flux:modal.trigger>
 
-    <flux:modal name="categoryModal" class="md:w-96">
+    <flux:modal name="myModal" class="md:w-96">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">Category detials</flux:heading>
-                {{-- <flux:text class="mt-2">Make changes to your personal details.</flux:text> --}}
+                @if ($isUpdate)
+                <div class="flex items-center gap-10 mt-2.5">
+                    <flux:switch wire:click="$toggle('enableEdit')" label="Enable edit" />
+                </div>
+                @endif
             </div>
 
-            <flux:input wire:model='name' label="Category name" placeholder="Category name" />
+            <flux:input wire:model='name' label="Category name" placeholder="Category name"
+                :disabled="$isUpdate && !$enableEdit" />
 
             <flux:radio.group wire:model="is_ignored_value" label="Is ignored value?">
-                <flux:radio value="1" label="Yes" checked />
-                <flux:radio value="0" label="No" />
+                <flux:radio value="1" label="Yes" :disabled="$isUpdate && !$enableEdit" />
+                <flux:radio value="0" label="No" :disabled="$isUpdate && !$enableEdit" />
             </flux:radio.group>
 
             <div class="flex">
                 <flux:spacer />
-                @if ($update)
-                     <flux:button wire:click='Update' type="submit" variant="primary">Update</flux:button>
-                @else
-                     <flux:button wire:click='save' type="submit" variant="primary">Add</flux:button>
-                @endif
-               
+
+                <flux:button type="button" variant="ghost" icon="x-circle" wire:click="cancel"
+                    @click="Flux.modal('myModal').close()">Cancel
+                </flux:button>
+
+                <flux:button wire:click='{{ $isUpdate ? "update" : "save" }}' type="submit" variant="primary">
+                    {{ $isUpdate ? "Update" : "Add" }}
+                </flux:button>
+
             </div>
         </div>
     </flux:modal>
-    @if (session('success'))
-    <flux:callout heading="{{ session('success') }}" variant='success' icon="check-circle" />
-    @endif
-    
-
-<div class="relative overflow-x-auto">
-    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-2.5">
-            <thead class="sticky top-0  bg-gray-100 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+    <div class=" mt-2 text-center">
+        @if (session('success'))
+        <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
+        @endif
+    </div>
+    <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-2.5">
+            <thead
+                class="sticky top-0  bg-gray-100 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-3">
                         ID
@@ -46,7 +53,7 @@
                     <th scope="col" class="px-6 py-3">
                         Name
                     </th>
-                   
+
                     <th scope="col" class="px-6 py-3">
                         Is ignored value?
                     </th>
@@ -88,6 +95,6 @@
                 @endforelse
             </tbody>
         </table>
-</div>
+    </div>
 
 </div>

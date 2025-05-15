@@ -6,7 +6,9 @@ use Flux\Flux;
 use Livewire\Component;
 use App\Models\Item;
 use Illuminate\Validation\Rules;
+use Livewire\Attributes\Title;
 
+#[Title('Items')]
 class Items extends Component
 {
     public $name, $price, $itemId, $update;
@@ -16,7 +18,7 @@ class Items extends Component
             'items' => Item::all(),
         ]);
     }
-    public function addItem()
+    public function Save()
     {
         $this->validate([
             'name' => 'required',
@@ -28,7 +30,7 @@ class Items extends Component
             'price' => $this->price
         ]);
         session()->flash('success','Item added successfully !.');
-        Flux::modal('itemModal')->close();
+        Flux::modal('myModal')->close();
         $this->reset();
     }
     public function edit($id)
@@ -38,17 +40,17 @@ class Items extends Component
         $item = Item::findOrFail($id);
         $this->name = $item->name;
         $this->price = $item->price;
-        Flux::modal('itemModal')->show();
+        Flux::modal('myModal')->show();
     }
 
-    public function updateItem()
+    public function Update()
     {
         Item::where('id', $this->itemId )->update([
             'name' => $this->name,
             'price' => $this->price
         ]);
         session()->flash('success','Item updated successfully !.');
-        Flux::modal('itemModal')->close();
+        Flux::modal('myModal')->close();
         $this->reset();
     }
 
@@ -57,5 +59,11 @@ class Items extends Component
         $item = Item::findOrFail($id);
         $item->delete();
         session()->flash('success','Item deleted successfully !.');
+    }
+
+    public function cancel()
+    {
+        $this->update=false;
+        $this->reset();
     }
 }

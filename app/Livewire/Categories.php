@@ -10,7 +10,9 @@ use Livewire\Component;
 #[Title('Category management')]
 class Categories extends Component
 {
-    public $name, $is_ignored_value, $update, $categoryId;
+    public bool $enableEdit = false;
+    public bool $isUpdate=false;
+    public $name, $is_ignored_value,  $categoryId;
     public function render()
     {
         return view('livewire.categories')->with([
@@ -28,7 +30,7 @@ class Categories extends Component
         if($done)
         {
             session()->flash('success', 'Category added successfully !');
-            Flux::modal('categoryModal')->close();
+            Flux::modal('myModal')->close();
         }
         $this->reset();
     }
@@ -37,13 +39,13 @@ class Categories extends Component
     {
         $category = Category::findOrFail($id);
         $this->categoryId = $id;
-        $this->update = true;
-        Flux::modal('categoryModal')->show();
+        $this->isUpdate = true;
+        Flux::modal('myModal')->show();
         $this->name = $category->name;
         $this->is_ignored_value = $category->is_ignored_value;
     }
 
-    public function Update()
+    public function update()
     {
         $validated = $this->validate([
             'name' => 'required',
@@ -53,10 +55,10 @@ class Categories extends Component
         if($done)
         {
             session()->flash('success', 'Category updated successfully !');
-            Flux::modal('categoryModal')->close();
+            Flux::modal('myModal')->close();
         }
         $this->reset();
-        $this->update = false;
+        $this->isUpdate = false;
     }
 
     public function delete($id)
@@ -69,9 +71,10 @@ class Categories extends Component
         }   
     }
 
-    public function cancel()
+      public function cancel()
     {
-        $this->update = false;
-        $this->reset();
+        $this->isUpdate = false;
+        $this->enableEdit = false;
+         $this->reset();
     }
 }

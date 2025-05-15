@@ -1,36 +1,33 @@
 <div class="container mx-auto">
-    <flux:modal.trigger name="itemModal" class="mb-3">
-        <flux:button icon='plus-circle' class=" bg-blue-800! text-white! hover:bg-blue-700!">New item</flux:button>
+    <flux:modal.trigger name="myModal" class="mb-3">
+        <flux:button wire:click='cancel' icon='plus-circle' class=" bg-blue-800! text-white! hover:bg-blue-700!">New
+            {{-- {{ $title }} --}}
+        </flux:button>
     </flux:modal.trigger>
 
-    <flux:modal name="itemModal" class="md:w-96">
+    <flux:modal name="myModal" class="md:w-96">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">Item Detials</flux:heading>
                 {{-- <flux:text class="mt-2">Enter the details of this item here.</flux:text> --}}
             </div>
-            <flux:input wire:model='name' label="Item Name" placeholder="Item name" />
+            <flux:input size="sm" wire:model='name' label="Item Name" placeholder="Item name" />
 
-            <flux:input wire:model='price' label="Item Price" placeholder="Item price" />
+            <flux:input size="sm" wire:model='price' label="Item Price" placeholder="Item price" />
 
             <div class="flex">
                 <flux:spacer />
-                @if ($update)
-                <flux:button type="submit" variant="ghost" icon='x-circle' x-on:click="Flux.modal('itemModal').close()">
-                    Cancel</flux:button>
-                <flux:button type="submit" icon='plus-circle' variant="primary" wire:click='updateItem'>Save changes
+                <flux:button type="submit" variant="ghost" icon="x-circle" x-on:click="Flux.modal('myModal').close()">
+                    Cancel
                 </flux:button>
-                @else
-                <flux:button type="submit" variant="ghost" icon='x-circle' x-on:click="Flux.modal('itemModal').close()">
-                    Cancel</flux:button>
-                <flux:button type="submit" wire:click="addItem" icon='plus-circle' variant="primary">Save Item
+                <flux:button type="submit" wire:click="{{ $update ? 'Update' : 'Save' }}" icon="plus-circle"
+                    variant="primary">
+                    {{ $update ? 'Save changes' : 'Save' }}
                 </flux:button>
-                @endif
-
             </div>
         </div>
     </flux:modal>
-    <div class=" mt-2">
+    <div class=" mt-2 text-center">
         @if (session('success'))
         <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
         @endif
