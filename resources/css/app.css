@@ -64,3 +64,28 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+table.custom-table {
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+table.custom-table th,
+table.custom-table td {
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+}
+table.custom-table thead th {
+    background-color: #f0f0f0;
+}
+
+table.custom-table td a {
+    color: inherit;
+    text-decoration: inherit;
+}
+
+table.custom-table td a.active-link {
+    color: blue;
+    text-decoration: none;
+}
+

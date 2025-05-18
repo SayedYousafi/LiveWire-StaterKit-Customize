@@ -7,15 +7,17 @@ use Livewire\Component;
 use App\Models\Item;
 use Illuminate\Validation\Rules;
 use Livewire\Attributes\Title;
+use Livewire\WithPagination;
 
 #[Title('Items')]
 class Items extends Component
 {
+    use WithPagination;
     public $name, $price, $itemId, $update;
     public function render()
     {
         return view('livewire.items')->with([
-            'items' => Item::all(),
+            'items' => Item::paginate(100),
         ]);
     }
     public function Save()

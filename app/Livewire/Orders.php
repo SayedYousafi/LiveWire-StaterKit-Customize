@@ -1,11 +1,13 @@
 <?php
 namespace App\Livewire;
 
+use App\Models\Cargo;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Order_item;
 use App\Models\Order_status;
 use DB;
+use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,7 +15,7 @@ class Orders extends Component
 {
     use WithPagination;
 
-    public $catName;
+    public $catName, $cargoId, $orderNo, $masterIds;
     public string $search = '';
     public string $title  = 'Orders';
 
@@ -55,11 +57,33 @@ class Orders extends Component
             }
 
         $orders = $query->paginate(100);
-
         return view('livewire.orders', array_merge($counts, [
             'orders' => $orders,
             'title'  => $this->title,
             'categories' => Category::pluck('name','de_cat'),
+            'cargos' => Cargo::where('cargo_status', 'Open')->pluck('cargo_no','id'),
         ]));
+    }
+
+    public function selectCargo($oNo)
+    {
+        //dd($oNo);
+        $this->orderNo = $oNo;
+        $this->masterIds = Order_item::where('order_no', "$this->orderNo")->pluck('master_id')->toArray();
+        //$this->cargoId = $this->masterIds['cargo_id']->first();
+        Flux::modal('myModal')->show();
+    }
+    public function changeCargo()
+    {
+    date_default_timezone_set('Europe/Berlin');
+        
+        Order_status::whereIn('master_id', $this->masterIds)
+            ->update([
+                'cargo_id' => $this->cargoId,  
+                'cargo_date' => now(),  
+            ]);
+
+        session()->flash('success', 'Cargo assigned successfully.');;
+        Flux::modal('myModal')->close();
     }
 }

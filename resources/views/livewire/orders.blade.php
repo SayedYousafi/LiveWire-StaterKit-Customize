@@ -1,7 +1,8 @@
 <div>
+@include('partials.cargos')
     <div class="flex justify-between mt-0">
         <div>
-            <flux:button icon="backward" class="bg-blue-800! text-white! hover:bg-blue-700!">
+            <flux:button icon="backward" onclick="history.back()" class="bg-blue-800! text-white! hover:bg-blue-700!">
                 Back
             </flux:button>
         </div>
@@ -13,7 +14,7 @@
 
                     @foreach ($categories as $de_cat => $name)
                     <flux:separator />
-                    <flux:menu.item icon='plus'  wire:click="$set('catName', {{ $de_cat }})">
+                    <flux:menu.item icon='plus' wire:click="$set('catName', {{ $de_cat }})">
                         {{ $name }}
                     </flux:menu.item>
                     @endforeach
@@ -31,34 +32,6 @@
         <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
     </div>
     @endif
-    {{-- {{ $search }} --}}
-    <style>
-        table.custom-table {
-            border: 1px solid #ccc;
-            border-collapse: collapse;
-        }
-
-        table.custom-table th,
-        table.custom-table td {
-            text-align: center;
-            border: 1px solid #ccc;
-            padding: 0.5rem;
-        }
-
-        table.custom-table thead th {
-            background-color: #f0f0f0;
-        }
-
-        table.custom-table td a {
-            color: inherit;
-            text-decoration: inherit;
-        }
-
-        table.custom-table td a.active-link {
-            color: blue;
-            text-decoration: none;
-        }
-    </style>
 
     <table class="custom-table w-full text-sm text-gray-500 dark:text-gray-400 mt-2.5">
         <thead class="sticky! top-0! z-10!">
@@ -66,7 +39,7 @@
                 <th rowspan="2">No</th>
                 <th rowspan="2">Re Assign</th>
                 <th rowspan="2">Order No.</th>
-                <th rowspan="2">Category</th>
+                <th rowspan="2">Catgy</th>
                 <th rowspan="2">Cargo</th>
                 <th rowspan="2">Comment</th>
                 <th rowspan="2">Created</th>
@@ -100,9 +73,18 @@
             @forelse ($orders as $order)
             <tr wire:key="{{ $order->id }}">
                 <td>{{ $loop->iteration }}</td>
-                <td><flux:button icon='arrow-uturn-left' size='sm' class=" bg-gray-400! hover:bg-gray-300!"/>
+                <td>
+                    <flux:button 
+                        icon='arrow-path' size='sm'
+                        wire:click="selectCargo('{{ $order->order_no }}')" 
+                        class=" bg-gray-500! hover:bg-gray-400! text-white!">
+                        Re-Assign
+                    </flux:button>
                 </td>
-                 <td>{{ $order->order_no }}{{-- ({{ $order->order_items_count }}) --}}</td> 
+                <td>
+                    <a class="active-link" href="{{ route('orderItems') }}/{{ $order->order_no }}" wire:navigate>{{
+                        $order->order_no }}</a>
+                </td>
                 <td>{{ $order->categories?->name }}</td>
                 <td>
                     @php
@@ -119,7 +101,7 @@
 
                 @php $nso = $order->status_counts['NSO'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/NSO"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/NSO"
                         class="{{ $nso > 0 ? 'active-link' : '' }}">
                         {{ $nso }}
                     </a>
@@ -127,7 +109,7 @@
 
                 @php $so = $order->status_counts['SO'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/SO"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/SO"
                         class="{{ $so > 0 ? 'active-link' : '' }}">
                         {{ $so }}
                     </a>
@@ -139,7 +121,7 @@
                 ($order->status_counts['D_Problem'] ?? 0);
                 @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/Problem"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Problem"
                         class="{{ $problem > 0 ? 'active-link' : '' }}">
                         {{ $problem }}
                     </a>
@@ -147,7 +129,7 @@
 
                 @php $purchased = $order->status_counts['Purchased'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/Purchased"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Purchased"
                         class="{{ $purchased > 0 ? 'active-link' : '' }}">
                         {{ $purchased }}
                     </a>
@@ -155,7 +137,7 @@
 
                 @php $checked = $order->status_counts['Checked'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/Checked"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Checked"
                         class="{{ $checked > 0 ? 'active-link' : '' }}">
                         {{ $checked }}
                     </a>
@@ -163,7 +145,7 @@
 
                 @php $paid = $order->status_counts['Paid'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/Paid"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Paid"
                         class="{{ $paid > 0 ? 'active-link' : '' }}">
                         {{ $paid }}
                     </a>
@@ -171,7 +153,7 @@
 
                 @php $printed = $order->status_counts['Printed'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/Printed"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Printed"
                         class="{{ $printed > 0 ? 'active-link' : '' }}">
                         {{ $printed }}
                     </a>
@@ -179,7 +161,7 @@
 
                 @php $invoiced = $order->status_counts['Invoiced'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/Invoiced"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Invoiced"
                         class="{{ $invoiced > 0 ? 'active-link' : '' }}">
                         {{ $invoiced }}
                     </a>
@@ -187,7 +169,7 @@
 
                 @php $shipped = $order->status_counts['Shipped'] ?? 0; @endphp
                 <td>
-                    <a wire:navigate href="{{ url('orders') }}/{{ $order->order_no }}/Shipped"
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Shipped"
                         class="{{ $shipped > 0 ? 'active-link' : '' }}">
                         {{ $shipped }}
                     </a>

@@ -1,17 +1,20 @@
 <?php
 
-use App\Livewire\Settings\Appearance;
-use App\Livewire\Settings\Password;
-use App\Livewire\Settings\Profile;
+use App\Http\Controllers\PrintController;
+use App\Livewire\Items;
+use App\Livewire\Teams;
+use App\Livewire\Orders;
+use App\Livewire\Tarics;
+use App\Livewire\Parents;
+use App\Livewire\Suppliers;
 use App\Livewire\Auth\Login;
 use App\Livewire\Categories;
-use App\Livewire\Items;
-use App\Livewire\Orders;
-use App\Livewire\Parents;
-use App\Livewire\Post;
-use App\Livewire\Suppliers;
-use App\Livewire\Tarics;
-use App\Livewire\Teams;
+use App\Livewire\Nso;
+use App\Livewire\OrderItems;
+use App\Livewire\Settings\Profile;
+use App\Livewire\Settings\Password;
+use App\Livewire\Settings\Appearance;
+use App\Livewire\SupplierOrder;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -27,6 +30,10 @@ Route::get('tarics', Tarics::class)->name('tarics');
 Route::get('parents', Parents::class)->name('parents');
 Route::get('teams', Teams::class)->name('teams');
 Route::get('orders', Orders::class)->name('orders');
+Route::get('orderItems/{param?}/{status?}', OrderItems::class)->name('orderItems');
+Route::get('nso', Nso::class)->name('nso');
+Route::get('so', SupplierOrder::class)->name('so');
+Route::get('print/{id}', [PrintController::class, 'print'])->name('print');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])

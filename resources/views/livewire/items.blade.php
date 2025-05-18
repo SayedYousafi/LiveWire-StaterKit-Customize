@@ -60,10 +60,10 @@
                     {{ $item->id }}
                 </td>
                 <td class="px-2 py-1">
-                    {{ $item->name }}
+                    {{ $item->item_name }}
                 </td>
                 <td class="px-2 py-1">
-                    {{ $item->price }}
+                    {{ $item->RMB_Price }}
                 </td>
 
                 <td class="px-2 py-1">
@@ -82,4 +82,5 @@
             @endforelse
         </tbody>
     </table>
+    <div> {{ $items->links() }}</div>
 </div>
