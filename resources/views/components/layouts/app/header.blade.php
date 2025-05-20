@@ -27,27 +27,28 @@
 
             <flux:dropdown position="top">
                 <flux:navbar.item icon="clipboard-document" icon:trailing="chevron-down">Orders</flux:navbar.item>
-                <flux:menu>
+                <flux:navmenu>
                     {{-- <flux:menu.item href="#" icon="plus">New item</flux:menu.item>
                     <flux:menu.separator /> --}}
-                    <flux:menu.item href="{{ route('nso') }}" icon="queue-list" wire:navigate>NSO</flux:menu.item>
-                    <flux:menu.separator />
-                    <flux:menu.item href="{{ route('so') }}" icon="building-storefront" wire:navigate>Suppliers
-                        order</flux:menu.item>
-                    <flux:menu.separator />
-                    <flux:menu.item href="{{ route('orders') }}" icon="clipboard-document-list" wire:navigate>List
-                        orders</flux:menu.item>
-                    <flux:menu.separator />
-                    <flux:menu.item href="{{ route('orderItems') }}" icon="clipboard-document-list" wire:navigate>List
-                        order items </flux:menu.item>
-                    <flux:menu.separator />
-                    <flux:menu.item href="{{ route('orders') }}" icon="document-currency-euro" wire:navigate>Invoices
-                    </flux:menu.item>
-                    <flux:menu.separator />
-                    <flux:menu.item href="{{ route('orders') }}" icon="arrow-path-rounded-square" wire:navigate>Problems
-                    </flux:menu.item>
-                    <flux:menu.separator />
-                </flux:menu>
+                    <flux:navmenu.item href="{{ route('nso') }}" icon="queue-list" wire:navigate>NSO</flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('so') }}" icon="building-storefront" wire:navigate>Suppliers
+                        order</flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('orders') }}" icon="clipboard-document-list" wire:navigate>List
+                        orders</flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('orderItems') }}" icon="clipboard-document-list" wire:navigate>List
+                        order items </flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('orders') }}" icon="document-currency-euro" wire:navigate>
+                        Invoices 
+                    </flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('orders') }}" icon="arrow-path-rounded-square" wire:navigate>Problems
+                    </flux:navmenu.item>
+                    <flux:navmenu.separator />
+                </flux:navmenu>
             </flux:dropdown>
 
             <flux:dropdown position="top">
@@ -72,8 +73,8 @@
                 </flux:menu>
             </flux:dropdown>
 
-            <flux:navbar.item icon="chat-bubble-bottom-center-text" :href="route('suppliers')"
-                :current="request()->routeIs('suppliers')" wire:navigate>
+            <flux:navbar.item icon="user-group" :href="route('suppliers')" :current="request()->routeIs('suppliers')"
+                wire:navigate>
                 {{ __('Suppliers') }}
             </flux:navbar.item>
 
@@ -187,7 +188,7 @@
     </flux:sidebar>
 
     {{ $slot }}
-    
+
 
     @fluxScripts
     @stack('scripts')

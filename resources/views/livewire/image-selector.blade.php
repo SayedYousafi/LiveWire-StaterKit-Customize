@@ -51,17 +51,16 @@
     </div>
 
     <div x-data="{ open: false }" class="space-y-2">
-        <label for="actual-btn" @click="open = true"
-               class="text-indigo-600 font-semibold cursor-pointer hover:underline">Upload an image from local</label>
+
+        {{-- <label for="actual-btn" @click="open = true"
+               class="text-indigo-600! font-semibold! cursor-pointer! hover:underline">Upload an image from local</label> --}}
+<label for="actual-btn" @click="open = true"
+               class="text-indigo-600! font-semibold! cursor-pointer! hover:underline">Upload an image from local</label>
 
         <div x-show="open" x-transition>
             <form wire:submit.prevent="save" enctype="multipart/form-data" class="space-y-4 mt-2">
 
                 <input type="file" wire:model="photo" id="actual-btn" class="hidden" />
-
-                @error('photo')
-                    <div class="text-red-500 text-sm">{{ $message }}</div>
-                @enderror
 
                 @if ($photo)
                     <div>

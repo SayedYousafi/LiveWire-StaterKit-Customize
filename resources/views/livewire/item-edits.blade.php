@@ -164,35 +164,36 @@
         @if($successMessage === 'Special price set successfully !!!')
             <flux:callout variant="success" heading="{{ $successMessage }}" class="mb-3" />
         @endif 
-            <legend class="text-lg font-semibold px-2 bg-white dark:bg-gray-900 text-black dark:text-white">Is Special
-                Item?
+            <legend class="text-lg font-semibold px-2 bg-white dark:bg-gray-900 text-black dark:text-white">Is Special Item?
             </legend>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">EUR Special</label>
                     <div class="text-gray-900 dark:text-gray-100">{{ $itemDetail->is_eur_special }}</div>
                     <flux:dropdown>
-                        <flux:button icon:trailing="chevron-down">
-                            {{ $is_eur_special === 'Y' ? 'Yes' : ($is_eur_special === 'N' ? 'No' : 'Select') }} EUR
+                        <flux:button icon:trailing="chevron-down">Change to:
+                            {{-- {{ $is_eur_special === 'Y' ? 'Yes' : ($is_eur_special === 'N' ? 'No' : 'Select') }}  --}}
                         </flux:button>
                         <flux:menu>
                             <flux:menu.item wire:click="$set('is_eur_special', 'Y')">Yes</flux:menu.item>
                             <flux:menu.item wire:click="$set('is_eur_special', 'N')">No</flux:menu.item>
                         </flux:menu>
                     </flux:dropdown>
+                    {{ $is_eur_special }}
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">RMB Special</label>
                     <div class="text-gray-900 dark:text-gray-100">{{ $itemDetail->is_rmb_special }}</div>
                     <flux:dropdown>
-                        <flux:button icon:trailing="chevron-down">
-                            {{ $is_rmb_special === 'Y' ? 'Yes' : ($is_rmb_special === 'N' ? 'No' : 'Select') }} RMB
+                        <flux:button icon:trailing="chevron-down">Change to:
+                            {{-- {{ $is_rmb_special === 'Y' ? 'Yes' : ($is_rmb_special === 'N' ? 'No' : 'Select') }}  --}}
                         </flux:button>
                         <flux:menu>
                             <flux:menu.item wire:click="$set('is_rmb_special', 'Y')">Yes</flux:menu.item>
                             <flux:menu.item wire:click="$set('is_rmb_special', 'N')">No</flux:menu.item>
                         </flux:menu>
                     </flux:dropdown>
+                    {{ $is_rmb_special }}
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">EK Net</label>
@@ -339,7 +340,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
             <flux:input wire:model="price_rmb" label="Price RMB" placeholder="Price RMB" />
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">isPO</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">isPO - </label>
                 <flux:dropdown>
                     <flux:button icon:trailing="chevron-down">
                         {{ $is_po === 'Yes' ? 'Yes' : ($is_po === 'No' ? 'No' : 'Select') }}
@@ -350,11 +351,12 @@
                     </flux:menu>
                 </flux:dropdown>
             </div>
-            <flux:textarea wire:model="url" label="Item URL" placeholder="Enter supplier item URL" rows="auto" />
+            
             <flux:input wire:model="moq" label="MOQ" placeholder="Minimum order quantity" />
             <flux:input wire:model="oi" label="Interval" placeholder="Interval" />
             <flux:input wire:model="lead_time" label="Lead time" placeholder="Lead time" />
             <flux:textarea wire:model="note_cn" label="Note CN" placeholder="Chinese note or description" rows="auto" />
+            <flux:textarea wire:model="url" label="Item URL" placeholder="Enter supplier item URL" rows="auto" />
         </div>
         <div class="text-right mt-4">
             <flux:button class="px-4 py-2 bg-gray-800! text-white! rounded! hover:bg-gray-700!"
