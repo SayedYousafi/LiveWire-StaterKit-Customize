@@ -5,7 +5,7 @@
             {{-- <flux:text class="mt-2">Make changes to QTY.</flux:text> --}}
         </div>
 
-        <flux:input wire:model='ref_no' label="New Reference #" placeholder="Enter Ref No." />
+        <flux:input wire:model='ref_no' label="New Reference #" placeholder="Enter Ref No." autofocus/>
         <flux:textarea wire:model='remark' rows="3" label="Supplier order remark:" placeholder="is there any supplier order remark?" />
 
         <div class="flex">

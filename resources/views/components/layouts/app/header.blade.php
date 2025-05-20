@@ -39,7 +39,7 @@
                         orders</flux:menu.item>
                     <flux:menu.separator />
                     <flux:menu.item href="{{ route('orderItems') }}" icon="clipboard-document-list" wire:navigate>List
-                        Item orders</flux:menu.item>
+                        order items </flux:menu.item>
                     <flux:menu.separator />
                     <flux:menu.item href="{{ route('orders') }}" icon="document-currency-euro" wire:navigate>Invoices
                     </flux:menu.item>
@@ -190,6 +190,8 @@
     
 
     @fluxScripts
+    @stack('scripts')
+
 </body>
 
 </html>

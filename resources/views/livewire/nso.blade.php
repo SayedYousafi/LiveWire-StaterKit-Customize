@@ -104,7 +104,7 @@
                 <td>{{ $order->QTY }}</td>
                 <td>
                     <flux:button variant="primary" wire:click="createSupplierOrder({{ $order->SUPPID }})" size="sm"
-                        icon="plus-circle">Supply order</flux:button>
+                        icon="plus-circle">Supplier order</flux:button>
                 </td>
             </tr>
             @if($tableId == $order->SUPPID)

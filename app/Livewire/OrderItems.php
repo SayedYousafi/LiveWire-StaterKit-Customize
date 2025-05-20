@@ -23,6 +23,7 @@ class OrderItems extends Component
         $query = DB::table('order_items')
             ->join('order_statuses', 'order_statuses.master_id', '=', 'order_items.master_id')
             ->join('items', 'items.ItemID_DE', '=', 'order_items.ItemID_DE')
+            ->join('warehouse_items','warehouse_items.item_id','=','items.id')
             ->join('supplier_items', 'supplier_items.item_id', '=', 'items.id')
             ->join('suppliers', 'suppliers.id', '=', 'supplier_items.supplier_id')
             ->where('supplier_items.is_default', 'Y');
@@ -35,6 +36,7 @@ class OrderItems extends Component
                     ->orWhere('items.item_name', 'like', "%{$this->search}%")
                     ->orWhere('items.item_name_cn', 'like', "%{$this->search}%")
                     ->orWhere('items.remark', 'like', "%{$this->search}%")
+                    ->orWhere('warehouse_items.item_no_de',  'like', "%{$this->search}%")
                     ->orWhere('items.ean', 'like', "%{$this->search}%")
                     ->orWhere('supplier_items.note_cn', 'like', "%{$this->search}%")
                     ->orWhere('suppliers.name', 'like', "%{$this->search}%");

@@ -11,8 +11,7 @@
             <flux:menu>
                 @foreach ($cargos as $id => $cargo_no)
                 <flux:separator />
-                <flux:menu.item icon='plus' wire:click="$set('cargoId', {{ $id }})">
-                    {{ $id }} - {{ $cargo_no }}
+                <flux:menu.item icon='plus' wire:click="$set('cargoId', {{ $id }})">{{ $id }} - {{ $cargo_no }}
                 </flux:menu.item>
                 @endforeach
             </flux:menu>

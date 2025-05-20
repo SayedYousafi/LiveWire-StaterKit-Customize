@@ -20,8 +20,8 @@ class SupplierOrder extends Component
     public $cargoId, $orderNo, $masterIds, $supplierId, $tableId, $terms;
     public $order_type_id, $npr_remark, $selectedSupplierName, $supplier_id;
     public $probNo, $checkNo, $chkDetails, $purchaseDetails = false, $purchaseDetailsNo, $editDetails, $chkDetailsNo, $m_id, $count_item, $count_purchased;
-    public $ref_no, $supplierOrderId, $item_ID;
-    public $currentQty, $qtyIdForChange, $remarks_cn, $remark;
+    public $ref_no, $supplierOrderId, $item_ID, $txtProblem, $problemId, $problemType, $checkId;
+    public $currentQty, $qtyIdForChange, $remarks_cn, $remark, $newStatus, $qty, $SOID;
     public string $search = '';
     public string $title  = 'Suppler Orders';
     public $param, $status;
@@ -283,4 +283,102 @@ class SupplierOrder extends Component
         $this->chkDetailsNo = null;
         $this->refreshItemOrders();
     }
+
+    public function pProblem($id)
+    {
+        $this->problemId  = $id;
+        $status           = Order_status::where('master_id', $id)->select('problems')->first();
+        $this->txtProblem = $status->problems ?? '';
+        Flux::modal('edit-problem')->show();
+
+    }
+
+    public function updateProblem()
+    {
+        Order_status::where('master_id', $this->problemId)->update(
+            [
+                'problems' => $this->txtProblem,
+                'status'   => 'P_Problem',
+            ]);
+
+        session()->flash('success', 'Purchase problem registered successfully !!!');
+        $this->txtProblem = '';
+        Flux::modal('edit-problem')->close();
+        $this->refreshItemOrders();
+
+    }
+    public function cProblem($id)
+    {
+        $this->checkId    = $id;
+        $status           = Order_status::where('master_id', $id)->select('problems')->first();
+        $this->txtProblem = $status->problems ?? '';
+        Flux::modal('edit-check-problem')->show();
+
+    }
+
+    public function updateStatus()
+    {
+        Order_status::where('master_id', $this->checkId)->update(
+            [
+                'problems' => $this->txtProblem,
+                'status'   => 'C_Problem',
+            ]);
+        session()->flash('success', 'Check problem registered successfully !!!');
+        $this->txtProblem = '';
+        Flux::modal('edit-check-problem')->close();
+        $this->refreshItemOrders();
+    }
+
+    public function adjustProblem($m_id)
+    {
+        $this->m_id = $m_id;
+        $edit       = Order_status::where('id', $m_id)->first();
+        //dd($edit);
+        $this->newStatus   = $edit->status;
+        $this->problemType = $edit->status;
+        $this->remark      = $edit->problems;
+        $this->SOID        = $edit->supplier_order_id;
+        $this->qty         = $edit->qty_label;
+        $this->remarks_cn  = $edit->remarks_cn;
+        Flux::modal('adjust-problem')->show();
+
+        //dd($this->m_id , 'waiting for Joschua Busniss logic');
+    }
+    public function editProblem()
+    {
+        // Check if the m_id is empty and show an error message
+        if (empty($this->m_id)) {
+            session()->flash('error', 'You need to refresh your page!');
+            return; // Stop further execution if there's no m_id
+        }
+
+        // Prepare the base data for update
+        $updateData = [
+            'status'     => $this->newStatus,
+            'problems'   => $this->remark,
+            'qty_label'  => $this->qty,
+            'remarks_cn' => $this->remarks_cn,
+        ];
+
+        // Check for a specific remark and adjust the data accordingly
+        if ($this->remark !== 'C_Problem') {
+            if ($this->newStatus === 'NSO') {
+                $updateData['supplier_order_id'] = null;
+            } else {
+                $updateData['supplier_order_id'] = $this->SOID;
+            }
+        } else {
+
+            $updateData['supplier_order_id'] = $this->SOID;
+        }
+
+        // Update the status with the prepared data
+        Order_status::where('id', $this->m_id)->update($updateData);
+
+        // Flash success message
+        session()->flash('success', 'Problem updated successfully!');
+        Flux::modal('adjust-problem')->close();
+        $this->refreshItemOrders();
+    }
+
 }

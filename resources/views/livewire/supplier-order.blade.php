@@ -24,9 +24,14 @@
         <flux:callout variant="danger" icon="check-circle" heading="{{ session('error') }}" />
     </div>
     @endif
+
     @include('partials.edit-so')
     @include('partials.edit-qty')
     @include('partials.edit-refeNo')
+    @include('partials.edit-problem')
+    @include('partials.edit-check-problem')
+    @include('partials.adjust-problem')
+
     <table class="custom-table w-full text-sm text-gray-500 dark:text-gray-400 mt-2.5">
         <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">
             <tr>

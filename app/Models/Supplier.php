@@ -14,7 +14,7 @@ class Supplier extends Model
              ->orWhere('company_name', 'like', '%' . $term . '%')
             ->orWhere('city', 'like', '%' . $term . '%')
             ->orWhere('province', 'like', '%' . $term . '%')
-
+         
             ->orWhere('contact_person', 'like', '%' . $term . '%');
     }
 

@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <flux:input wire:model="ref_no" label="Reference No:" placeholder="Reference No" />
+        <flux:input wire:model="ref_no" label="Reference No:" placeholder="Reference No" autofocus />
 
         <flux:textarea wire:model='remark' label='Supplier order remark:' placeholder='Enter supplier order remark' />
         <div class="flex">

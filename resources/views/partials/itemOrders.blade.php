@@ -11,7 +11,6 @@
             <th>QTY</th>
             <th>RMB</th>
             <th>Total</th>
-            {{-- <th>Unit</th> --}}
             <th>Status</th>
             <th colspan="3">Actions</th>
         </tr>
@@ -98,14 +97,14 @@
                 </flux:button>
             </td>
             <td>
-                <flux:button wire:click='setProblemOrCheck("{{$itemOrder->master_id}}", "problem")' size='sm'
+                <flux:button wire:click="pProblem('{{$itemOrder->master_id}}')" size='sm'
                     icon='speaker-wave' class="bg-amber-500! hover:bg-amber-400! text-white!">
                     P_Problem
                 </flux:button>
             </td>
             @elseif ($count_item==$count_purchased && $order_state=='Purchased')
             <td nowrap>
-                <flux:button wire:click='setProblemOrCheck("{{$itemOrder->master_id}}", "problem")' size='sm'
+                <flux:button wire:click="pProblem('{{$itemOrder->master_id}}', 'problem')" size='sm'
                     icon='speaker-wave' class="bg-amber-500! hover:bg-amber-400! text-white!">
                     P_Problem
                 </flux:button>
@@ -116,7 +115,7 @@
             </td>
             @elseif ($order_state=='Purchased')
             <td>
-                <flux:button wire:click='setProblemOrCheck("{{$itemOrder->master_id}}", "problem")' size='sm'
+                <flux:button wire:click="pProblem('{{$itemOrder->master_id}}', 'problem')" size='sm'
                     icon='speaker-wave' class="bg-amber-500! hover:bg-amber-400! text-white!">
                     P_Problem
                 </flux:button>
@@ -129,7 +128,7 @@
                 </flux:button>
             </td>
             <td>
-                <flux:button wire:click='setProblemOrCheck("{{$itemOrder->master_id}}", "check")' size='sm'
+                <flux:button wire:click="cProblem('{{$itemOrder->master_id}}', 'check')" size='sm'
                     icon='speaker-wave' class=" bg-violet-500! hover:bg-violet-400! text-white!">
                     C_Problem
                 </flux:button>
@@ -145,7 +144,8 @@
             @elseif($order_state=='C_Problem' || $order_state=='P_Problem')
             <td colspan="2">
                 <flux:button class="bg-green-500! hover:bg-green-400! text-white!"
-                    wire:click='adjustProblem({{ $itemOrder->sqrID }})'>
+                icon='adjustments-horizontal' size='sm'
+                    wire:click="adjustProblem({{ $itemOrder->sqrID }})">
                     Adjust
                 </flux:button>
             </td>
@@ -153,32 +153,22 @@
             @endif
         </tr>
  @if ($title !== 'NSOs')
-        @if($probNo == $itemOrder->master_id || $checkNo == $itemOrder->master_id)
-        <tr wire:key="problem-check-{{ $itemOrder->master_id }}">
-            @if($probNo == $itemOrder->master_id)
-            @include('components.problem', ['masterId' => $itemOrder->master_id, 'type' => 'problem'])
-            @endif
-            @if($checkNo == $itemOrder->master_id)
-            @include('components.problem', ['masterId' => $itemOrder->master_id, 'type' => 'check'])
-            @endif
-        </tr>
-        @endif
-
+       
         @if($purchaseDetailsNo == $itemOrder->master_id)
-        @if($itemOrder->is_rmb_special == 'Y' && ($itemOrder->rmb_special_price == '' || $itemOrder->rmb_special_price
-        == 0))
-        <tr wire:key="details-warning-{{ $itemOrder->master_id }}">
-            <td colspan="17">
-                <flux:callout variant="danger" icon="x-circle" heading="Cannot purchase unless you set RMB Price." />
-            </td>
-        </tr>
-        @else
-        <tr wire:key="details-row-{{ $itemOrder->master_id }}">
-            <td colspan="17" align="center">
-                @include('partials.purchase-order-details')
-            </td>
-        </tr>
-        @endif
+            @if($itemOrder->is_rmb_special == 'Y' && ($itemOrder->rmb_special_price == '' || $itemOrder->rmb_special_price
+            == 0))
+                <tr wire:key="details-warning-{{ $itemOrder->master_id }}">
+                    <td colspan="17">
+                        <flux:callout variant="danger" icon="x-circle" heading="Cannot purchase unless you set RMB Price." />
+                    </td>
+                </tr>
+            @else
+                <tr wire:key="details-row-{{ $itemOrder->master_id }}">
+                    <td colspan="17" align="center">
+                        @include('partials.purchase-order-details')
+                    </td>
+                </tr>
+            @endif
         @endif
 
         @if ($editDetails)
@@ -196,18 +186,9 @@
             </td>
         </tr>
         @endif
-
-        @if ($m_id==$itemOrder->sqrID)
-        <tr wire:key="qty-change-{{ $itemOrder->sqrID }}">
-            <td colspan="16" align="center" class="caption:top">
-                @include('components.qtyChange')
-            </td>
-        </tr>
-        @endif
         </tr>
     @endif
         @endforeach
-
         <tr>
             <th colspan="5">Grand</th>
             <td><strong>{{ formatDecimal($volum/1000) }}</strong></td>

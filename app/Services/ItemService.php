@@ -3,53 +3,22 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 
-class OrderItemService
+class ItemService
 {
     public function baseOrderQuery()
     {
-        return DB::table('order_items')
-            ->join('order_statuses', 'order_statuses.master_id', '=', 'order_items.master_id')
-            ->join('items', 'items.ItemID_DE', '=', 'order_items.ItemID_DE')
+        return DB::table('items')
             ->join('supplier_items', 'supplier_items.item_id', '=', 'items.id')
-            ->join('warehouse_items','warehouse_items.item_id','=','items.id')
+        ->join('warehouse_items','warehouse_items.item_id','=','items.id')
             ->join('suppliers', 'suppliers.id', '=', 'supplier_items.supplier_id')
             ->join('supplier_types', 'suppliers.order_type_id', '=', 'supplier_types.id')
-            ->join('orders', 'order_items.order_no', '=', 'orders.order_no')
             ->where('supplier_items.is_default', 'Y');
-
     }
-
-    public function finalizeOrderQuery($query)
-    {
-        DB::statement('SET SESSION sql_mode = ""');
-
-        return $query->select(
-            'order_items.id AS ID',
-            'suppliers.id AS SUPPID',
-            'suppliers.name',
-            'supplier_types.type_name',
-            'orders.comment',
-            'suppliers.order_type_id',
-            'order_statuses.status',
-            DB::raw('SUM(order_items.qty) as QTY'),
-            DB::raw('COUNT(order_statuses.ItemID_DE) as countItems'),
-        )->groupBy('suppliers.id');
-    }
-
     public function rawOrderQuery($query)
     {
         return $query->select(
-            'order_items.id AS ID',
-            'order_items.ItemID_DE',
-            'order_items.order_no',
-            'order_items.qty',
-            'order_items.remark_de',
-            'order_items.master_id',
-            'order_statuses.remarks_cn',
-            'order_statuses.cargo_id',
-            'order_statuses.status',
-            'order_statuses.qty_label',
-            'order_statuses.id as sqrID',
+            'items.id AS itemId',
+            'items.RMB_Price',
             'items.length',
             'items.width',
             'items.height',
@@ -58,26 +27,24 @@ class OrderItemService
             'items.ean',
             'items.cat_id',
             'items.photo',
-            'items.id AS item_id',
+            'items.parent_no_de',
             'items.is_rmb_special',
             'items.item_name',
             'items.taric_id',
             'items.item_name_cn',
+            'items.remark',
+            'items.isActive',
             'supplier_items.supplier_id',
             'supplier_items.price_rmb',
             'supplier_items.is_po',
             'supplier_items.url',
-            'suppliers.id AS SUPPID',
+            'suppliers.id AS supplierId',
             'supplier_items.note_cn',
             'suppliers.name',
-            
             'suppliers.website',
             'suppliers.order_type_id',
             'supplier_types.type_name',
-            'orders.comment',
-            'warehouse_items.item_no_de',
-            'order_statuses.supplier_order_id',
-            'order_statuses.rmb_special_price'
+
         );
     }
 
@@ -104,9 +71,18 @@ class OrderItemService
         return $query->orderBy('items.item_name');
     }
 
-    public function getItemsData()
+    public function getItemsData($search = null)
     {
         $query = $this->rawOrderQuery(clone $this->baseOrderQuery());
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('items.item_name', 'like', "%$search%")
+                    ->orWhere('items.item_name_cn', 'like', "%$search%")
+                    ->orWhere('items.ean', 'like', "%$search%")
+                    ->orWhere('items.remark', 'like', "%$search%");
+                    //->orWhere('warehouse_items.parent_no_de', 'like', "%$search%");
+            });
+        }
         return $query->orderBy('items.id', 'desc');
     }
 }

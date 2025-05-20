@@ -9,12 +9,15 @@ use App\Livewire\Parents;
 use App\Livewire\Suppliers;
 use App\Livewire\Auth\Login;
 use App\Livewire\Categories;
+use App\Livewire\ItemDetails;
+use App\Livewire\ItemEdits;
 use App\Livewire\Nso;
 use App\Livewire\OrderItems;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\SupplierOrder;
+use App\Models\Item;
 use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
@@ -25,10 +28,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', Login::class)->name('home');
 Route::get('categories', Categories::class )->name('categories');
 Route::get('items', Items::class )->name('items');
+Route::get('itemDetail/{itemId}', ItemDetails::class )->name('itemDetail');
+Route::get('itemEdit/{id}', ItemEdits::class )->name('itemEdit');
 Route::get('suppliers', Suppliers::class )->name('suppliers');
 Route::get('tarics', Tarics::class)->name('tarics');
 Route::get('parents', Parents::class)->name('parents');
 Route::get('teams', Teams::class)->name('teams');
+
 Route::get('orders', Orders::class)->name('orders');
 Route::get('orderItems/{param?}/{status?}', OrderItems::class)->name('orderItems');
 Route::get('nso', Nso::class)->name('nso');
