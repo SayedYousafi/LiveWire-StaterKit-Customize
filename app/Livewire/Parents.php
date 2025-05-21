@@ -48,10 +48,6 @@ class Parents extends Component
             'title'   => $this->title,
         ]);
 
-        // return view('livewire.parents')->with([
-        //     'Parents' => Parentz::search($this->search)->orderBy('id', 'desc')->paginate(100),
-        //     'title'   => $this->title,
-        // ]);
     }
 
     public function save()

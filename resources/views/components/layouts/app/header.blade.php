@@ -41,7 +41,7 @@
                     <flux:navmenu.item href="{{ route('orderItems') }}" icon="clipboard-document-list" wire:navigate>List
                         order items </flux:navmenu.item>
                     <flux:navmenu.separator />
-                    <flux:navmenu.item href="{{ route('orders') }}" icon="document-currency-euro" wire:navigate>
+                    <flux:navmenu.item href="{{ route('invoices') }}" icon="document-currency-euro" wire:navigate>
                         Invoices 
                     </flux:navmenu.item>
                     <flux:navmenu.separator />
