@@ -5,8 +5,8 @@
             {{-- <flux:text class="mt-2">Make changes to QTY.</flux:text> --}}
         </div>
 
-        <flux:input wire:model='currentQty' label="New QTY" placeholder="Enter New QTY" autofocus/>
-        <flux:textarea wire:model='remarks_cn' rows="3" label="Enter CN Remarks" />
+        <flux:input wire:model='currentQty' label="New QTY:" placeholder="Enter New QTY" autofocus/>
+        <flux:textarea wire:model='remarks_cn' rows="3" label="Enter Remarks" />
 
         <div class="flex">
             <flux:spacer />

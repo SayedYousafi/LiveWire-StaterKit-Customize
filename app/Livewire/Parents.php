@@ -37,7 +37,7 @@ class Parents extends Component
 
     public function render()
     {
-        $parentsQuery = Parentz::search($this->search);
+        $parentsQuery = Parentz::search($this->search)->withCount('items');
 
         if (! $this->showInactive) {
             $parentsQuery->where('is_active', '1');

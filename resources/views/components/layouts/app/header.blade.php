@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
-
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @include('partials.head')
 </head>
@@ -82,9 +81,9 @@
             <flux:dropdown position="top">
                 <flux:navbar.item icon="layout-grid" icon:trailing="chevron-down">Management</flux:navbar.item>
                 <flux:menu>
-                    <flux:menu.item href="#" icon="presentation-chart-bar" wire:navigate>Control</flux:menu.item>
+                    <flux:menu.item href="{{ route('controls') }}" icon="presentation-chart-bar" wire:navigate>Control</flux:menu.item>
                     <flux:menu.separator />
-                    <flux:menu.item href="{{ route('items') }}" icon="wrench" wire:navigate>Admin</flux:menu.item>
+                    <flux:menu.item href="{{ route('admin') }}" icon="wrench" wire:navigate>Admin</flux:menu.item>
                     <flux:menu.separator />
                     <flux:menu.item href="{{ route('teams') }}" icon="user-group" wire:navigate>Team</flux:menu.item>
                     <flux:menu.separator />
@@ -191,6 +190,8 @@
 
 
     @fluxScripts
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     @stack('scripts')
 
 </body>

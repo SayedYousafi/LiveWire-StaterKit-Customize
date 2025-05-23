@@ -89,3 +89,68 @@ table.custom-table td a.active-link {
     text-decoration: none;
 }
 
+/* resources/css/app.css */
+
+/* Base outer table container */
+.table-default {
+  @apply w-full overflow-x-auto border border-gray-300 dark:border-gray-700 rounded-lg;
+}
+
+/* Table layout */
+.table-default table {
+  @apply w-full border-collapse table-auto min-w-full;
+}
+
+/* Sticky thead */
+.table-default thead {
+  @apply bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-10;
+}
+
+.table-default thead tr {
+  @apply sticky top-0 z-10;
+}
+
+/* Cells */
+.table-default th,
+.table-default td {
+  @apply border border-gray-300 dark:border-gray-700 p-1 text-center align-middle text-sm;
+}
+
+/* Body row styling */
+.table-default tbody tr {
+  @apply h-6 text-wrap;
+}
+
+/* Optional row highlighting class */
+.table-highlighted {
+  @apply bg-gray-700 dark:bg-gray-900 text-white;
+}
+
+/* --- NEW: Nested Table Styling --- */
+
+.table-nested {
+  @apply w-full border border-gray-400 dark:border-gray-600 rounded-md overflow-hidden;
+}
+
+.table-nested table {
+  @apply w-full table-auto border-collapse;
+}
+
+.table-nested thead {
+  @apply bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100;
+}
+
+.table-nested th,
+.table-nested td {
+  @apply border border-gray-300 dark:border-gray-700 p-1 text-left text-sm;
+}
+
+.table-nested tbody tr {
+  @apply transition duration-150 ease-in-out;
+}
+
+.table-nested tbody tr:hover {
+  @apply bg-gray-100 dark:bg-gray-700;
+}
+
+

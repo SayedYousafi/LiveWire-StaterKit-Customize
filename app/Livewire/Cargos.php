@@ -67,7 +67,7 @@ class Cargos extends Component
 
     public function update()
     {
-        $this->validate();$validate = $this->validate([
+        $validated = $this->validate([
             'cargo_no' => 'required',
             'customer_id' => 'required',
             'cargo_type_id' => 'required'

@@ -28,5 +28,9 @@ class Item extends Model
     {
         return $this->belongsTo(Taric::class);
     }
+    public function parents()
+    {
+        return $this->belongsTo(Parents::class, 'parent_id', 'id');
+    }
 }
 

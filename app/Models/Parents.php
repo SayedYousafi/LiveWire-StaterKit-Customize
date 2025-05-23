@@ -7,6 +7,11 @@ class Parents extends Model
 {
     protected $guarded = [];
 
+    public function items()
+    {
+        return $this->hasMany(Item::class, 'parent_id');
+    }
+
     public static function search($term)
     {
         return static::where('name_en', 'like', '%' . $term . '%')

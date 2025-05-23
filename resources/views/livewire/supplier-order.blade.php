@@ -15,7 +15,7 @@
 
     {{-- Flash message --}}
     @if (session('success'))
-    <div class="mt-2 text-center">
+    <div class="mt-3 text-center mb-3">
         <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
     </div>
     @endif
@@ -31,8 +31,9 @@
     @include('partials.edit-problem')
     @include('partials.edit-check-problem')
     @include('partials.adjust-problem')
+    @include('partials.set-special-price')
 
-    <table class="custom-table w-full text-sm text-gray-500 dark:text-gray-400 mt-2.5">
+    <table class="table-default">
         <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">
             <tr>
                 <th>SOID

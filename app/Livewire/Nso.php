@@ -90,4 +90,10 @@ class Nso extends Component
 
         session()->flash('success', 'Supplier order created successfully !!!');
     }
+    public function cancel()
+    {
+        $this->tableId    = null;
+        $this->supplierId = null;
+        $this->terms      =null;
+    }
 }

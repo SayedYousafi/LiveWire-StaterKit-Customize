@@ -1,6 +1,6 @@
-<table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
+<table class="table-default">
     <thead>
-        <tr>
+        <tr class="table-highlighted">
             <th>EAN</th>
             <th>Item Name</th>
             <th>Remarks</th>
@@ -77,8 +77,7 @@
             @if ($itemOrder->is_rmb_special=='Y')
             <td nowrap>
                 <flux:button size='sm' icon='currency-dollar' class=" bg-red-500! hover:bg-red-400! text-white!"
-                    data-bs-toggle="modal" data-bs-target="#priceModal"
-                    wire:click="specialPriceSelected({{ $itemOrder->sqrID}})">
+                    wire:click="specialPriceSelected({{$itemOrder->sqrID}})">
                     Set price
                 </flux:button>
             </td>

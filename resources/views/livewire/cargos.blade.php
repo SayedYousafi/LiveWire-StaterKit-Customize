@@ -8,7 +8,7 @@
             </flux:modal.trigger>
         </div>
 
-
+<x-sub-menu/>
         <div>
             <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass"
                 placeholder="Search {{ $title }}" />

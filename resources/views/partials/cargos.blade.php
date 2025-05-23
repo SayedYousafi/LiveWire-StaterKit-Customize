@@ -2,9 +2,7 @@
     <div class="space-y-6">
         <div>
             <flux:heading size="lg">Update cargo</flux:heading>
-            <flux:text class="mt-2">Assigning cargo to Order No.  {{ $orderNo }}
-            
-            </flux:text>
+            {{-- <flux:text class="mt-2">Assigning cargo to Order No.  {{ $orderNo }}</flux:text>--}}
         </div>
         <flux:dropdown>
             <flux:button icon:trailing="chevron-down">Select a cargo </flux:button>
@@ -22,7 +20,8 @@
         <div class="flex">
 
             <flux:spacer />
-            <flux:button wire:click='changeCargo' type="submit" variant="primary">Save changes</flux:button>
+            <flux:button wire:click='changeCargo' size='sm' icon='archive-box'
+            type="submit" variant="primary">Save changes</flux:button>
         </div>
     </div>
 </flux:modal>

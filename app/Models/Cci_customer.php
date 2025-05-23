@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Order_status extends Model
+class Cci_customer extends Model
 {
     protected $guarded = [];
 }

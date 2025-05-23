@@ -58,6 +58,7 @@ class OrderItems extends Component
         $orderItems = $query->select('order_items.id AS ID', 'order_items.order_no', 'order_items.qty', 'order_statuses.remarks_cn',
             'order_statuses.cargo_id', 'order_statuses.status', 'order_items.remark_de', 'items.remark',
             'items.ean','supplier_items.note_cn', 'items.item_name', 'items.item_name_cn', 'supplier_items.price_rmb', 'suppliers.id AS supplierId', 'suppliers.name')
+            ->orderBy('order_items.order_no', 'DESC')
             ->orderBy('items.item_name', 'ASC')
             ->paginate(100);
 

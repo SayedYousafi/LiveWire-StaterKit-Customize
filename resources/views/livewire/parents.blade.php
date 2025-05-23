@@ -112,17 +112,17 @@
     @endif
 
     <div class="relative overflow-x-auto">
-        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-2.5">
-            <thead class="sticky top-0 bg-gray-100 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+        <table class="table-default mt-3">
+            <thead>
                 <tr>
-                    <th class="px-6 py-3">ID</th>
-                    <th class="px-6 py-3">Name EN</th>
-                    <th class="px-6 py-3">Name DE</th>
-                    <th class="px-6 py-3">Name CN</th>
-                    <th class="px-6 py-3">active?</th>
-                    <th class="px-6 py-3">Taric</th>
+                    <th>ID</th>
+                    <th>Name EN</th>
+                    <th>Name DE</th>
+                    <th>Name CN</th>
+                    <th>active?</th>
+                    <th>Taric</th>
 
-                    <th colspan="3" class="px-6 py-3">Actions</th>
+                    <th colspan="3">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -133,21 +133,21 @@
                     {{--
                 <tr wire:key="{{ $parent->id }}"
                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"> --}}
-                    <td class="px-2 py-1">{{ $parent->id }}</td>
-                    <td class="px-2 py-1">{{ $parent->name_en }}</td>
-                    <td class="px-2 py-1">{{ $parent->name_de }}</td>
-                    <td class="px-2 py-1">{{ $parent->name_cn }}</td>
-                    <td class="px-2 py-1">{{ $parent->is_active == 1 ? 'Yes' : 'No' }}</td>
-                    <td class="px-2 py-1">{{ $parent->taric_id }}</td>
-                    <td class="px-2 py-1">
+                    <td>{{ $parent->id }} ({{ $parent->items_count }})</td>
+                    <td>{{ $parent->name_en }}</td>
+                    <td>{{ $parent->name_de }}</td>
+                    <td>{{ $parent->name_cn }}</td>
+                    <td>{{ $parent->is_active == 1 ? 'Yes' : 'No' }}</td>
+                    <td>{{ $parent->taric_id }}</td>
+                    <td>
                         <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $parent->id }})"
                             size="sm">Edit</flux:button>
                     </td>
-                    <td class="px-2 py-1">
-                        {{-- <flux:button variant="danger" icon="minus-circle" wire:click="delete({{ $parent->id }})"
-                            wire:confirm="Are you sure deleting this record?" size="sm">Delete</flux:button>--}}
-                    </td>
-                    <td class="px-2 py-1">
+                    {{-- <td>
+                        <flux:button variant="danger" icon="minus-circle" wire:click="delete({{ $parent->id }})"
+                            wire:confirm="Are you sure deleting this record?" size="sm">Delete</flux:button>
+                    </td> --}}
+                    <td>
                         <flux:button size='sm'>Description</flux:button>
                     </td>
                 </tr>

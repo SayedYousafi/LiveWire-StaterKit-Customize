@@ -48,6 +48,7 @@ class OrderItemService
             'order_statuses.remarks_cn',
             'order_statuses.cargo_id',
             'order_statuses.status',
+            'order_statuses.qty_split',
             'order_statuses.qty_label',
             'order_statuses.id as sqrID',
             'items.length',

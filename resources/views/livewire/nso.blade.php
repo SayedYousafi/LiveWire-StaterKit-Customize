@@ -23,11 +23,13 @@
     {{-- Express Orders --}}
     <p class="mt-6 font-semibold text-gray-700 dark:text-gray-200">Express Orders</p>
 
-    <table class="custom-table w-full text-sm text-gray-500 dark:text-gray-400 mt-2.5">
-        <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">
+    <table class="table-default">
+        <thead class="">
             <tr>
-                <th>Supplier ID</th>
-                <th>Supplier</th>
+                <th class="">SupplierID
+                    <flux:button variant="danger" size='sm' wire:click='cancel' icon='x-circle'></flux:button>
+                </th>
+                <th>Supplier name</th>
                 <th>Order Type</th>
                 <th>Count</th>
                 <th>QTY</th>
@@ -39,10 +41,8 @@
             <tr wire:key="express-{{ $order->SUPPID }}" @if (str_contains($order->comment, 'Expres')) class='bg-red-50'
                 @endif>
                 <td>
-                    <flux:button 
-                    class=" bg-gray-500! hover:bg-gray-400! text-white!"
-                    size='sm' icon:trailing='arrow-right-circle'
-                        wire:click="showTable({{ $order->SUPPID }} ,'Express')">
+                    <flux:button class=" bg-gray-500! hover:bg-gray-400! text-white!" size='sm'
+                        icon:trailing='arrow-right-circle' wire:click="showTable({{ $order->SUPPID }} ,'Express')">
                         {{ $order->SUPPID }}
                     </flux:button>
 
@@ -53,8 +53,7 @@
                 <td>{{ $order->QTY }}</td>
                 <td>
                     <flux:button variant="primary" wire:click="createSupplierOrder({{ $order->SUPPID }})"
-                        wire:confirm='Are you sure?' size="sm"
-                        icon="plus-circle">Supplier order</flux:button>
+                        wire:confirm='Are you sure?' size="sm" icon="plus-circle">Supplier order</flux:button>
                 </td>
             </tr>
             @if($tableId == $order->SUPPID)
@@ -75,10 +74,12 @@
     {{ $supplierId }}
     @endisset
     <p class="mt-6 font-semibold text-gray-700 dark:text-gray-200">Normal Orders</p>
-    <table class="custom-table w-full text-sm text-gray-500 dark:text-gray-400 mt-2.5">
-        <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">
+    <table class="table-default">
+        <thead class="">
             <tr>
-                <th>Supplier ID</th>
+                <th class="">SupplierID
+                    <flux:button variant="danger" size='sm' wire:click='cancel' icon='x-circle'></flux:button>
+                </th>
                 <th>Supplier</th>
                 <th>Order Type</th>
                 <th>Count</th>
@@ -90,10 +91,8 @@
             @forelse ($nsoOrders as $order)
             <tr wire:key="nso-{{ $order->SUPPID }}">
                 <td>
-                    <flux:button 
-                    class=" bg-gray-500! hover:bg-gray-400! text-white!"
-                    size='sm' icon:trailing='arrow-right-circle'
-                        wire:click="showTable({{ $order->SUPPID }} ,'Normal')">
+                    <flux:button class=" bg-gray-500! hover:bg-gray-400! text-white!" size='sm'
+                        icon:trailing='arrow-right-circle' wire:click="showTable({{ $order->SUPPID }} ,'Normal')">
                         {{ $order->SUPPID }}
                     </flux:button>
 

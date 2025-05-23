@@ -9,7 +9,7 @@ class ItemService
     {
         return DB::table('items')
             ->join('supplier_items', 'supplier_items.item_id', '=', 'items.id')
-        ->join('warehouse_items','warehouse_items.item_id','=','items.id')
+            ->join('warehouse_items','warehouse_items.item_id','=','items.id')
             ->join('suppliers', 'suppliers.id', '=', 'supplier_items.supplier_id')
             ->join('supplier_types', 'suppliers.order_type_id', '=', 'supplier_types.id')
             ->where('supplier_items.is_default', 'Y');

@@ -1,16 +1,19 @@
 <?php
 
 use App\Livewire\Nso;
+use App\Livewire\Admin;
 use App\Livewire\Items;
 use App\Livewire\Teams;
 use App\Livewire\Cargos;
 use App\Livewire\Orders;
 use App\Livewire\Tarics;
 use App\Livewire\Parents;
+use App\Livewire\Controls;
 use App\Livewire\Invoices;
 use App\Livewire\ItemEdits;
 use App\Livewire\Suppliers;
 use App\Livewire\Auth\Login;
+use App\Livewire\CargoTypes;
 use App\Livewire\Categories;
 use App\Livewire\OrderItems;
 use App\Livewire\ItemDetails;
@@ -42,14 +45,14 @@ Route::get('so', SupplierOrder::class)->name('so');
 Route::get('print/{id}', [PrintController::class, 'print'])->name('print');
 Route::get('cargos', Cargos::class)->name('cargos');
 Route::get('invoices', Invoices::class)->name('invoices');
+Route::get('cargotypes',CargoTypes::class)->name('cargotypes');
+Route::get('controls', Controls::class)->name('controls');
+Route::get('admin', Admin::class)->name('admin');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Route::view('orders', 'orders')
-//     ->middleware(['auth', 'verified'])
-//     ->name('orders');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');

@@ -381,4 +381,24 @@ class SupplierOrder extends Component
         $this->refreshItemOrders();
     }
 
+    public $priceId, $rmb_special_price;
+    public function specialPriceSelected($id)
+    {
+        $this->priceId = $id;
+        $rmb = Order_status::findOrFail($this->priceId);
+        $this->rmb_special_price=$rmb->rmb_special_price;
+        Flux::modal('edit-price')->show();
+    }
+    public function setSpecialPrice()
+    {
+        $this->validate(['rmb_special_price' => 'required|gte:0|lte:9999']);
+        Order_status::where('id', $this->priceId)->update([
+            'rmb_special_price' => "$this->rmb_special_price",
+        ]);
+        session()->flash('success', 'Special price set successfully !');
+        Flux::modal('edit-price')->close();
+        $this->rmb_special_price = '';
+    }
+
+    
 }
