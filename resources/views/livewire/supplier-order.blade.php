@@ -1,7 +1,7 @@
 <div>
     {{-- Header with Back, Title and Search --}}
     <div class="flex justify-between mt-0 items-center">
-        <flux:button icon="backward" onclick="history.back()" class="bg-blue-800! text-white! hover:bg-blue-700!">
+        <flux:button icon="backspace" onclick="history.back()" class="bg-blue-800! text-white! hover:bg-blue-700!">
             Back
         </flux:button>
 
@@ -33,7 +33,7 @@
     @include('partials.adjust-problem')
     @include('partials.set-special-price')
 
-    <table class="table-default">
+    <table class="table-default mt-2.5">
         <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">
             <tr>
                 <th>SOID
@@ -49,7 +49,7 @@
         </thead>
         <tbody>
             @forelse ($sos as $order)
-            <tbody wire:key="sos-group-{{ $order->id }}">
+            <tbody>
             <tr wire:key="sos-{{ $order->id }}" @if (str_contains($order->comment, 'Expres')) class='bg-red-50' @endif>
                 <td>
                     <flux:button class=" bg-gray-500! hover:bg-gray-400! text-white!" size='sm'
@@ -68,7 +68,7 @@
                 </td>
                 @if(
                 ($order->paid === 'N' && !is_null($order->ref_no)) ||
-                ($order->status->status === 'Purchased' && !is_null($order->ref_no))
+                ($order->status?->status === 'Purchased' && !is_null($order->ref_no))
                 )
                 <td>
                     <flux:button wire:click="payOrder({{ $order->id }}, {{ $order->supplier->supplier_id }})"

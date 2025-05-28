@@ -37,6 +37,7 @@ class InvoiceService
             ->join('tarics', 'tarics.id', '=', 'items.taric_id')
             ->join('order_statuses', 'order_statuses.master_id', '=', 'order_items.master_id')
             ->join('cargos', 'cargos.id', '=', 'order_statuses.cargo_id')
+            ->join('cargo_types','cargo_types.id','=','cargos.cargo_type_id')
             ->join('customers', 'cargos.customer_id', '=', 'customers.id')
             ->where('supplier_items.is_default', '=', 'Y')
             ->where('order_statuses.status', '!=', 'Invoiced');
@@ -58,6 +59,7 @@ class InvoiceService
             'tarics.*',
             'cargos.*',
             'customers.*',
+            'cargo_types.cargo_type',
             'order_statuses.id as sqrID'
         ];
     }

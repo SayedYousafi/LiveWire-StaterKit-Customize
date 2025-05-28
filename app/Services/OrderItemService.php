@@ -9,13 +9,15 @@ class OrderItemService
     {
         return DB::table('order_items')
             ->join('order_statuses', 'order_statuses.master_id', '=', 'order_items.master_id')
+        //->join('supplier_orders','supplier_orders.id','=','order_statuses.supplier_order_id')
             ->join('items', 'items.ItemID_DE', '=', 'order_items.ItemID_DE')
             ->join('supplier_items', 'supplier_items.item_id', '=', 'items.id')
-            ->join('warehouse_items','warehouse_items.item_id','=','items.id')
+            ->join('warehouse_items', 'warehouse_items.item_id', '=', 'items.id')
             ->join('suppliers', 'suppliers.id', '=', 'supplier_items.supplier_id')
             ->join('supplier_types', 'suppliers.order_type_id', '=', 'supplier_types.id')
             ->join('orders', 'order_items.order_no', '=', 'orders.order_no')
             ->where('supplier_items.is_default', 'Y');
+            
 
     }
 
@@ -71,14 +73,15 @@ class OrderItemService
             'suppliers.id AS SUPPID',
             'supplier_items.note_cn',
             'suppliers.name',
-            
+
             'suppliers.website',
             'suppliers.order_type_id',
             'supplier_types.type_name',
             'orders.comment',
             'warehouse_items.item_no_de',
             'order_statuses.supplier_order_id',
-            'order_statuses.rmb_special_price'
+            'order_statuses.rmb_special_price',
+            'order_statuses.problems',
         );
     }
 
@@ -105,9 +108,23 @@ class OrderItemService
         return $query->orderBy('items.item_name');
     }
 
-    public function getItemsData()
+    public function getItemsData($search = null)
     {
         $query = $this->rawOrderQuery(clone $this->baseOrderQuery());
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('items.item_name', 'like', "%$search%")
+                    ->orWhere('items.item_name_cn', 'like', "%$search%")
+                    ->orWhere('items.ean', 'like', "%$search%")
+                    ->orWhere('order_statuses.status', 'like', "%$search%")
+                    ->orWhere('orders.order_no', 'like', "%$search%")
+                    ->orWhere('items.remark', 'like', "%$search%");
+                //->orWhere('warehouse_items.parent_no_de', 'like', "%$search%");
+            });
+        }
+
         return $query->orderBy('items.id', 'desc');
     }
+
 }

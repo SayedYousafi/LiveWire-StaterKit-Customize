@@ -7,15 +7,15 @@ class Supplier extends Model
 {
     protected $guarded = [];
 
-    public static function search($term)
+    public static function scopeSearch($query, $value)
     {
-        return static::where('name', 'like', '%' . $term . '%')
-            ->orWhere('name_cn', 'like', '%' . $term . '%')
-             ->orWhere('company_name', 'like', '%' . $term . '%')
-            ->orWhere('city', 'like', '%' . $term . '%')
-            ->orWhere('province', 'like', '%' . $term . '%')
+        $query->where('name', 'like', '%' . $value . '%')
+            ->orWhere('name_cn', 'like', '%' . $value . '%')
+             ->orWhere('company_name', 'like', '%' . $value . '%')
+            ->orWhere('city', 'like', '%' . $value . '%')
+            ->orWhere('province', 'like', '%' . $value . '%')
          
-            ->orWhere('contact_person', 'like', '%' . $term . '%');
+            ->orWhere('contact_person', 'like', '%' . $value . '%');
     }
 
     protected $casts = [
@@ -26,5 +26,10 @@ class Supplier extends Model
     public function orderType()
     {
         return $this->belongsTo(Supplier_type::class, 'order_type_id', 'id');
+    }
+
+    public function items()
+    {
+        return $this->belongsToMany(Item::class, 'supplier_items', 'supplier_id', 'item_id');
     }
 }

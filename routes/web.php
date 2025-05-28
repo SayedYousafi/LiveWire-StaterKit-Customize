@@ -7,9 +7,11 @@ use App\Livewire\Teams;
 use App\Livewire\Cargos;
 use App\Livewire\Orders;
 use App\Livewire\Tarics;
+use App\Livewire\AddItem;
 use App\Livewire\Parents;
 use App\Livewire\Controls;
 use App\Livewire\Invoices;
+use App\Livewire\Problems;
 use App\Livewire\ItemEdits;
 use App\Livewire\Suppliers;
 use App\Livewire\Auth\Login;
@@ -18,20 +20,20 @@ use App\Livewire\Categories;
 use App\Livewire\OrderItems;
 use App\Livewire\ItemDetails;
 use App\Livewire\SupplierOrder;
+use App\Livewire\ClosedInvoices;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Appearance;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EtlController;
 use App\Http\Controllers\PrintController;
 
-// Route::get('/', function () {
-//     return view('welcome');
-// })->name('home');
-
+// Route::get('/', function () { return view('welcome'); })->name('home');
 //directly calling the login page.
 Route::get('/', Login::class)->name('home');
 Route::get('categories', Categories::class )->name('categories');
-Route::get('items', Items::class )->name('items');
+Route::get('items/{param?}', Items::class )->name('items');
+Route::get('itemAdd', AddItem::class)->name('itemAdd');
 Route::get('itemDetail/{itemId}', ItemDetails::class )->name('itemDetail');
 Route::get('itemEdit/{id}', ItemEdits::class )->name('itemEdit');
 Route::get('suppliers', Suppliers::class )->name('suppliers');
@@ -42,17 +44,18 @@ Route::get('orders', Orders::class)->name('orders');
 Route::get('orderItems/{param?}/{status?}', OrderItems::class)->name('orderItems');
 Route::get('nso', Nso::class)->name('nso');
 Route::get('so', SupplierOrder::class)->name('so');
-Route::get('print/{id}', [PrintController::class, 'print'])->name('print');
 Route::get('cargos', Cargos::class)->name('cargos');
-Route::get('invoices', Invoices::class)->name('invoices');
 Route::get('cargotypes',CargoTypes::class)->name('cargotypes');
+Route::get('invoices', Invoices::class)->name('invoices');
+Route::get('invoicesClosed', ClosedInvoices::class)->name('invoicesClosed');
 Route::get('controls', Controls::class)->name('controls');
 Route::get('admin', Admin::class)->name('admin');
+Route::get('problems', Problems::class)->name('problems');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('print/{id}', [PrintController::class, 'print'])->name('print');
+Route::get('invoice/{id}/{sn}', [PrintController::class, 'newInvoice'])->name('invoice');
 
+Route::view('dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -62,4 +65,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
+//ETL Processes
+Route::get('etl', [EtlController::class, 'findTargetDate']); // ->middleware('auth');
+Route::get('updateRecords', [EtlController::class, 'statusRemark']); // ->middleware('auth');
+Route::get('synchIDs', [EtlController::class, 'MisIds']); // ->middleware('auth');
+Route::get('importWareHouse', [EtlController::class, 'whareHouseSync']);
 require __DIR__.'/auth.php';

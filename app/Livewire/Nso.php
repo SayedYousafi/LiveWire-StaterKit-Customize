@@ -2,12 +2,14 @@
 
 namespace App\Livewire;
 
-use App\Models\Supplier_order;
-use App\Models\Order_status;
-use App\Services\OrderItemService;
 use Livewire\Component;
+use App\Models\Order_status;
 use Livewire\WithPagination;
+use App\Models\Supplier_order;
+use Livewire\Attributes\Title;
+use App\Services\OrderItemService;
 
+#[Title('NSO')]
 class Nso extends Component
 {
     use WithPagination;
@@ -28,14 +30,14 @@ class Nso extends Component
     public function render()
     {
         $baseQuery = $this->orderItemService->baseOrderQuery();
-
+//dd($baseQuery);
         $nsoOrders = $this->orderItemService
             ->finalizeOrderQuery(clone $baseQuery)
             ->where('order_statuses.status', 'NSO')
             ->where('orders.comment', 'NOT LIKE', '%expres%')
             ->orderBy('suppliers.id', 'ASC')
             ->get();
-
+//dd($nsoOrders);
         $expressOrders = $this->orderItemService
             ->finalizeOrderQuery(clone $baseQuery)
             ->where('order_statuses.status', 'NSO')

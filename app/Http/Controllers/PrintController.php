@@ -11,6 +11,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 class PrintController extends Controller
 {
     public $item_ID, $sid;
+
     public function print($id)
     {
         //dd($id);
@@ -55,5 +56,35 @@ class PrintController extends Controller
         //$this->trackPrint();
         session()->flash('success', 'wow -- Printed successfully !, check out your Label Printer now');
         //return redirect()->to('so');
+    }
+
+     public function newInvoice($id, $sn)
+    {
+        \DB::statement('SET SESSION sql_mode = ""');
+        //dd($id, $sn);
+        $data = DB::table('cci_invoices')
+            ->join('cci_customers', 'cci_invoices.cci_customer_id', '=', 'cci_customers.id')
+            //->join('tcustomers', 'tcustomers.id', '=', 'cci_customers.customer_id')
+            ->where('cci_invoices.cci_customer_id', $id)
+            ->where('cci_invoices.invSerialNo', $sn)
+            ->select(
+                'cci_customers.*',
+                'cci_customers.country as Country_Name',
+                'cci_invoices.*',
+                'cci_invoices.remark as REMARK',
+                \DB::raw('SUM(cci_invoices.taric_code) AS taric_code_count'),
+                \DB::raw('SUM(cci_invoices.total_qty) AS total_qty'),
+                \DB::raw('SUM(cci_invoices.total_price) AS total_price'),
+            )
+            ->groupBy(
+                'cci_invoices.taric_code' //cci_invoices.taric_code
+            )
+            ->orderBy('cci_invoices.id', 'ASC')
+            ->get();
+        //dd($data);
+        // Create the PDF
+        $pdf = Pdf::loadView('partials.invoice', compact('data'));
+        $file_name = 'invoice.pdf';
+        return $pdf->stream();
     }
 }

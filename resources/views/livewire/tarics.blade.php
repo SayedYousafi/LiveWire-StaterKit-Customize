@@ -96,7 +96,7 @@
                 <tr wire:key='{{ $taric->id }}' class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
 
                     <td class="px-2 py-1">
-                        {{ $taric->id }}
+                        {{ $taric->id }} <span class=" text-blue-700 text-bold ">({{ $taric->items_count }})</span> 
                     </td>
                     <td class="px-2 py-1">
                         {{ $taric->code }}
@@ -113,12 +113,12 @@
                     
                     <td class="px-2 py-1">
                         <flux:button variant='primary' icon='pencil-square' wire:click='edit({{ $taric->id }})'
-                            size='sm'>Edit</flux:button>
+                            size='sm'>Details</flux:button>
                     </td>
-                    <td class="px-2 py-1">
+                    {{-- <td class="px-2 py-1">
                         <flux:button variant='danger' icon='minus-circle' wire:click='delete({{ $taric->id }})'
                             wire:confirm='Are you sure deleting this record?' size='sm'>Delete</flux:button>
-                    </td>
+                    </td> --}}
                 </tr>
                 @empty
                 <tr>

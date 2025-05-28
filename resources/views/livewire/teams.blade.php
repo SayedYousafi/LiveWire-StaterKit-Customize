@@ -115,6 +115,7 @@
                     <th class="px-6 py-3">Email</th>
                     <th class="px-6 py-3">Mobile</th>
                     <th class="px-6 py-3">Designation</th>
+                    <th class="px-6 py-3">Join date</th>
                     <th colspan="2" class="px-6 py-3">Actions</th>
                 </tr>
             </thead>
@@ -123,15 +124,16 @@
                     <tr wire:key="{{ $team->id }}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                         <td class="px-2 py-1">{{ $team->id }}</td>
                         <td class="px-2 py-1">{{ $team->first_name }} {{ $team->last_name }}</td>
-                        <td class="px-2 py-1">{{ $team->email_private }}</td>
+                        <td class="px-2 py-1">{{ $team->email_business }}</td>
                         <td class="px-2 py-1">{{ $team->mobile }}</td>
                         <td class="px-2 py-1">{{ $team->designation }}</td>
+                        <td class="px-2 py-1">{{ $team->join_date }}</td>
                         <td class="px-2 py-1">
                             <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $team->id }})" size="sm">Edit</flux:button>
                         </td>
-                        <td class="px-2 py-1">
+                        {{-- <td class="px-2 py-1">
                             <flux:button variant="danger" icon="minus-circle" wire:click="delete({{ $team->id }})" wire:confirm="Are you sure deleting this record?" size="sm">Delete</flux:button>
-                        </td>
+                        </td> --}}
                     </tr>
                 @empty
                     <tr>

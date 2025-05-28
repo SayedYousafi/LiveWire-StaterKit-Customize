@@ -9,8 +9,10 @@ use App\Models\VarVal;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Controls')]
 class Controls extends Component
 {
     protected Client $client;
@@ -44,15 +46,15 @@ class Controls extends Component
         // $test = Supplier_item::all();
         // dd($test);
         return view('livewire.controls', [
-            'items'              => $this->getDuplicateEans(),
+
             'confirmed'          => $this->getConfirmedCount(),
             'zeroRmb'            => $this->getZeroRmbCount(),
             'count_supp'         => $this->getMissingSuppliersCount(),
-            'oldCount'           => $this->getOldConfirmCount(),
+
             'countNpr'           => $this->getNprCount(),
             'rates'              => $this->xRate(),
             'unusedImages'       => $this->getImageDiffs()[0],
-            //'missing_images_in_server' => $this->getImageDiffs()[1],
+            'naClass'       => $this->getCountNaclass(),
             'nullPixs'           => $this->getNullPictures(),
             'parents'            => $this->getTaricMismatch(),
             'count_null_cargo'   => $this->getCountNullCargo(),
@@ -100,12 +102,13 @@ class Controls extends Component
     protected function getNullPictures()
     {
         //return Cache::remember('null_pictures', 600, function () {
-        return Item::select('id', 'photo')
+        $noPics = Item::select('id', 'photo')
             ->where('isActive', 'Y')
-            ->where(fn($q) => $q->whereNull('photo')->orWhereIn('photo', ['DummyPicture.jpg', '']))
+            ->whereNull('photo')->orWhereIn('photo', ['DummyPicture.jpg', ''])
         //->limit(100)
             ->get();
         //});
+        return ($noPics);
     }
 
     protected function getImageDiffs(): array
@@ -128,18 +131,6 @@ class Controls extends Component
         });
     }
 
-    protected function getDuplicateEans()
-    {
-        return Cache::remember('duplicate_eans', 600, function () {
-            return Item::select('ean', DB::raw('COUNT(*) as count'))
-                ->where('isActive', 'Y')
-                ->groupBy('ean')
-                ->having('count', '>', 1)
-                ->limit(100)
-                ->get();
-        });
-    }
-
     protected function getConfirmedCount()
     {
         return Cache::remember('confirmed_count', 600, function () {
@@ -153,7 +144,8 @@ class Controls extends Component
 
     protected function getNprCount()
     {
-        return Cache::remember('npr_count', 600, fn() => Item::where('is_npr', 'Y')->where('isActive', 'Y')->count());
+        return Cache::remember('npr_count', 600, fn() =>
+            Item::where('is_npr', 'Y')->where('isActive', 'Y')->count());
     }
 
     protected function getMissingEnglishValuesCount()
@@ -184,20 +176,6 @@ class Controls extends Component
         });
     }
 
-    protected function getOldConfirmCount()
-    {
-        return Cache::remember('old_confirm_count', 600, function () {
-            $cutoff = now()->subDays(90)->startOfDay();
-
-            return Confirm::join('supplier_items as si', 'si.id', '=', 'confirms.supp_items_id')
-                ->join('items as i', 'i.id', '=', 'si.item_id')
-                ->where('si.is_default', 'Y')
-                ->where('i.isActive', 'Y')
-                ->where('confirms.created_at', '<=', $cutoff)
-                ->count();
-        });
-    }
-
     protected function getNullTaricIds()
     {
         return Cache::remember('null_taric_ids', 600, function () {
@@ -223,7 +201,10 @@ class Controls extends Component
     {
         return Cache::remember('count_null_cargo', 600, fn() => Status::whereNull('cargo_id')->count());
     }
-
+    protected function getCountNaclass()
+    {
+        return $naClass =Item::whereRaw("ShippingClass(items.weight, items.length,items.width, items.height) = 'Na'");
+    }
     protected function getDuplicatePhotos()
     {
         return Cache::remember('duplicate_photos', 600, function () {

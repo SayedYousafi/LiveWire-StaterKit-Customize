@@ -44,11 +44,11 @@
 
                 <span class="td">
                     @if(str_contains($data->item_name, 'K011111') || str_contains($data->remarks_cn, 'K011111'))
-                    <img src="img/Sayed_K011111_logo.png" width="70">
+                    <img src="images/Sayed_K011111_logo.png" width="70">
                     @elseif(str_contains($data->item_name, 'K022222') || str_contains($data->remarks_cn, 'K022222'))
-                    <img src="img/Sayed_blank_Logo.png" width="70">
+                    <img src="images/Sayed_blank_Logo.png" width="70">
                     @else
-                    <img src="img/Sayed_GTech.png" width="70">
+                    <img src="images/Sayed_GTech.png" width="70">
                     @endif
                 </span>
             </td>

@@ -1,16 +1,17 @@
 <?php
 namespace App\Livewire;
 
-use App\Models\Cargo;
-use App\Models\Category;
-use App\Models\Order;
-use App\Models\Order_item;
-use App\Models\Order_status;
 use DB;
 use Flux\Flux;
+use App\Models\Cargo;
+use App\Models\Order;
 use Livewire\Component;
+use App\Models\Category;
+use App\Models\Order_item;
+use App\Models\Order_status;
 use Livewire\WithPagination;
-
+use Livewire\Attributes\Title;
+#[Title('Orders')]
 class Orders extends Component
 {
     use WithPagination;
@@ -70,7 +71,8 @@ class Orders extends Component
         //dd($oNo);
         $this->orderNo = $oNo;
         $this->masterIds = Order_item::where('order_no', "$this->orderNo")->pluck('master_id')->toArray();
-        //$this->cargoId = $this->masterIds['cargo_id']->first();
+        //dd($this->masterIds);
+        //$this->cargoId = $this->masterIds['0']->first();
         Flux::modal('myModal')->show();
     }
     public function changeCargo()

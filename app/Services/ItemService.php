@@ -12,6 +12,9 @@ class ItemService
             ->join('warehouse_items','warehouse_items.item_id','=','items.id')
             ->join('suppliers', 'suppliers.id', '=', 'supplier_items.supplier_id')
             ->join('supplier_types', 'suppliers.order_type_id', '=', 'supplier_types.id')
+            ->join('variation_values','variation_values.item_id','=','items.id')
+            ->join('parents','parents.id','=','items.parent_id')
+            ->join('tarics','tarics.id','=','items.taric_id')
             ->where('supplier_items.is_default', 'Y');
     }
     public function rawOrderQuery($query)
@@ -74,6 +77,7 @@ class ItemService
     public function getItemsData($search = null)
     {
         $query = $this->rawOrderQuery(clone $this->baseOrderQuery());
+        
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('items.item_name', 'like', "%$search%")
@@ -83,6 +87,7 @@ class ItemService
                     //->orWhere('warehouse_items.parent_no_de', 'like', "%$search%");
             });
         }
+        
         return $query->orderBy('items.id', 'desc');
     }
 }

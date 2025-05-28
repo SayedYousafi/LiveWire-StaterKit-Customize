@@ -136,7 +136,8 @@
                 @forelse ($suppliers as $supplier)
                 <tr wire:key="{{ $supplier->id }}"
                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                    <td class="px-2 py-1">{{ $supplier->id }}</td>
+                    <td class="px-2 py-1">{{ $supplier->id }} 
+                        <span class="text-bold text-blue-700">({{ $supplier->items_count }})</span> </td>
                     <td class="px-2 py-1">{{ $supplier->name }} - {{ $supplier->name_cn }}</td>
                     <td class="px-2 py-1">{{ $supplier->orderType?->type_name }}</td>
                     <td class="px-2 py-1">{{ $supplier->contact_person }}</td>

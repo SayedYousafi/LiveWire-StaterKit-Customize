@@ -11,10 +11,14 @@ use App\Services\OrderItemService;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithPagination;
 
+#[Title('Supplier Order')]
 class SupplierOrder extends Component
 {
+    use WithPagination;
     public $itemOrders = [];
 
     public $cargoId, $orderNo, $masterIds, $supplierId, $tableId, $terms;
@@ -35,10 +39,12 @@ class SupplierOrder extends Component
 
     public function render()
     {
-        $sos = Supplier_order::with(['status', 'supplier', 'orderTypes'])
-            ->whereHas('status', function ($query) {
-                $query->whereNotNull('order_statuses.supplier_order_id');
-            })->latest()->get();
+        $sos = Supplier_order::with(['statuses', 'supplier', 'orderTypes'])
+            ->whereHas('statuses', function ($query) {
+                $query->whereNotIn('status', ['Shipped', 'Invoiced']);
+            })
+            ->latest()
+            ->paginate(50);
 
         return view('livewire.supplier-order')->with(
             [
@@ -64,6 +70,7 @@ class SupplierOrder extends Component
 
     public function showTable($soid)
     {
+        // dd($soid);
         $this->tableId    = $soid;
         $this->supplierId = $soid;
         $this->refreshItemOrders();
@@ -384,9 +391,9 @@ class SupplierOrder extends Component
     public $priceId, $rmb_special_price;
     public function specialPriceSelected($id)
     {
-        $this->priceId = $id;
-        $rmb = Order_status::findOrFail($this->priceId);
-        $this->rmb_special_price=$rmb->rmb_special_price;
+        $this->priceId           = $id;
+        $rmb                     = Order_status::findOrFail($this->priceId);
+        $this->rmb_special_price = $rmb->rmb_special_price;
         Flux::modal('edit-price')->show();
     }
     public function setSpecialPrice()
@@ -400,5 +407,4 @@ class SupplierOrder extends Component
         $this->rmb_special_price = '';
     }
 
-    
 }

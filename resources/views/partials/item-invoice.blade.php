@@ -1,20 +1,21 @@
-<div class="overflow-x-auto">
-    <table class="table-nested">
-        <thead class="">
-            <tr class="table-highlighted">
-                <th class="">ID</th>
-                <th class="">EAN</th>
-                <th class="">Item Name</th>
-                <th class="">Taric code</th>
-                <th class="">Remark</th>
-                <th class="">Order_no</th>
-                <th class="">SOID</th>
-                <th class="">Status</th>
-                <th class="">V(dm³)</th>
-                <th class="">W(kg)</th>
-                <th class="">QTY</th>
-                <th class="">RMB</th>
-                <th class="" colspan="2">EK</th>
+<div class="table-default overflow-y-auto">
+  <table class="table-nested">
+    <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800">
+      <tr class="table-highlighted">
+                <th>ID</th>
+                <th>EAN</th>
+                <th>Item Name</th>
+                <th>Taric code</th>
+                <th>Remark</th>
+                <th>Order_no</th>
+                <th>SOID</th>
+                <th>Status</th>
+                <th>V(dm³)</th>
+                <th>W(kg)</th>
+                <th>QTY</th>
+                <th>RMB</th>
+                <th>EK</th>
+               
             </tr>
         </thead>
         @php
@@ -28,18 +29,30 @@
         <tbody>
             @foreach ($invoiceItems as $item)
             @php
-            $qty = $item->qty;
-            $qtySplit = $item->qty_split;
+            // Gather all numeric quantities
+            $allQuantities = collect([
+            is_numeric($item->qty_split) ? $item->qty_split : null,
+            is_numeric($item->qty) ? $item->qty : null,
+            is_numeric($item->qty_label) ? $item->qty_label : null,
+            ])->reject(fn($q) => $q === null);
+
+            // Get unique values for display
+            $quantities = $allQuantities->unique()->values();
+            $displayQty = $quantities->implode('/');
+
+            // Get the first available numeric quantity for math
+            $numericQty = $allQuantities->first() ?? 0;
+
+            // Accumulate totals
+            $totalQty += $numericQty;
+            $grandTotal += $numericQty * $item->price_rmb;
+
             $width = $item->width;
             $height = $item->height;
             $length = $item->length;
-            $weight = $item->weight;
+            $weight = $item->weight * $numericQty;
 
-            $currentQty = ($qtySplit != $qty) ? $qtySplit : $qty;
-            $totalQty += $currentQty;
-            $grandTotal += $qty * $item->price_rmb;
-
-            $volum += ($width * $height * $length) * $qty;
+            $volum += ($width * $height * $length) * $numericQty;
             $Tweight += $weight;
             @endphp
 
@@ -56,10 +69,10 @@
                     <flux:button size="sm" icon='arrow-path' class="bg-indigo-600! text-white! hover:bg-indigo-500"
                         wire:click="reAssign('{{ $item->master_id }}')">ReAssign</flux:button>
                 </td>
-                <td class="">{{ $item->ean }}</td>
+                <td>{{ $item->ean }}</td>
 
                 @if ($item->code === '0000000000')
-                <td class="">{{ $item->item_name }}</td>
+                <td>{{ $item->item_name }}</td>
                 @php
                 if (isset($tariffCache[$item->srqTaricID])) {
                 $fixedCode = $tariffCache[$item->srqTaricID];
@@ -79,28 +92,23 @@
                         wire:click="selectCode('{{ $item->master_id }}')">Fix</flux:button>
                 </td>
                 @else
-                <td class="">{{ $item->item_name }}</td>
-                <td class="">{{ $item->code }}</td>
+                <td>{{ $item->item_name }}</td>
+                <td>{{ $item->code }}</td>
                 @endif
 
-                <td class="">{{ $item->remark_de }} / {{ $item->remarks_cn }} / {{ $item->remark }}</td>
-                <td class="">{{ $item->order_no }}</td>
-                <td class="">{{ $item->supplier_order_id }}</td>
-                <td class="">{{ $item->status }}</td>
-                <td class="">{{ formatDecimal((($width * $height * $length) * $qty) / 1000) }}</td>
-                <td class="">{{ $weight }}</td>
-                <td class="">
-                    @if ($qtySplit != $qty)
-                    {{ $qtySplit }}<strong>/</strong>{{ $qty }}
-                    @else
-                    {{ $qty }}
-                    @endif
-                </td>
+                <td>{{ $item->remark_de }} / {{ $item->remarks_cn }} / {{ $item->remark }}</td>
+                <td>{{ $item->order_no }}</td>
+                <td>{{ $item->supplier_order_id }}</td>
+                <td>{{ $item->status }}</td>
+                <td>{{ formatDecimal((($width * $height * $length) * $qty) / 1000) }}</td>
+                <td>{{ $weight }}</td>
+                <td>{{ $displayQty }}</td>
+                
                 @php $price = $item->is_rmb_special == 'Y' ? $item->rmb_special_price : $item->price_rmb; @endphp
                 <td class=" {{ $item->is_rmb_special == 'Y' ? 'bg-yellow-300 dark:bg-yellow-700' : '' }}">
                     {{ $price }}@if($item->is_rmb_special == 'Y')<sup>*</sup>@endif
                 </td>
-                <td class="">
+                <td>
                     @if ($price == 0 && $item->is_rmb_special == 'Y')
                     <span class="text-xs text-red-500">Special item with zero RMB price</span>
                     @elseif ($item->is_eur_special == 'Y')
@@ -111,22 +119,12 @@
                 </td>
 
                 @if ($item->is_eur_special == 'Y')
-                <td class="">
+                <td>
                     <flux:button size="sm" icon="currency-euro" variant='danger'
                         wire:click='itemToSet({{ $item->master_id }})'>Set EUR Price</flux:button>
                 </td>
                 @endif
             </tr>
-
-            {{-- @if ($reAssignId == $item->master_id)
-            <tr>
-                <td colspan="14" class="text-center  bg-gray-50 dark:bg-gray-800">
-                    <b>Select Cargo for item with EAN: {{ $item->ean }}</b><br>
-                    <span>Current Cargo ID: {{ $item->cargo_id }}</span>
-                    @include('cargos.chooseCargo')
-                </td>
-            </tr>
-            @endif --}}
 
             @if ($changId == $item->master_id)
             <tr>
@@ -137,12 +135,6 @@
                 </td>
             </tr>
             @endif
-
-            {{-- @if ($item->master_id == $changId)
-            <tr>
-                <td colspan="14">@include('partials.edit-qty')</td>
-            </tr>
-            @endif --}}
 
             @if ($itemToSetId == $item->master_id)
             <div class=" mt-2 text-center mb-2">
@@ -174,10 +166,10 @@
         </tbody>
         <tfoot class="bg-gray-100 dark:bg-gray-900 font-semibold">
             <tr>
-                <td colspan="8" class="">Grand</td>
-                <td class="">{{ formatDecimal($volum / 1000) }}</td>
-                <td class="">{{ $Tweight }}</td>
-                <td class="">{{ $totalQty }}</td>
+                <td colspan="8">Grand</td>
+                <td>{{ formatDecimal($volum / 1000) }}</td>
+                <td>{{ $Tweight }}</td>
+                <td>{{ $totalQty }}</td>
             </tr>
         </tfoot>
     </table>

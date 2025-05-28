@@ -13,7 +13,7 @@
             Today {{ date('Y-m-d') }} Currency Rates
         </legend>
         <div class="grid grid-cols-3 text-center mt-4 font-semibold">
-            <div>EUR</div>
+            <div><flux:text icon='euro-currency'></flux:text> EUR</div>
             <div>USD</div>
             <div>RMB</div>
         </div>
@@ -33,10 +33,10 @@
                 <i data-lucide="shopping-bag" class="w-5 h-5"></i> Orders
             </legend>
             <div class="space-y-2 mt-4">
-                <x-report-link href="{{ url('orderItems') }}" label="Order items unassigned to cargo" :count="$count_null_cargo" />
+                <x-report-link href="{{ url('orderItems/noCargo') }}" label="Order items unassigned to cargo" :count="$count_null_cargo" />
                 <x-report-link href="{{ url('problems') }}" label="Orders with purchase problem" :count="$purchaseProblem" />
                 <x-report-link href="{{ url('problems') }}" label="Orders with Check Problem" :count="$checkProblem" />
-                <x-report-link href="{{ url('confirms/date') }}" label="Confirmed items older than 3 months" :count="$oldCount" />
+                {{-- <x-report-link href="{{ url('confirms/date') }}" label="Confirmed items older than 3 months" :count="$oldCount" /> --}}
             </div>
         </fieldset>
 
@@ -46,8 +46,8 @@
                 <i data-lucide="truck" class="w-5 h-5"></i> Suppliers
             </legend>
             <div class="space-y-2 mt-4">
-                <x-report-link href="{{ url('/supplierItems/noSupplier') }}" label="Items without suppliers" :count="$count_supp" />
-                <x-report-link href="{{ url('/supplierItems/zero') }}" label="Items without RMB Price" :count="$zeroRmb" />
+                <x-report-link href="{{ url('items/noSupplier') }}" label="Items without suppliers" :count="$count_supp" />
+                <x-report-link href="{{ url('items/zero') }}" label="Items without RMB Price" :count="$zeroRmb" />
             </div>
         </fieldset>
 
@@ -57,12 +57,12 @@
                 <i data-lucide="package-search" class="w-5 h-5"></i> Items
             </legend>
             <div class="space-y-2 mt-4">
-                <x-report-link href="{{ url('admin.duplicate') }}" label="Duplicate EAN" :count="0" />
-                <x-report-link href="{{ url('noEngVarValue') }}" label="Missing Var Values EN" :count="$countNoEngVarValue" />
-                <x-report-link href="{{ url('/noTarics') }}" label="Items with No Taric Code" :count="count($nullTaric)" />
+              
+                <x-report-link href="{{ url('items/varval') }}" label="Missing Var Values EN" :count="$countNoEngVarValue" />
+                <x-report-link href="{{ url('items/noTarics') }}" label="Items with No Taric Code" :count="count($nullTaric)" />
                 <x-report-link href="{{ url('/mismatch') }}" label="Items with mismatched tarics" :count="$parents->count()" />
-                <x-report-link href="{{ url('/nullCategory') }}" label="Items with null category" :count="$nullCat" />
-                <x-report-link href="{{ url('shipping-classNa') }}" label="Items with wrong shipping class (Na)" :count="null" color="red" />
+                <x-report-link href="{{ url('items/noCategory') }}" label="Items with null category" :count="$nullCat" />
+                <x-report-link href="{{ url('items/naShipping') }}" label="Items with wrong shipping class (Na)" :count="$naClass->count()" color="red" />
             </div>
         </fieldset>
 
@@ -72,11 +72,11 @@
                 <i data-lucide="image" class="w-5 h-5"></i> Pictures
             </legend>
             <div class="space-y-2 mt-4">
-                <x-report-link href="{{ url('/npr') }}" label="Is New Picture Required" :count="$countNpr" />
+                <x-report-link href="{{ url('items/npr') }}" label="Is New Picture Required" :count="$countNpr" />
                 <x-report-link href="{{ url('/listpix') }}" label="Unused pictures" :count="count($unusedImages)" />
-                <x-report-link href="{{ url('itemNoPix') }}" label="Items without picture" :count="$nullPixs->count()" />
-                <x-report-link href="{{ url('pics') }}" label="Pictures with multiple cargos" :count="$parents_results->count()" />
-                <x-report-link href="{{ url('pics/check') }}" label="Pictures with multiple items" :count="null" />
+                <x-report-link href="{{ url('items/noPics') }}" label="Items without picture" :count="$nullPixs->count()" />
+                <x-report-link href="{{ url('items/multipleParentsPics') }}" label="Picture with multiple parents" :count="$parents_results->count()" />
+                {{-- <x-report-link href="{{ url('pics/check') }}" label="Picture with multiple parents" :count="null" /> --}}
             </div>
         </fieldset>
     </div>

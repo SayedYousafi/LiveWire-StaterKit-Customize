@@ -17,8 +17,10 @@ class Supplier_order extends Model
         return $this->belongsTo(Supplier::class,'supplier_id','id');
     }
 
-    public function status()
+    public function statuses()
     {
-        return $this->belongsTo(Order_status::class,'id', 'supplier_order_id');
+        //return $this->hasMany(Order_status::class,'id', 'supplier_order_id');
+        return $this->hasMany(Order_status::class, 'supplier_order_id', 'id');
     }
+
 }

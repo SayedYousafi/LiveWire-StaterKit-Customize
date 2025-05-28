@@ -9,7 +9,7 @@ class CargoTypes extends Component
 {
     public $cargoTypeId;
     public string $search   = '';
-    public string $title    = 'Cargos';
+    public string $title    = 'cargotypes';
     public $isUpdate        = false;
     public bool $enableEdit = false;
 

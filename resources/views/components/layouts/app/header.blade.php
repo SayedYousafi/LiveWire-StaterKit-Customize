@@ -25,7 +25,7 @@
             </flux:navbar.item> --}}
 
             <flux:dropdown position="top">
-                <flux:navbar.item icon="clipboard-document" icon:trailing="chevron-down">Orders</flux:navbar.item>
+                <flux:navbar.item icon="clipboard-document" icon:trailing="chevron-down" :current="request()->routeIs('so')">Orders</flux:navbar.item>
                 <flux:navmenu>
                     {{-- <flux:menu.item href="#" icon="plus">New item</flux:menu.item>
                     <flux:menu.separator /> --}}
@@ -44,14 +44,15 @@
                         Invoices 
                     </flux:navmenu.item>
                     <flux:navmenu.separator />
-                    <flux:navmenu.item href="{{ route('orders') }}" icon="arrow-path-rounded-square" wire:navigate>Problems
+                    <flux:navmenu.item href="{{ route('problems') }}" icon="arrow-path-rounded-square" wire:navigate>
+                        Problems
                     </flux:navmenu.item>
                     <flux:navmenu.separator />
                 </flux:navmenu>
             </flux:dropdown>
 
             <flux:dropdown position="top">
-                <flux:navbar.item icon="book-open-text" icon:trailing="chevron-down">Items</flux:navbar.item>
+                <flux:navbar.item icon="book-open-text" icon:trailing="chevron-down" :current="request()->routeIs('items')">Items</flux:navbar.item>
                 <flux:menu>
                     {{-- <flux:menu.item href="#" icon="plus">New item</flux:menu.item>
                     <flux:menu.separator /> --}}
@@ -79,9 +80,9 @@
 
 
             <flux:dropdown position="top">
-                <flux:navbar.item icon="layout-grid" icon:trailing="chevron-down">Management</flux:navbar.item>
+                <flux:navbar.item icon="layout-grid" icon:trailing="chevron-down" :current="request()->routeIs('controls')">Management</flux:navbar.item>
                 <flux:menu>
-                    <flux:menu.item href="{{ route('controls') }}" icon="presentation-chart-bar" wire:navigate>Control</flux:menu.item>
+                    <flux:menu.item href="{{ route('controls') }}"  icon="presentation-chart-bar" wire:navigate>Control</flux:menu.item>
                     <flux:menu.separator />
                     <flux:menu.item href="{{ route('admin') }}" icon="wrench" wire:navigate>Admin</flux:menu.item>
                     <flux:menu.separator />

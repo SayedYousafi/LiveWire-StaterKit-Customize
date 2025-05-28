@@ -3,13 +3,18 @@ namespace App\Livewire;
 
 use Flux\Flux;
 use App\Models\Cargo;
-use App\Models\Cci_customer;
+use App\Models\Taric;
 use Livewire\Component;
+use App\Models\Cci_item;
 use App\Models\Customer;
 use App\Models\Order_item;
+use App\Models\Cci_invoice;
+use App\Models\Cci_customer;
 use App\Models\Order_status;
+use Livewire\Attributes\Title;
 use App\Services\InvoiceService;
 
+#[Title('Open invoices')]
 class Invoices extends Component
 {
     protected InvoiceService $invoiceItemService;
@@ -18,11 +23,11 @@ class Invoices extends Component
     {
         $this->invoiceItemService = $invoiceItemService;
     }
-
+    public string $title = 'invoices';
     public $tariffNo;
     public $itemNo;
-    public $reAssignId, $remarks_cn, $cargoId, $changId, $qty_no, $currentQty, $itemToSetId, $pricedTaricId, $special_code, $invSerialNo, 
-    $customerId, $selectedMasterIds, $eur_special_price, $changIdnew_cust_inv_id, $new_cust_inv_id;
+    public $reAssignId, $remarks_cn, $cargoId, $changId, $qty_no, $currentQty, $itemToSetId, $pricedTaricId, $special_code, $invSerialNo,
+    $customerId, $ean, $eur, $rmb, $qty, $taricCode, $item_name, $selectedMasterIds, $eur_special_price, $changIdnew_cust_inv_id, $new_cust_inv_id;
 
     public function render()
     {
@@ -54,13 +59,13 @@ class Invoices extends Component
 
     public function cancel()
     {
-        $this->tariffNo       = null;
-        $this->itemNo         = null;
-        $this->changId        = null;
-        $this->reAssignId     = null;
-        $this->special_code   = '';
-        $this->qty_no         = null;
-        $this->itemToSetId    = null;
+        $this->tariffNo     = null;
+        $this->itemNo       = null;
+        $this->changId      = null;
+        $this->reAssignId   = null;
+        $this->special_code = '';
+        $this->qty_no       = null;
+        $this->itemToSetId  = null;
         session()->forget('verifiedRow');
         Flux::modal('edit-price')->close();
     }
@@ -135,7 +140,6 @@ class Invoices extends Component
     }
     public function splitDelivery($id)
     {
-        $this->changId = $id;
         $this->qty_no  = $id;
         Flux::modal('edit-qty')->show();
         $order    = Order_item::where('master_id', "$this->qty_no")->first();
@@ -155,7 +159,7 @@ class Invoices extends Component
             //Flux::modal('edit-qty')->close();
         }
     }
-public function selectCode($id)
+    public function selectCode($id)
     {
         $this->changId      = $id;
         $itemToChange       = Order_status::where('master_id', "$this->changId")->first();
@@ -198,40 +202,40 @@ public function selectCode($id)
         }
     }
 
-public function verifyAll($id)
-{
-    $chkTaricId = $this->invoiceItemService->getInvoices($id)->get();
+    public function verifyAll($id)
+    {
+        $chkTaricId = $this->invoiceItemService->getInvoices($id)->get();
 
-    $hasSpecialTaricCode = false;
-    $hasUnPrintedLabels = false;
-    $countItemStatus = 0;
+        $hasSpecialTaricCode = false;
+        $hasUnPrintedLabels  = false;
+        $countItemStatus     = 0;
 
-    foreach ($chkTaricId as $chkId) {
-        if ($chkId->srqTaricID === 48) {
-            $hasSpecialTaricCode = true;
-            break;
+        foreach ($chkTaricId as $chkId) {
+            if ($chkId->srqTaricID === 48) {
+                $hasSpecialTaricCode = true;
+                break;
+            }
+
+            if ($chkId->status !== 'Printed') {
+                $hasUnPrintedLabels = true;
+                $countItemStatus++;
+            }
         }
 
-        if ($chkId->status !== 'Printed') {
-            $hasUnPrintedLabels = true;
-            $countItemStatus++;
+        if ($hasSpecialTaricCode) {
+            session()->flash('error', "This invoice cannot be closed, it has Special Taric Code");
+            session()->forget('verifiedRow');
+            return;
+        }
+
+        if ($hasUnPrintedLabels) {
+            session()->flash('error', "This invoice cannot be closed, still have ($countItemStatus) unprinted labels");
+            session()->forget('verifiedRow');
+        } else {
+            session()->flash('success', "All good, Good to go! click blue button to close this invoice!");
+            session()->put('verifiedRow', $id);
         }
     }
-
-    if ($hasSpecialTaricCode) {
-        session()->flash('error', "This invoice cannot be closed, it has Special Taric Code");
-        session()->forget('verifiedRow');
-        return;
-    }
-
-    if ($hasUnPrintedLabels) {
-        session()->flash('error', "This invoice cannot be closed, still have ($countItemStatus) unprinted labels");
-        session()->forget('verifiedRow');
-    } else {
-        session()->flash('success', "All good, Good to go! click blue button to close this invoice!");
-        session()->put('verifiedRow', $id);
-    }
-}
 
     public function checkStatus($id, $cust_id)
     {
@@ -241,11 +245,11 @@ public function verifyAll($id)
         // 1. create customer
         $this->createCustomer($this->customerId);
         // // 2. create item invoices
-        // $this->createItems($id);
+        $this->createItems($id);
         // // 3. create Invoices
-        // $this->createInvoice($id);
+        $this->createInvoice($id);
         // //4. set status to invoiced.
-        // $this->statusInvoiced($id);
+        $this->statusInvoiced($id);
         // //change the cargo status from open to close;
         // $this->closeCargo($id);
 
@@ -255,24 +259,172 @@ public function verifyAll($id)
     // 1. create customer
     public function createCustomer($id)
     {
-        $customer      = Customer::findOrFail($id);
+        $customer         = Customer::findOrFail($id);
         $this->customerId = $customer->id;
         //dd($customer);
-            $cData = $customer->toArray();
-            unset($cData['id']);
-            unset($cData['custom_no']); // ignore the primary key for column consisitency
-            $cData['customer_id']  = $customer->id;
-            $cData['invSerialNo']  = $this->invSerialNo;
-        
-            $new_cust_inv          = Cci_customer::create($cData);
-            if ($new_cust_inv) {
-                session()->flash('success', 'Customer invoice created successfully !!! ');
-                $this->new_cust_inv_id = $new_cust_inv->id;
+        $cData = $customer->toArray();
+        unset($cData['id']);
+        unset($cData['custom_no']); // ignore the primary key for column consisitency
+        $cData['customer_id'] = $customer->id;
+        $cData['invSerialNo'] = $this->invSerialNo;
+
+        $new_cust_inv = Cci_customer::create($cData);
+        if ($new_cust_inv) {
+            session()->flash('success', 'Customer invoice created successfully !!! ');
+            $this->new_cust_inv_id = $new_cust_inv->id;
+        } else {
+            session()->flash('error', 'something went wrong !!! ');
+        }
+    }
+// 2. create item invoices
+    public function createItems($id)
+    {
+        //retrieve and create cci_items table
+        $invoicedItems = $this->invoiceItemService->getInvoices($id)->get();
+        //dd($invoicedItems);
+        foreach ($invoicedItems as $item) {
+
+            $this->ean = $item->ean;
+
+// Handle the Tariff logic for itemTaricId === 48
+            if ($item->itemTaricId === 48) {
+                $itemCode = Taric::where('id', $item->srqTaricID)
+                    ->select('name_en', 'code')
+                    ->first();
+
+                if ($itemCode) {
+                    $this->taricCode = $itemCode->code;
+                    // Optionally assign the name if needed
+
+                } else {
+                    // Fallback values if no tariff found
+                    $this->taricCode = 'n/a';
+                    $this->item_name = 'Unknown Item';
+                }
+            } else {
+                // Handle other items
+                if (! empty($item->set_taric_code) && $item->set_taric_code !== $item->code) {
+                    // Use set_taric_code if it's present and different from code
+                    $this->taricCode = $item->set_taric_code;
+                } else {
+                    // Use code as the default if set_taric_code is missing or equal to code
+                    $this->taricCode = $item->code;
+                }
+
+                // Set item_name from item
+                $this->item_name = $item->item_name;
             }
-            else{
-                session()->flash('error', 'something went wrong !!! ');
+
+// Set RMB and EUR prices based on the conditions
+            $this->rmb = ($item->is_rmb_special == 'Y') ? $item->rmb_special_price : $item->price_rmb;
+
+            if ($item->is_eur_special == 'Y') {
+                $this->eur = $item->eur_special_price;
             }
-        
+
+// Handle qty_split logic
+            $this->qty = ($item->qty == $item->qty_split) ? $item->qty : $item->qty_split;
+
+            $cci_item = Cci_item::create([
+                'invSerialNo'     => $this->invSerialNo,
+                'cci_customer_id' => $this->customerId,
+                'cargo_id'        => $id,
+                'ean'             => $this->ean,
+                'item_name'       => $this->item_name,
+                'tariff_code'     => $this->taricCode,
+                'qty'             => $this->qty,
+                'rmb'             => $this->rmb,
+                'eur'             => $this->eur,
+            ]);
+        }
     }
 
+    public function createInvoice($cargoId)
+    {
+        //$invoiceItems = $this->invoiceItemService->getInvoices($cargoId)->get();
+        $invoiceItems = $this->invoiceItemService->getInvoices($cargoId, 'listByTarics')->get();
+        //dd($invoiceItems);
+        $totalPrice = 0;
+        $totalQty   = 0;
+
+        // Caches to prevent duplicate queries
+        $tariffCacheById   = [];
+        $tariffCacheByCode = [];
+
+        foreach ($invoiceItems as $item) {
+            $itemCount = $item->total_count;
+            $cargoNo   = $item->cargo_no;
+            $totalQty += $item->totalQty;
+            $totalPrice += $item->totalValue;
+
+            // Determine tariff code and name based on itemTaricId
+            if ($item->itemTaricId === 48) {
+                if (isset($tariffCacheById[$item->srqTaricID])) {
+                    $tariff = $tariffCacheById[$item->srqTaricID];
+                } else {
+                    $tariff                             = Taric::find($item->srqTaricID, ['name_en', 'code']);
+                    $tariffCacheById[$item->srqTaricID] = $tariff;
+                }
+
+                if ($tariff) {
+                    $taricCode   = $tariff->code;
+                    $taricNameEN = $tariff->name_en;
+                } else {
+                    $taricCode   = 'n/a';
+                    $taricNameEN = 'Unknown Tariff';
+                }
+            } else {
+                if (! empty($item->set_taric_code) && $item->set_taric_code !== $item->code) {
+                    if (isset($tariffCacheByCode[$item->set_taric_code])) {
+                        $tariff = $tariffCacheByCode[$item->set_taric_code];
+                    } else {
+                        $tariff = Taric::where('code', $item->set_taric_code)
+                            ->select('name_en')
+                            ->first();
+                        $tariffCacheByCode[$item->set_taric_code] = $tariff;
+                    }
+                    $taricCode   = $item->set_taric_code;
+                    $taricNameEN = $tariff ? $tariff->name_en : 'Unknown Tariff';
+                } else {
+                    $taricCode   = $item->code;
+                    $taricNameEN = $item->name_en;
+                }
+            }
+
+            // Create a ClosedInvoice record for the current item
+            Cci_invoice::create([
+                'invSerialNo'     => $this->invSerialNo,
+                'cci_customer_id' => $this->new_cust_inv_id,
+                'cargo_id'        => $cargoId,
+                'cargo_no'        => $cargoNo,
+                'cargo_type'      => $item->cargo_type,
+                'taric_code'      => $taricCode,
+                'taric_nameEN'    => $taricNameEN,
+                'item_count'      => $itemCount,
+                'total_qty'       => $item->totalQty,
+                'total_price'     => $item->totalValue,
+            ]);
+        }
+
+        // Create a final record for the freight cost
+        Cci_invoice::create([
+            'invSerialNo'     => $this->invSerialNo,
+            'cci_customer_id' => $this->new_cust_inv_id,
+            'cargo_id'        => $cargoId,
+            'taric_code'      => 'n/a',
+            'taric_nameEN'    => 'Freight cost',
+        ]);
+
+        session()->flash('success', 'Closed invoice created successfully!');
+    }
+// 4. setting status to invoice after successfull creation of invoices
+
+    public function statusInvoiced($id)
+    {
+        Order_status::where('cargo_id', $id)
+            ->update(
+                [
+                    'status' => 'Invoiced',
+                ]);
+    }
 }

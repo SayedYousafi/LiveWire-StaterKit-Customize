@@ -1,16 +1,15 @@
 <div>
-    <x-sub-menu />
+    <x-sub-menu :current="$title" />
+    @if (session('success'))
     <div class=" mt-2 text-center mb-2">
-        @if (session('success'))
         <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
-        @endif
     </div>
-
+    @endif
+    @if (session('error'))
     <div class=" mt-2 text-center mb-2">
-        @if (session('error'))
         <flux:callout variant="danger" icon="x-circle" heading="{{ session('error') }}" />
-        @endif
     </div>
+    @endif
     {{-- @include('partials.edit-so') --}}
     @include('partials.cargos')
     @include('partials.edit-qty')
@@ -63,7 +62,7 @@
                     @if (session('verifiedRow') == $invoice->cargoId)
                     <td>
                         <flux:button size='sm' icon='lock-closed' class="bg-blue-600! text-white! hover:bg-blue-500!"
-                            wire:click='checkStatus({{ $invoice->cargoId }}, {{ $invoice->taric_id }} , {{ $invoice->customerId }})'>
+                            wire:click='checkStatus({{ $invoice->cargoId }}, {{ $invoice->customerId }})'>
                             Close Invoice</flux:button>
                     </td>
                     @endif

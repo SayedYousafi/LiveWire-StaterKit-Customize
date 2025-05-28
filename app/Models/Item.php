@@ -32,5 +32,9 @@ class Item extends Model
     {
         return $this->belongsTo(Parents::class, 'parent_id', 'id');
     }
+    public function values()
+    {
+        return $this->hasMany(VarVal::class, 'item_id', 'id');
+    }
 }
 

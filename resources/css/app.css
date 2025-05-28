@@ -65,92 +65,66 @@ select:focus[data-flux-control] {
     @apply size-4;
 } */
 
-table.custom-table {
-    border: 1px solid #ccc;
-    border-collapse: collapse;
-}
-table.custom-table th,
-table.custom-table td {
-    text-align: center;
-    border: 1px solid #ccc;
-    padding: 0.5rem;
-}
-table.custom-table thead th {
-    background-color: #f0f0f0;
-}
 
-table.custom-table td a {
-    color: inherit;
-    text-decoration: inherit;
-}
-
-table.custom-table td a.active-link {
-    color: blue;
-    text-decoration: none;
-}
-
-/* resources/css/app.css */
-
-/* Base outer table container */
+/* Base responsive table container */
 .table-default {
   @apply w-full overflow-x-auto border border-gray-300 dark:border-gray-700 rounded-lg;
 }
 
-/* Table layout */
 .table-default table {
   @apply w-full border-collapse table-auto min-w-full;
 }
 
-/* Sticky thead */
+/* Sticky header with dark mode support */
 .table-default thead {
   @apply bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-10;
 }
-
 .table-default thead tr {
   @apply sticky top-0 z-10;
 }
 
-/* Cells */
+/* Table cells */
 .table-default th,
 .table-default td {
   @apply border border-gray-300 dark:border-gray-700 p-1 text-center align-middle text-sm;
 }
 
-/* Body row styling */
+/* Body rows */
 .table-default tbody tr {
   @apply h-6 text-wrap;
 }
 
-/* Optional row highlighting class */
+/* Optional row highlight */
 .table-highlighted {
   @apply bg-gray-700 dark:bg-gray-900 text-white;
 }
 
-/* --- NEW: Nested Table Styling --- */
-
-.table-nested {
+/* Nested tables inside table-default (hover-enabled) */
+.table-default .table-nested {
   @apply w-full border border-gray-400 dark:border-gray-600 rounded-md overflow-hidden;
 }
-
-.table-nested table {
+.table-default .table-nested table {
   @apply w-full table-auto border-collapse;
 }
-
-.table-nested thead {
+.table-default .table-nested thead {
   @apply bg-gray-200 dark:bg-gray-800 text-gray-800 dark:text-gray-100;
 }
-
-.table-nested th,
-.table-nested td {
+.table-default .table-nested th,
+.table-default .table-nested td {
   @apply border border-gray-300 dark:border-gray-700 p-1 text-left text-sm;
 }
-
-.table-nested tbody tr {
+.table-default .table-nested tbody tr {
   @apply transition duration-150 ease-in-out;
 }
-
-.table-nested tbody tr:hover {
+.table-default .table-nested tbody tr:hover {
   @apply bg-gray-100 dark:bg-gray-700;
 }
 
+/* Link styles inside tables */
+.table-default td a {
+  @apply text-inherit no-underline;
+}
+.table-default td a.active-link {
+  @apply text-blue-600 font-bold hover:underline;
+}
 

@@ -2,7 +2,7 @@
 @include('partials.cargos')
     <div class="flex justify-between mt-0">
         <div>
-            <flux:button icon="backward" onclick="history.back()" class="bg-blue-800! text-white! hover:bg-blue-700!">
+            <flux:button icon="backspace" onclick="history.back()" class="bg-blue-800! text-white! hover:bg-blue-700!">
                 Back
             </flux:button>
         </div>
@@ -33,7 +33,7 @@
     </div>
     @endif
 
-    <table class="custom-table w-full text-sm text-gray-500 dark:text-gray-400 mt-2.5">
+    <table class="table-default mt-2.5">
         <thead class="sticky! top-0! z-10!">
             <tr>
                 <th rowspan="2">No</th>
@@ -50,9 +50,10 @@
                 <th>SO</th>
                 <th>Problem</th>
                 <th>Purchase</th>
-                <th>Check</th>
-                <th>Paid</th>
-                <th>Print</th>
+                 <th>Paid</th>
+                <th>Checked</th>
+               
+                <th>Printed</th>
                 <th>Invoiced</th>
                 <th>Shipped</th>
             </tr>
@@ -62,8 +63,9 @@
                 <th>{{ $orderOrders }}</th>
                 <th>{{ $problemOrders }}</th>
                 <th>{{ $purchaseOrders }}</th>
-                <th>{{ $checkOrders }}</th>
                 <th>{{ $paidOrders }}</th>
+                <th>{{ $checkOrders }}</th>
+                
                 <th>{{ $printOrders }}</th>
                 <th>{{ $invoicedOrders }}</th>
                 <th>{{ $shippedOrders }}</th>
@@ -78,7 +80,7 @@
                         icon='arrow-path' size='sm'
                         wire:click="selectCargo('{{ $order->order_no }}')" 
                         class=" bg-gray-500! hover:bg-gray-400! text-white!">
-                        Re-Assign
+                        ReAssign
                     </flux:button>
                 </td>
                 <td>
@@ -135,6 +137,15 @@
                     </a>
                 </td>
 
+                
+                @php $paid = $order->status_counts['Paid'] ?? 0; @endphp
+                <td>
+                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Paid"
+                        class="{{ $paid > 0 ? 'active-link' : '' }}">
+                        {{ $paid }}
+                    </a>
+                </td>
+
                 @php $checked = $order->status_counts['Checked'] ?? 0; @endphp
                 <td>
                     <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Checked"
@@ -143,13 +154,6 @@
                     </a>
                 </td>
 
-                @php $paid = $order->status_counts['Paid'] ?? 0; @endphp
-                <td>
-                    <a wire:navigate href="{{ route('orderItems') }}/{{ $order->order_no }}/Paid"
-                        class="{{ $paid > 0 ? 'active-link' : '' }}">
-                        {{ $paid }}
-                    </a>
-                </td>
 
                 @php $printed = $order->status_counts['Printed'] ?? 0; @endphp
                 <td>

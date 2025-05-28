@@ -80,11 +80,11 @@
                         <flux:button variant='primary' icon='pencil-square' wire:click='edit({{ $category->id }})'
                             size='sm'>Edit</flux:button>
                     </td>
-                    <td class="px-2 py-1">
+                    {{-- <td class="px-2 py-1">
                         <flux:button variant='danger' icon='minus-circle' wire:click='delete({{ $category->id }})'
                             wire:confirm='Are you sure deleting this record?' size='sm'>Delete</flux:button>
                     </td>
-                </tr>
+                </tr> --}}
                 @empty
                 <tr>
                     <th colspan="5" scope="row"

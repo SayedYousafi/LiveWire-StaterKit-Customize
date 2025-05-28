@@ -15,7 +15,7 @@ class Tarics extends Component
     public function render()
     {
         return view('livewire.tarics')->with([
-            'tarics' => Taric::search($this->search)->paginate(25),
+            'tarics' => Taric::withCount('items')->search($this->search)->paginate(25),
         ]);
     }
 

@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-         RedirectIfAuthenticated::redirectUsing(fn() => route('admin'));
+        //RedirectIfAuthenticated::redirectUsing(fn() => route('admin'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -34,7 +34,8 @@ class Suppliers extends Component
     public function render()
     {
         return view('livewire.suppliers')->with([
-            'suppliers'    => Supplier::search($this->search)->with('orderType')->orderBy('id')->paginate(100),
+            'suppliers'    => Supplier::withCount('items')->search($this->search)->with('orderType')->orderBy('id')->paginate(100),
+            //'tarics' => Taric::withCount('items')->search($this->search)->paginate(25),
             'title'        => $this->title,
             'order_types'  => Supplier_type::all(),
         ]);

@@ -1,8 +1,9 @@
 <div>
     @include('partials.cargos')
+    @include('partials.edit-qty')
     <div class="flex justify-between mt-0">
         <div>
-            <flux:button icon="backward" 
+            <flux:button icon="backspace" 
             onclick="history.back()"
             class="bg-blue-800! text-white! hover:bg-blue-700!">
                 Back
@@ -19,9 +20,8 @@
         <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
     </div>
     @endif
-    
 
-    <table class="custom-table w-full text-sm text-gray-500 dark:text-gray-400 mt-2.5">
+    <table class="table-default mt-2">
         <thead class="sticky! top-0! z-10!">
             <tr>
                 <th>S. No</th>
@@ -41,15 +41,29 @@
         </thead>
         <tbody>
             @forelse ($orderItems as $order)
-            <tr wire:key="{{ $order->ID }}">
+            @php
+            // Gather all numeric quantities
+            $allQuantities = collect([
+            is_numeric($order->qty_split) ? $order->qty_split : null,
+            is_numeric($order->qty) ? $order->qty : null,
+            is_numeric($order->qty_label) ? $order->qty_label : null,
+            ])->reject(fn($q) => $q === null);
+            // Get unique values for display
+            $quantities = $allQuantities->unique()->values();
+            $displayQty = $quantities->implode('/');
+
+            // Get the first available numeric quantity for math
+            $numericQty = $allQuantities->first() ?? 0;
+            @endphp
+            <tr wire:key="{{ $order->ID }}" >
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $order->ean }}</td>
                 <td class="text-left! whitespace-normal break-words">{{ $order->item_name }}
                     / {{ $order->item_name_cn }}
                 </td>
                 <td>{{ $p = $order->price_rmb }}</td>
-                <td>{{ $q = $order->qty }}</td>
-                <td>{{ $p*$q }}</td>
+                <td>{{ $displayQty }}</td>
+                <td>{{ $p*$numericQty }}</td>
                 <td class="text-left!"> {{ $order->name }} - {{ $order->supplierId }}</td>
                 <td>{{ $order->order_no }}</td>
                 <td class="text-left! whitespace-normal break-words">{{ $order->remark}} / 
@@ -57,13 +71,26 @@
                 </td>
                 <td>{{ $order->status }}</td>
                 <td>{{ $order->cargo_id }}</td>
-                <td><flux:button variant='primary' size='sm' icon='divide'>Split</flux:button></td>
+                <td>
+                    <flux:button size="sm" icon='share' class="bg-yellow-600! text-white! hover:bg-yellow-500"
+                    wire:confirm='Are you sure spliting this?' wire:click="splitDelivery('{{ $order->master_id }}')">
+                    Split</flux:button>
+                </td>
                 <td>
                     <flux:button
                     wire:click="selectCargo({{ $order->ID }})" 
                     class=" bg-gray-500! hover:bg-gray-400! text-white!"
-                    size='sm' icon='arrow-uturn-left'>Re-Assign</flux:button></td>
+                    size='sm' icon='arrow-uturn-left'>ReAssign</flux:button></td>
             </tr>
+            {{-- @if ($qty_no == $order->master_id)
+            <tr>
+                <td colspan="14" class="text-center  bg-gray-50 dark:bg-gray-800">
+                    <b>Change QTY for EAN: {{ $order->ean }}</b><br>
+                   
+                     @include('partials.edit-qty')
+                </td>
+            </tr>
+            @endif --}}
             @empty
             <tr>
                 <td colspan="19">No records found</td>

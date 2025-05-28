@@ -200,6 +200,7 @@
             <div class="col-span-3 text-center content-center">
               <img src="{{ asset('storage/'.$itemDetail->photo) }}" class="max-w-full max-h-[600px] mx-auto" />
             </div>
+             {{-- <div><strong>Picture name:</strong><br>{{ $itemDetail->photo }}</div> --}}
           </div>
         </fieldset>
 

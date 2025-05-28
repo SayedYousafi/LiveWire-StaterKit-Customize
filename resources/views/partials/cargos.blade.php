@@ -5,7 +5,7 @@
             {{-- <flux:text class="mt-2">Assigning cargo to Order No.  {{ $orderNo }}</flux:text>--}}
         </div>
         <flux:dropdown>
-            <flux:button icon:trailing="chevron-down">Select a cargo </flux:button>
+            <flux:button icon:trailing="chevron-down">Select a cargo {{ $cargoId }}</flux:button>
             <flux:menu>
                 @foreach ($cargos as $id => $cargo_no)
                 <flux:separator />

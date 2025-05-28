@@ -7,10 +7,10 @@
                 </flux:button>
             </flux:modal.trigger>
         </div>
-<x-sub-menu/>
+<x-sub-menu :current="$title"/>
         <div class="flex justify-end items-center gap-4 my-2">
             {{-- <flux:text color="blue" class="text-base">Cargo Types</flux:text> --}}
-            <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass" placeholder="Search Cargo Type" />
+            <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass" placeholder="Search {{ $title }}" />
         </div>
     </div>
 

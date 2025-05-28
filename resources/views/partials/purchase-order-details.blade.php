@@ -13,7 +13,11 @@
 
 <section wire:key="purchase-details-{{ $itemOrder->master_id }}">
 <h3 class="text-center text-xl font-semibold mb-4">Confirm item before purchase</h3>
-
+@if (session('success'))
+    <div class=" mt-2 text-center mb-2">
+        <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
+    </div>
+    @endif
 <div class="overflow-x-auto">
   <table class="min-w-full table-auto border text-sm bg-gray-100 dark:bg-gray-800">
     <tbody>

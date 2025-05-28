@@ -1,7 +1,7 @@
 <div>
     {{-- Header with Back, Title and Search --}}
     <div class="flex justify-between mt-0 items-center">
-        <flux:button icon="backward" onclick="history.back()" class="bg-blue-800! text-white! hover:bg-blue-700!">
+        <flux:button icon="backspace" onclick="history.back()" class="bg-blue-800! text-white! hover:bg-blue-700!">
             Back
         </flux:button>
 

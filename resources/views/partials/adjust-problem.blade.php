@@ -22,7 +22,6 @@
                 </flux:menu>
             </flux:dropdown>
 
-
         </div>
         <flux:textarea wire:model='remark' rows="3" label='Adjustment remark:' autofocus
             placeholder="Short description of adjustment" />
