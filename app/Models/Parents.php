@@ -12,14 +12,18 @@ class Parents extends Model
         return $this->hasMany(Item::class, 'parent_id');
     }
 
-    public static function search($term)
+    public function scopeSearch($query, $term)
     {
-        return static::where('name_en', 'like', '%' . $term . '%')
-            ->orWhere('name_de', 'like', '%' . $term . '%')
-            ->orWhere('name_cn', 'like', '%' . $term . '%')
-            ->orWhere('de_no', 'like', '%' . $term . '%')
-            ->orWhere('var_en_1', 'like', '%' . $term . '%')
-            ->orWhere('var_de_1', 'like', '%' . $term . '%');
+        return $query->when($term, function ($q) use ($term) {
+            $q->where(function ($query) use ($term) {
+                $query->where('name_en', 'like', '%' . $term . '%')
+                    ->orWhere('name_de', 'like', '%' . $term . '%')
+                    ->orWhere('name_cn', 'like', '%' . $term . '%')
+                    ->orWhere('de_no', 'like', '%' . $term . '%')
+                    ->orWhere('var_en_1', 'like', '%' . $term . '%')
+                    ->orWhere('var_de_1', 'like', '%' . $term . '%');
+            });
+        });
     }
 
     protected $casts = [

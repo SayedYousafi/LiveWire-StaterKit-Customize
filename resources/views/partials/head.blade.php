@@ -12,6 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
+
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 {{-- @fluxAppearance --}}

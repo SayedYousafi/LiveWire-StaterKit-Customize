@@ -147,10 +147,10 @@
                         <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $supplier->id }})"
                             size="sm">Edit</flux:button>
                     </td>
-                    <td class="px-2 py-1">
+                    {{-- <td class="px-2 py-1">
                         <flux:button variant="danger" icon="minus-circle" wire:click="delete({{ $supplier->id }})"
                             wire:confirm="Are you sure deleting this record?" size="sm">Delete</flux:button>
-                    </td>
+                    </td> --}}
                 </tr>
                 @empty
                 <tr>

@@ -1,17 +1,20 @@
 <?php
 namespace App\Livewire;
 
-use App\Models\Team;
 use Flux\Flux;
+use App\Models\Team;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 
+#[Title('Gtech Teams')]
 class Teams extends Component
 {
     use WithPagination;
 
     public bool $enableEdit = false;
     public bool $isUpdate   = false;
+    public bool $active = true;
 
     public $TeamId;
     public string $search = '';
@@ -50,16 +53,30 @@ class Teams extends Component
         'mobile'        => 'required',
     ];
 
-    public function render()
-    {
-        return view('livewire.teams')->with([
-            'Teams' => Team::search($this->search)->orderBy('id')->paginate(100),
-            'title' => $this->title,
-        ]);
-    }
+public function render()
+{
+    $query = Team::query()->search($this->search);
+
+    $query->where('status', $this->active == 0 ? 0 : 1);
+
+    $teams = $query->orderBy('id')->paginate(100);
+
+    return view('livewire.teams')->with([
+        'Teams' => $teams,
+        'title' => $this->title,
+    ]);
+}
+
 
     public function save()
     {
+        if($this->status='Active'){
+            $this->status = 1;
+        }
+       if($this->status='inActive'){
+            $this->status = 0;
+        }
+
         $this->validate();
 
         $created = Team::create($this->getTeamData());
@@ -87,6 +104,13 @@ class Teams extends Component
 
     public function update()
     {
+        if($this->status='Active'){
+            $this->status = 1;
+        }
+       if($this->status='inActive'){
+            $this->status = 0;
+        }
+
         $this->validate();
 
         $updated = Team::where('id', $this->TeamId)->update($this->getTeamData());

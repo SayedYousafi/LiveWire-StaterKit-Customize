@@ -161,7 +161,7 @@ class EtlController extends Controller
         $this->updateOrderItemQty();
         //sench ItemID_DEs
         //$this->synchIDs();
-        return redirect('/orders.index');
+        return redirect('/orders');
     }
 
     public function removeUnmatchedItems()
@@ -261,7 +261,7 @@ class EtlController extends Controller
                 Order_item::where('ItemID_DE', $currentItemID_DE)->update(['ItemID_DE' => $csvData[$ean]]);
             }
         }
-        return redirect('/index')->with('success', 'ItemID_DEs are synched successfully !');
+        return redirect('/orders')->with('success', 'ItemID_DEs are synched successfully !');
     }
 
     public function synchIDs()
@@ -332,6 +332,6 @@ class EtlController extends Controller
                 }
                 fclose($handle);
             }
-        return redirect('/index')->with('success', 'WareHouse items synched successfully !');
+        return redirect('/orders')->with('success', 'WareHouse items synched successfully !');
     }
 }

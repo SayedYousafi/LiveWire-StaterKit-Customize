@@ -1,7 +1,16 @@
 @php use Illuminate\Support\Facades\Auth; @endphp
 
 <div class="max-w-7xl mx-auto p-6 space-y-6">
-
+    <div class=" mt-2 text-center">
+        @if (session('success'))
+        <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
+        @endif
+    </div>
+    <div class=" mt-2 text-center">
+        @if (session('error'))
+        <flux:callout variant="danger" icon="check-circle" heading="{{ session('error') }}" />
+        @endif
+    </div>
 
     <flux:modal name="myModal" class="md:w-96">
         <div class="space-y-6">
@@ -15,7 +24,8 @@
             <div class="flex">
                 <flux:spacer />
 
-                <flux:button wire:click='setValue' icon='plus-circle' type="submit" variant="primary">Save changes</flux:button>
+                <flux:button wire:click='setValue' icon='plus-circle' type="submit" variant="primary">Save changes
+                </flux:button>
             </div>
         </div>
     </flux:modal>
@@ -32,15 +42,15 @@
             <fieldset class="border border-gray-300 rounded-xl p-4">
                 <legend class="text-lg font-semibold text-gray-700 px-2">Administration</legend>
                 <div class=" mt-2 text-center">
-                        @if (session('success'))
-                        <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
-                        @endif
-                    </div>
+                    @if (session('success'))
+                    <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
+                    @endif
+                </div>
                 <div class="space-y-2 mt-2">
                     <a href="{{ url('users') }}" class="text-blue-600 hover:underline flex items-center gap-2">
                         <i data-lucide="user-cog" class="w-4 h-4"></i> Administrators and users
                     </a>
-                    
+
                     <a href="{{ route('register') }}" class="text-blue-600 hover:underline flex items-center gap-2">
                         <i data-lucide="user-plus" class="w-4 h-4"></i> Register a new MIS user
                     </a>
@@ -52,20 +62,26 @@
 
             {{-- Reports --}}
             <fieldset class="border border-gray-300 rounded-xl p-4">
-                <legend class="text-lg font-semibold text-gray-700 px-2">Reports</legend>
+                <legend class="text-lg font-semibold text-gray-700 px-2">Exports/Reports</legend>
                 <div class="space-y-2 mt-2">
-                    
-                    <a href="{{ route('teams') }}" class="text-blue-600 hover:underline flex items-center gap-2">
-                        <i data-lucide="users" class="w-4 h-4"></i> GTech Team members list
+                    <a href="{{ url('export') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                        <i data-lucide="list-checks" class="w-4 h-4"></i>Export Full items list
                     </a>
-                    <a href="{{ url('items/confirms') }}" class="text-blue-600 hover:underline flex items-center gap-2">
-                        <i data-lucide="list-checks" class="w-4 h-4"></i> Confirmed items list
+                        <a href="{{ url('export/isNew') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                        <i data-lucide="list-checks" class="w-4 h-4"></i>Export New items list
+                    </a>
+                    <a href="{{ url('export/updated') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                        <i data-lucide="users" class="w-4 h-4"></i> Exported updated item list
+                    </a>
+                    <a href="{{ url('confirmed') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                        <i data-lucide="list-checks" class="w-4 h-4"></i>Export confirmed items list
                     </a>
 
                     <a href="{{ url('WarehouseValue') }}" class="text-blue-600 hover:underline flex items-center gap-2">
                         <i data-lucide="warehouse" class="w-4 h-4"></i> DE Warehouse StockQTY
                     </a>
-                    
+
+
                 </div>
             </fieldset>
 

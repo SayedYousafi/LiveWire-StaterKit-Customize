@@ -19,7 +19,7 @@
                 Closed invoices
             </flux:navbar.item>
 
-            <flux:navbar.item href="#" wire:navigate
+            <flux:navbar.item href="{{ route('customers') }}" wire:navigate
                 class="{{ $current === 'customers' ? 'font-bold text-blue-600 underline' : '' }}">
                 Customers
             </flux:navbar.item>

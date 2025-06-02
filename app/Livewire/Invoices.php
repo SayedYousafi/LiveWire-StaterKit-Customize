@@ -32,6 +32,7 @@ class Invoices extends Component
     public function render()
     {
         $items = $this->invoiceItemService->baseInvoiceQuery()
+            ->where('cargo_status','!=','Shipped')
             ->groupBy('cargos.id')
             ->orderBy('cargos.id', 'DESC')
             ->get();

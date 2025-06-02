@@ -1,26 +1,26 @@
 <?php
 namespace App\Livewire;
 
-use App\Models\Parents as Parentz;
 use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
+use App\Models\Parents as Parentz;
 
+#[Title('Parents')]
 class Parents extends Component
 {
     use WithPagination;
 
-    public bool $showInactive = false;
+    public bool $active     = true;
     public bool $enableEdit = false;
-    public bool $isUpdate = false;
-   
+    public bool $isUpdate   = false;
+
     public string $search = '';
     public string $title  = 'Parents';
 
-    public $parentId;
-    public $de_id, $de_no, $id, $is_active, $is_nwv, $is_var_unilingual;
-    public $name_cn, $name_de, $name_en;
-    public $rank, $taric_id;
+    public $parentId, $de_id, $de_no, $id, $is_active, $is_nwv, $is_var_unilingual;
+    public $name_cn, $name_de, $name_en, $rank, $taric_id;
     public $var_de_1, $var_de_2, $var_de_3;
     public $var_en_1, $var_en_2, $var_en_3;
 
@@ -30,24 +30,23 @@ class Parents extends Component
         'name_cn' => 'nullable|string|max:255',
         'name_de' => 'nullable|string|max:255',
     ];
-    public function updatedShowInactive()
-    {
-        $this->resetPage(); // forces re-evaluation of the query and pagination
-    }
 
     public function render()
     {
-        $parentsQuery = Parentz::search($this->search)->withCount('items');
-
-        if (! $this->showInactive) {
-            $parentsQuery->where('is_active', '1');
-        }
+        $parentsQuery = Parentz::query();
+            if($this->active!=0){
+                $parentsQuery->where('is_active', 1);
+            }else{
+                $parentsQuery->where('is_active', 0);
+            }
+            
+            $parentsQuery->search($this->search) // Now this works properly as a scope
+            ->withCount('items');
 
         return view('livewire.parents')->with([
             'Parents' => $parentsQuery->orderBy('id', 'desc')->paginate(100),
             'title'   => $this->title,
         ]);
-
     }
 
     public function save()

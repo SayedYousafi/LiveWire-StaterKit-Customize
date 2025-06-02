@@ -54,7 +54,7 @@ class Controls extends Component
             'countNpr'           => $this->getNprCount(),
             'rates'              => $this->xRate(),
             'unusedImages'       => $this->getImageDiffs()[0],
-            'naClass'       => $this->getCountNaclass(),
+            'naClass'            => $this->getCountNaclass(),
             'nullPixs'           => $this->getNullPictures(),
             'parents'            => $this->getTaricMismatch(),
             'count_null_cargo'   => $this->getCountNullCargo(),
@@ -104,9 +104,12 @@ class Controls extends Component
         //return Cache::remember('null_pictures', 600, function () {
         $noPics = Item::select('id', 'photo')
             ->where('isActive', 'Y')
-            ->whereNull('photo')->orWhereIn('photo', ['DummyPicture.jpg', ''])
-        //->limit(100)
+            ->where(function ($query) {
+                $query->whereNull('photo')
+                    ->orWhereIn('photo', ['DummyPicture.jpg', '']);
+            })
             ->get();
+
         //});
         return ($noPics);
     }
@@ -203,7 +206,7 @@ class Controls extends Component
     }
     protected function getCountNaclass()
     {
-        return $naClass =Item::whereRaw("ShippingClass(items.weight, items.length,items.width, items.height) = 'Na'");
+        return $naClass = Item::whereRaw("ShippingClass(items.weight, items.length,items.width, items.height) = 'Na'");
     }
     protected function getDuplicatePhotos()
     {

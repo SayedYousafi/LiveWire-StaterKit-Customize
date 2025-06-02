@@ -40,7 +40,7 @@
                 </td>
 
                 <td>{{ $ci->customer_company_name }}</td>
-                <td>{{ $ci->cargo_no }}</td>
+                <td>{{ $ci->id }} - {{ $ci->cargo_no }}</td>
                 <td>{{ myDate($ci->InvoiceDate, 'd-m-Y' )}}</td>
                 <td><a wire:click.prevent="showItems({{$ci->customer_id}}, {{$ci->invSerialNo }})" href="#">{{
                         $ci->item_count}}</a></td>

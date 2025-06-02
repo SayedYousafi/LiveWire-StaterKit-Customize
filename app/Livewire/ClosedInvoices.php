@@ -22,7 +22,7 @@ class ClosedInvoices extends Component
         $results = DB::table('cci_customers')
             ->join('cci_invoices', 'cci_customers.id', '=', 'cci_invoices.cci_customer_id')
             ->join('cargos', 'cci_invoices.cargo_id', '=', 'cargos.id')
-            //->join('status_remark_qty', 'status_remark_qty.cargo_id', '=', '')
+            //->join('order_statuses', 'order_statuses.cargo_id', '=', '')
             ->select(
                 'cci_customers.id',
                 'cci_customers.customer_id',
@@ -40,7 +40,7 @@ class ClosedInvoices extends Component
             )
             ->whereColumn('cci_invoices.invSerialNo', 'cci_customers.invSerialNo')
             ->groupBy('cci_customers.id', )
-            ->latest()->get();
+            ->orderBy('cci_customers.id','DESC')->get();
 
         $data = $results;
         //dd($data);
@@ -96,9 +96,9 @@ class ClosedInvoices extends Component
     }
     public function shipCI($id)
     {
-        $itemsToShip = \DB::table('status_remark_qty')
-            ->where('status_remark_qty.status', 'Invoiced')
-            ->where('status_remark_qty.cargo_id', $id)
+        $itemsToShip = \DB::table('order_statuses')
+            ->where('order_statuses.status', 'Invoiced')
+            ->where('order_statuses.cargo_id', $id)
             ->get();
             //dd($itemsToShip);
 

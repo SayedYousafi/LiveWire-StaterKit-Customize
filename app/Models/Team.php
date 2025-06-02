@@ -8,20 +8,23 @@ class Team extends Model
 {
     protected $guarded = [];
 
-    public static function search($term)
-    {
-        return static::where('first_name', 'like', '%' . $term . '%')
-            ->orWhere('middle_name', 'like', '%' . $term . '%')
-             ->orWhere('last_name', 'like', '%' . $term . '%')
-            ->orWhere('city', 'like', '%' . $term . '%')
-            ->orWhere('designation', 'like', '%' . $term . '%')
+public function scopeSearch($query, $term)
+{
+    return $query->when($term, function ($q) use ($term) {
+        $q->where(function ($q) use ($term) {
+            $q->where('first_name', 'like', '%' . $term . '%')
+              ->orWhere('middle_name', 'like', '%' . $term . '%')
+              ->orWhere('last_name', 'like', '%' . $term . '%')
+              ->orWhere('city', 'like', '%' . $term . '%')
+              ->orWhere('designation', 'like', '%' . $term . '%')
+              ->orWhere('country', 'like', '%' . $term . '%');
+        });
+    });
+}
 
-            ->orWhere('country', 'like', '%' . $term . '%');
-    }
 
     protected $casts = [
-        'is_fully_prepared'   => 'boolean',
-        'is_tax_included'     => 'boolean',
-        'is_freight_included' => 'boolean',
+        'status'   => 'boolean',
+
     ];
 }

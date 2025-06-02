@@ -9,6 +9,11 @@
         </div>
 
         <flux:text color="blue" class="text-base">{{ $title }}</flux:text>
+        <div class="">
+            
+            <flux:switch wire:click="$toggle('active')" label="Active / InActive" />
+
+        </div>
 
         <div>
             <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass" placeholder="Search {{ $title }}" :disabled="$isUpdate && !$enableEdit" />
@@ -23,6 +28,11 @@
                 <flux:switch wire:click="$toggle('enableEdit')" label="Enable edit" />
             </div>
             @endif
+
+            <flux:select wire:model="status" placeholder="Active / Inactive" :disabled="$isUpdate && !$enableEdit">
+                <flux:select.option>Active</flux:flux:select.option>
+                <flux:select.option>InActive</flux:flux:select.option>
+            </flux:select>
             <div class="grid grid-cols-4 gap-4">
                 <div class="col-span-2">
                     <flux:input wire:model="first_name" label="First Name" placeholder="First Name" class="w-full" :disabled="$isUpdate && !$enableEdit" />
@@ -114,8 +124,10 @@
                     <th class="px-6 py-3">Name</th>
                     <th class="px-6 py-3">Email</th>
                     <th class="px-6 py-3">Mobile</th>
+                    <th class="px-6 py-3">Emergency contact</th>
                     <th class="px-6 py-3">Designation</th>
                     <th class="px-6 py-3">Join date</th>
+                    <th class="px-6 py-3">Address</th>
                     <th colspan="2" class="px-6 py-3">Actions</th>
                 </tr>
             </thead>
@@ -126,8 +138,10 @@
                         <td class="px-2 py-1">{{ $team->first_name }} {{ $team->last_name }}</td>
                         <td class="px-2 py-1">{{ $team->email_business }}</td>
                         <td class="px-2 py-1">{{ $team->mobile }}</td>
+                        <td class="px-2 py-1">{{ $team->contact_number }}</td>
                         <td class="px-2 py-1">{{ $team->designation }}</td>
                         <td class="px-2 py-1">{{ $team->join_date }}</td>
+                         <td class="px-2 py-1">{{ $team->house_no }}, {{ $team->street }}, {{ $team->city }}, {{ $team->countrey }}</td>
                         <td class="px-2 py-1">
                             <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $team->id }})" size="sm">Edit</flux:button>
                         </td>
@@ -135,6 +149,8 @@
                             <flux:button variant="danger" icon="minus-circle" wire:click="delete({{ $team->id }})" wire:confirm="Are you sure deleting this record?" size="sm">Delete</flux:button>
                         </td> --}}
                     </tr>
+                    
+                   
                 @empty
                     <tr>
                         <td colspan="7" class="px-2 py-1 text-center font-medium text-gray-900 dark:text-white">
@@ -142,6 +158,18 @@
                         </td>
                     </tr>
                 @endforelse
+                @if($active ==0)
+                    <tr>
+                            <td colspan="7" align="center">
+                                <em>May they all be filled with loving-kindness.<br>
+                                May they all be free from suffering.<br>
+                                May theý all be well.<br>
+                                May they all be at peace.<br>
+                                May they all be joyful.<br>
+                                </em>
+                            </td>
+                    </tr>
+                @endif
             </tbody>
         </table>
 

@@ -40,13 +40,32 @@
                     <flux:navmenu.item href="{{ route('orderItems') }}" icon="clipboard-document-list" wire:navigate>List
                         order items </flux:navmenu.item>
                     <flux:navmenu.separator />
-                    <flux:navmenu.item href="{{ route('invoices') }}" icon="document-currency-euro" wire:navigate>
-                        Invoices 
-                    </flux:navmenu.item>
-                    <flux:navmenu.separator />
+                    
                     <flux:navmenu.item href="{{ route('problems') }}" icon="arrow-path-rounded-square" wire:navigate>
                         Problems
                     </flux:navmenu.item>
+                </flux:navmenu>
+            </flux:dropdown>
+
+             <flux:dropdown position="top">
+                <flux:navbar.item icon="banknotes" icon:trailing="chevron-down" :current="request()->routeIs('invoices')">Invoices</flux:navbar.item>
+                <flux:navmenu>
+                    {{-- <flux:menu.item href="#" icon="plus">New item</flux:menu.item>
+                    <flux:menu.separator /> --}}
+                    <flux:navmenu.item href="{{ route('invoices') }}" icon="queue-list" wire:navigate>Open invoices</flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('invoicesClosed') }}" icon="gift-top" wire:navigate>Closed invoices</flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('customers') }}" icon="user-plus" wire:navigate>Customers</flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('cargos') }}" icon="rocket-launch" wire:navigate>Cargos </flux:navmenu.item>
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('cargotypes') }}" icon="truck" wire:navigate> Cargo Types 
+                    </flux:navmenu.item>
+                    {{-- <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('problems') }}" icon="arrow-path-rounded-square" wire:navigate>
+                        Problems
+                    </flux:navmenu.item> --}}
                     <flux:navmenu.separator />
                 </flux:navmenu>
             </flux:dropdown>
@@ -88,7 +107,7 @@
                     <flux:menu.separator />
                     <flux:menu.item href="{{ route('teams') }}" icon="user-group" wire:navigate>Team</flux:menu.item>
                     <flux:menu.separator />
-                    <flux:menu.item href="#" icon="users" wire:navigate>Users</flux:menu.item>
+                    <flux:menu.item href="{{ url('users') }}" icon="users" wire:navigate>Users</flux:menu.item>
                 </flux:menu>
             </flux:dropdown>
 
@@ -97,11 +116,14 @@
         <flux:spacer />
 
         <flux:navbar class="me-1.5 space-x-0.5 rtl:space-x-reverse py-0!">
-            <flux:tooltip :content="__('Search')" position="bottom">
+            @auth
+                {{ __('Hello') }} {{ Auth::user()->name }} &nbsp; &#128515; &nbsp;
+              @endauth
+            {{--<flux:tooltip :content="__('Search')" position="bottom">
                 <flux:navbar.item class="!h-10 [&>div>svg]:size-5" icon="magnifying-glass" href="#"
                     :label="__('Search')" />
             </flux:tooltip>
-            {{-- <flux:tooltip :content="__('Repository')" position="bottom">
+             <flux:tooltip :content="__('Repository')" position="bottom">
                 <flux:navbar.item class="h-10 max-lg:hidden [&>div>svg]:size-5" icon="folder-git-2"
                     href="https://github.com/laravel/livewire-starter-kit" target="_blank" :label="__('Repository')" />
             </flux:tooltip>

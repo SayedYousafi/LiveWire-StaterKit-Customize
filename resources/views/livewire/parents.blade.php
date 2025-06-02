@@ -9,7 +9,8 @@
         </div>
         <div class="flex justify-end items-center gap-4 my-2">
             <flux:text color="blue" class="text-base">{{ $title }}</flux:text>
-            <flux:switch wire:click="$toggle('showInactive')" label="Active / InActive" />
+            <flux:switch wire:click="$toggle('active')" label="Active / InActive" />
+
         </div>
 
         <div>
@@ -148,7 +149,7 @@
                             wire:confirm="Are you sure deleting this record?" size="sm">Delete</flux:button>
                     </td> --}}
                     <td>
-                        <flux:button size='sm'>Description</flux:button>
+                        <flux:button as href="{{ route('shortdesc', $parent->id) }}" size='sm' class=" bg-blue-600! text-white! hove:bg-blue-500!" >Description</flux:button>
                     </td>
                 </tr>
                 @empty

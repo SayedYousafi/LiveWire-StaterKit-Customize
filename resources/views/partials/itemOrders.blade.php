@@ -1,6 +1,7 @@
 <table class="table-default">
     <thead>
         <tr class="table-highlighted">
+            <th>#</th>
             <th>EAN</th>
             <th>Item Name</th>
             <th>Remarks</th>
@@ -60,6 +61,7 @@
 
         <tr wire:key="status-buttons-{{ $itemOrder->master_id }}-{{ $itemOrder->status }}" 
             @if(str_contains($itemOrder->comment, 'express')) class="bg-red-50 dark:bg-red-900" @endif>
+            <td>{{ $loop->iteration }}</td>
             <td>
                 @if ($itemOrder->status=='SO')
                 <flux:button icon='arrow-left-start-on-rectangle' size='sm'

@@ -33,12 +33,14 @@ class Items extends Component
         if ($this->param === 'zero') {
             // $query->whereHas('suppliers', fn($q) => $q->whereNull('price_rmb')->orWhere('price_rmb', 0))
             $query->where(function ($q) {
-                $q->whereNull('supplier_items.price_rmb')->orWhere('supplier_items.price_rmb', 0);})
+                $q->whereNull('supplier_items.price_rmb')->orWhere('supplier_items.price_rmb', 0);
+            })
                 ->where('items.is_rmb_special', 'N')
                 ->where('items.isActive', 'Y');
-        } elseif($this->param === 'varval') {
+        } elseif ($this->param === 'varval') {
             $query->where(function ($q) {
-                $q->whereNull('variation_values.value_en')->orWhere('variation_values.value_en', '');})
+                $q->whereNull('variation_values.value_en')->orWhere('variation_values.value_en', '');
+            })
                 ->where('items.isActive', 'Y')
                 ->where('parents.is_var_unilingual', 'N');
         } elseif ($this->param === 'noTarics') {
@@ -48,7 +50,13 @@ class Items extends Component
         } elseif ($this->param === 'npr') {
             $query->where('items.is_npr', 'Y')->where('items.isActive', 'Y');
         } elseif ($this->param === 'noPics') {
-            $query->where('items.is_npr', 'Y')->where('items.isActive', 'Y')->whereNull('photo')->orWhereIn('photo', ['DummyPicture.jpg', '']);
+            $query->where('items.is_npr', 'Y')
+                ->where('items.isActive', 'Y')
+                ->where(function ($q) {
+                    $q->whereNull('photo')
+                        ->orWhereIn('photo', ['DummyPicture.jpg', '']);
+                });
+
         } elseif ($this->param === 'naShipping') {
             $query->whereRaw("ShippingClass(items.weight, items.length, items.width, items.height) = 'Na'");
             //$query->whereNull('supplier_items.supplier_id');
@@ -64,8 +72,7 @@ class Items extends Component
             }
         } elseif ($this->param === 'parentNONE') {
             $query->where('parent_no_de', 'NONE');
-        }
-        elseif (preg_match('/^parent(V\d{3}-\w{3})$/', $this->param, $matches)) {
+        } elseif (preg_match('/^parent(V\d{3}-\w{3})$/', $this->param, $matches)) {
             $parent_no_de = $matches[1];
             $query->where('parent_no_de', $parent_no_de);
         } elseif ($this->param) {

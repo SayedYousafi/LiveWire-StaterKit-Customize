@@ -7,7 +7,9 @@ use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\Value;
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
+#[Title('Mangement')]
 class Admin extends Component
 {
     public $txtValue, $valueId;
