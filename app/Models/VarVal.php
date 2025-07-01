@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class VarVal extends Model
 {
-    protected $table ='variation_values';
+    protected $table = 'variation_values';
+
     protected $guarded = [];
 
     public function values()

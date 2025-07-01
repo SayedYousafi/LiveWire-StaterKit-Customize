@@ -9,7 +9,7 @@ class Cargo extends Model
 {
     protected $guarded = [];
 
-    public function customer():BelongsTo
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
     }

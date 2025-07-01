@@ -34,6 +34,11 @@
                 Cargos type
             </flux:navbar.item>
 
+            <flux:navbar.item wire:navigate href="{{ route('packingList') }}"
+                class="{{ $current === 'cargotypes' ? 'font-bold text-blue-600 underline' : '' }}">
+                Packing List
+            </flux:navbar.item>
+
         </flux:navbar>
     </div>
 

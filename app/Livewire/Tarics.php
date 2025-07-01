@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Taric;
@@ -9,8 +10,28 @@ use Livewire\WithPagination;
 class Tarics extends Component
 {
     use WithPagination;
-    public $update = false, $taricId, $search='', $title = 'Tarics';
-    public $code, $name_en, $name_de, $reguler_artikel, $duty_rate, $description_de, $description_en;
+
+    public $update = false;
+
+    public $taricId;
+
+    public $search = '';
+
+    public $title = 'Tarics';
+
+    public $code;
+
+    public $name_en;
+
+    public $name_de;
+
+    public $reguler_artikel;
+
+    public $duty_rate;
+
+    public $description_de;
+
+    public $description_en;
 
     public function render()
     {
@@ -24,15 +45,15 @@ class Tarics extends Component
         $validated = $this->validate([
             'name_en' => 'required',
             'name_de' => 'required',
-            'code'    => 'required',
+            'code' => 'required',
         ]);
         $done = Taric::create([
-            'name_en'         => $this->name_en,
-            'name_de'         => $this->name_de,
+            'name_en' => $this->name_en,
+            'name_de' => $this->name_de,
             'reguler_artikel' => $this->reguler_artikel,
-            'duty_rate'       => $this->duty_rate,
-            'description_de'  => $this->description_de,
-            'description_en'  => $this->description_en,
+            'duty_rate' => $this->duty_rate,
+            'description_de' => $this->description_de,
+            'description_en' => $this->description_en,
         ]);
         if ($done) {
             Flux::modal('myModal')->close();
@@ -46,16 +67,16 @@ class Tarics extends Component
     public function edit($id)
     {
         $this->taricId = $id;
-        $this->update  = true;
+        $this->update = true;
         Flux::modal('myModal')->show();
-        $taric                 = Taric::findOrFail($id);
-        $this->name_en         = $taric->name_en;
-        $this->name_de         = $taric->name_de;
-        $this->description_de  = $taric->description_de;
-        $this->description_en  = $taric->description_en;
-        $this->duty_rate       = $taric->duty_rate;
+        $taric = Taric::findOrFail($id);
+        $this->name_en = $taric->name_en;
+        $this->name_de = $taric->name_de;
+        $this->description_de = $taric->description_de;
+        $this->description_en = $taric->description_en;
+        $this->duty_rate = $taric->duty_rate;
         $this->reguler_artikel = $taric->reguler_artikel;
-        $this->code            = $taric->code;
+        $this->code = $taric->code;
 
     }
 
@@ -64,15 +85,15 @@ class Tarics extends Component
         $validated = $this->validate([
             'name_en' => 'required',
             'name_de' => 'required',
-            'code'    => 'required',
+            'code' => 'required',
         ]);
         $done = Taric::where('id', $this->taricId)->update([
-            'name_en'         => $this->name_en,
-            'name_de'         => $this->name_de,
+            'name_en' => $this->name_en,
+            'name_de' => $this->name_de,
             'reguler_artikel' => $this->reguler_artikel,
-            'duty_rate'       => $this->duty_rate,
-            'description_de'  => $this->description_de,
-            'description_en'  => $this->description_en,
+            'duty_rate' => $this->duty_rate,
+            'description_de' => $this->description_de,
+            'description_en' => $this->description_en,
         ]);
         if ($done) {
             Flux::modal('myModal')->close();

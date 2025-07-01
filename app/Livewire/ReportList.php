@@ -2,22 +2,25 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
 
 class ReportList extends Component
 {
     public $files = [];
 
-    public function mount()
+    public function download($filePath)
     {
-        $this->listFiles();
+
+        return response()->download(storage_path("app/{$filePath}"));
     }
 
-    public function listFiles()
+    public function render()
     {
+        //dd(Storage::files('exports'));
+
         $this->files = collect(Storage::files('exports'))
-            ->map(fn($file) => [
+            ->map(fn ($file) => [
                 'name' => basename($file),
                 'path' => $file,
                 'date_exported' => date('Y-m-d H:i:s', Storage::lastModified($file)), // Get file modified date
@@ -25,16 +28,9 @@ class ReportList extends Component
             ->sortByDesc('date_exported') // Sort by latest date
             ->values()
             ->toArray();
-    }
-
-    public function download($filePath)
-    {
-        
-        return response()->download(storage_path("app/{$filePath}"));
-    }
-
-    public function render()
-    {
-        return view('livewire.report-list');
+        //dd($this->files);
+        return view('livewire.report-list')->with([
+            'files' => $this->files,
+        ]);
     }
 }

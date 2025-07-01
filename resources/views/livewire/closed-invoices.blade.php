@@ -48,9 +48,9 @@
                 <td>{{ $ci->total_price}}</td>
                 <td class="text text-center">
 
-                    <flux:button wire:click='checkPrice({{ $ci->id }},{{$ci->invSerialNo}})'
-                        class="bg-blue-600! text-white! hover:bg-blue-500!" icon='document-duplicate' size='sm'>
-                        Create PDF
+                    <flux:button wire:click='checkPrice({{ $ci->id }},{{$ci->invSerialNo}})'>
+                        {{-- class="bg-blue-600! text-white! hover:bg-blue-500!" icon='document-duplicate' size='sm'> --}}
+                        <img src="{{ asset('img/icon_download_PDF.svg') }}" alt="MySVG" class="w-10 h-10">
                     </flux:button>
                 </td>
                 <td>
@@ -63,9 +63,12 @@
                 </td>
                 <td class="text text-center fw-bold">
                     @if ($ci->cargo_status=='Shipped')
-                    Shipped
+                        <flux:button wire:confirm='Are you sure? shipment will happen?'
+                            wire:navigate href="{{ route('packingList', $ci->cargo_id) }}" icon='numbered-list' size='sm'>
+                            Pack List
+                        </flux:button> 
                     @else
-                    <flux:button wire:confirm='Are you sure? shipment will happen?'
+                    <flux:button wire:confirm='Ready to Make Packing List?'
                         wire:click="shipCI({{ $ci->cargo_id }})" variant='danger' icon='x-circle' size='sm'>
                         Ship
                     </flux:button>

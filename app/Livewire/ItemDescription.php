@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Parents;
@@ -7,8 +8,11 @@ use Livewire\Component;
 
 class ItemDescription extends Component
 {
-    public $parent_id = 263, $shortDescs = [];
-    public $rows      = [['type' => 0, 'value' => '', 'value2' => '']];
+    public $parent_id = 263;
+
+    public $shortDescs = [];
+
+    public $rows = [['type' => 0, 'value' => '', 'value2' => '']];
 
     protected $listeners = ['checkLastRow'];
 
@@ -30,7 +34,7 @@ class ItemDescription extends Component
         $existingRows = ShortDescription::where('parent_id', $this->parent_id)->get();
 
         if ($existingRows->isNotEmpty()) {
-            $this->rows       = $existingRows->unique('type')->map(fn($row) => ['type' => $row->type, 'value' => $row->value, 'value2' => $row->value2])->toArray();
+            $this->rows = $existingRows->unique('type')->map(fn ($row) => ['type' => $row->type, 'value' => $row->value, 'value2' => $row->value2])->toArray();
             $this->shortDescs = $existingRows;
         }
     }
@@ -54,14 +58,14 @@ class ItemDescription extends Component
                     // Only create if type is not 0
                     if ($row['type'] != 0) {
                         ShortDescription::create([
-                            'type'        => $row['type'],
-                            'value'       => $row['value'],
-                            'value2'      => $row['value2'],
-                            'item_id'     => $item['id'],
-                            'ean'         => $item['ean'],
-                            'item_name'   => $item['item_name'],
-                            'model'       => $item['model'] ?? null,
-                            'parent_id'   => $this->parent_id,
+                            'type' => $row['type'],
+                            'value' => $row['value'],
+                            'value2' => $row['value2'],
+                            'item_id' => $item['id'],
+                            'ean' => $item['ean'],
+                            'item_name' => $item['item_name'],
+                            'model' => $item['model'] ?? null,
+                            'parent_id' => $this->parent_id,
                             'parent_name' => $parent['name_de'],
                         ]);
                     }
@@ -80,31 +84,31 @@ class ItemDescription extends Component
         return response()->streamDownload(function () {
             $output = fopen('php://output', 'w');
             fprintf($output, "\xEF\xBB\xBF"); // Add UTF-8 BOM
-            fputcsv($output, ["EAN", "Short Description EN", "Short Description DE"]);
+            fputcsv($output, ['EAN', 'Short Description EN', 'Short Description DE']);
 
-            $shortDescs   = ShortDescription::all();
+            $shortDescs = ShortDescription::all();
             $groupedItems = $shortDescs->groupBy('ean');
 
             foreach ($groupedItems as $ean => $items) {
                 // $filteredItems = $items->filter(fn($item) => ! ($item->type == 6 && is_null($item->model)));
-                $filteredItems = $items->filter(fn($item) => !($item->type == 6 && empty($item->model)));
-                $fullTextEn = $filteredItems->map(fn($item) => match ($item->type) {
+                $filteredItems = $items->filter(fn ($item) => ! ($item->type == 6 && empty($item->model)));
+                $fullTextEn = $filteredItems->map(fn ($item) => match ($item->type) {
                     1 => "<p>{$item->value}</p>",
                     2 => "<p>{$item->value} <strong><a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'>{$item->parent_name} Inquiry</a></strong></p>",
-                    3 => "<p><a href='https://data.gtech-shop.de/CAD/" . str_replace(' ', '_', $item->item_name) . ".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value} \"{$item->item_name}.stp\"</strong></a></p>",
-                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/" . str_replace(' ', '_', $item->parent_name) . ".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /> <strong>Download {$item->value} {$item->parent_name}.pdf</strong></a></p>",
+                    3 => "<p><a href='https://data.gtech-shop.de/CAD/".str_replace(' ', '_', $item->item_name).".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value} \"{$item->item_name}.stp\"</strong></a></p>",
+                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/".str_replace(' ', '_', $item->parent_name).".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /> <strong>Download {$item->value} {$item->parent_name}.pdf</strong></a></p>",
                     5 => "<p><a href='https://data.gtech-shop.de/Datasheets/{$item->value}.pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_Norm_Icon.jpg' /> <strong>Download {$item->value}.pdf</strong></a></p>",
                     6 => "<p><a href='https://data.gtech-shop.de/CAD/{$item->model}.stp'><img alt='' src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download \"{$item->model}.stp\"</strong></a> <a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'><strong>Inquire other {$item->parent_name} CAD files</strong></a></p>",
                 })->implode('');
-                
-                $fullTextDe = $filteredItems->map(fn($item) => match ($item->type) {
+
+                $fullTextDe = $filteredItems->map(fn ($item) => match ($item->type) {
                     1 => "<p>{$item->value2}</p>",
                     2 => "<p>{$item->value2} <strong><a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'>{$item->parent_name} Inquiry</a></strong></p>",
-                    3 => "<p><a href='https://data.gtech-shop.de/CAD/" . str_replace(' ', '_', $item->item_name) . ".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value2} \"{$item->item_name}.stp\"</strong></a></p>",
-                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/" . str_replace(' ', '_', $item->parent_name) . ".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /> <strong>Download {$item->value2} {$item->parent_name}.pdf</strong></a></p>",
+                    3 => "<p><a href='https://data.gtech-shop.de/CAD/".str_replace(' ', '_', $item->item_name).".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value2} \"{$item->item_name}.stp\"</strong></a></p>",
+                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/".str_replace(' ', '_', $item->parent_name).".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /> <strong>Download {$item->value2} {$item->parent_name}.pdf</strong></a></p>",
                     5 => "<p><a href='https://data.gtech-shop.de/Datasheets/{$item->value2}.pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_Norm_Icon.jpg' /> <strong>Download {$item->value2}.pdf</strong></a></p>",
                     6 => "<p><a href='https://data.gtech-shop.de/CAD/{$item->model}.stp'><img alt='' src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download \"{$item->model}.stp\"</strong></a> <a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'><strong>Inquire other {$item->parent_name} CAD files</strong></a></p>",
-                })->implode('');               
+                })->implode('');
 
                 fputcsv($output, [$ean, $fullTextEn, $fullTextDe]);
             }
@@ -116,7 +120,7 @@ class ItemDescription extends Component
     public function render()
     {
         return view('livewire.item-description', [
-            'pItems'     => Parents::findOrFail($this->parent_id),
+            'pItems' => Parents::findOrFail($this->parent_id),
             'shortDescs' => ShortDescription::where('parent_id', $this->parent_id)->get(),
 
         ]);

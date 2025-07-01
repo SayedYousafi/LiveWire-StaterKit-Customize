@@ -27,8 +27,7 @@
             <flux:dropdown position="top">
                 <flux:navbar.item icon="clipboard-document" icon:trailing="chevron-down" :current="request()->routeIs('so')">Orders</flux:navbar.item>
                 <flux:navmenu>
-                    {{-- <flux:menu.item href="#" icon="plus">New item</flux:menu.item>
-                    <flux:menu.separator /> --}}
+                    {{-- <flux:menu.item href="#" icon="plus">New item</flux:menu.item><flux:menu.separator /> --}}
                     <flux:navmenu.item href="{{ route('nso') }}" icon="queue-list" wire:navigate>NSO</flux:navmenu.item>
                     <flux:navmenu.separator />
                     <flux:navmenu.item href="{{ route('so') }}" icon="building-storefront" wire:navigate>Suppliers
@@ -62,10 +61,10 @@
                     <flux:navmenu.separator />
                     <flux:navmenu.item href="{{ route('cargotypes') }}" icon="truck" wire:navigate> Cargo Types 
                     </flux:navmenu.item>
-                    {{-- <flux:navmenu.separator />
-                    <flux:navmenu.item href="{{ route('problems') }}" icon="arrow-path-rounded-square" wire:navigate>
-                        Problems
-                    </flux:navmenu.item> --}}
+                    <flux:navmenu.separator />
+                    <flux:navmenu.item href="{{ route('packingList') }}" icon="queue-list" wire:navigate>
+                        Packing List
+                    </flux:navmenu.item> 
                     <flux:navmenu.separator />
                 </flux:navmenu>
             </flux:dropdown>
@@ -78,7 +77,10 @@
                     <flux:menu.item href="{{ route('items') }}" icon="list-bullet" wire:navigate>List items
                     </flux:menu.item>
                     <flux:menu.separator />
-                    <flux:menu.item href="{{ route('items') }}" icon="queue-list" wire:navigate>Edited items
+                    <flux:menu.item href="{{ route('items') }}/edited" icon="queue-list" wire:navigate>Edited items
+                    </flux:menu.item>
+                    <flux:menu.separator />
+                    <flux:menu.item href="{{ route('items') }}/is_new" icon="star" wire:navigate>List new items
                     </flux:menu.item>
                     <flux:menu.separator />
                     <flux:menu.item href="{{ route('parents') }}" icon="building-storefront" wire:navigate>Parents
@@ -133,46 +135,63 @@
             </flux:tooltip> --}}
         </flux:navbar>
 
-        <!-- Desktop User Menu -->
-        <flux:dropdown position="top" align="end">
-            <flux:profile class="cursor-pointer" :initials="auth()->user()->initials()" />
+<!-- Desktop User Menu -->
+<flux:dropdown position="top" align="end">
+    @auth
+        <flux:profile class="cursor-pointer" :initials="auth()->user()->initials()" />
+    @else
+        <flux:profile class="cursor-pointer" :initials="'G'" />
+    @endauth
 
-            <flux:menu>
-                <flux:menu.radio.group>
-                    <div class="p-0 text-sm font-normal">
-                        <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                            <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                <span
-                                    class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                    {{ auth()->user()->initials() }}
-                                </span>
-                            </span>
+    <flux:menu>
+        <flux:menu.radio.group>
+            <div class="p-0 text-sm font-normal">
+                <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
+                    <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                        <span
+                            class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                            @auth
+                                {{ auth()->user()->initials() }}
+                            @else
+                                G
+                            @endauth
+                        </span>
+                    </span>
 
-                            <div class="grid flex-1 text-start text-sm leading-tight">
-                                <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                            </div>
-                        </div>
+                    <div class="grid flex-1 text-start text-sm leading-tight">
+                        @auth
+                            <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
+                            <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                        @else
+                            <span class="truncate font-semibold">Guest</span>
+                            <span class="truncate text-xs">Not logged in</span>
+                        @endauth
                     </div>
-                </flux:menu.radio.group>
+                </div>
+            </div>
+        </flux:menu.radio.group>
 
-                <flux:menu.separator />
+        <flux:menu.separator />
 
-                <flux:menu.radio.group>
-                    <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}
-                    </flux:menu.item>
-                </flux:menu.radio.group>
+        @auth
+            <flux:menu.radio.group>
+                <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                    {{ __('Settings') }}
+                </flux:menu.item>
+            </flux:menu.radio.group>
 
-                <flux:menu.separator />
+            <flux:menu.separator />
 
-                <form method="POST" action="{{ route('logout') }}" class="w-full">
-                    @csrf
-                    <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                        {{ __('Log Out') }}
-                    </flux:menu.item>
-                </form>
-            </flux:menu>
-        </flux:dropdown>
+            <form method="POST" action="{{ route('logout') }}" class="w-full">
+                @csrf
+                <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
+                    {{ __('Log Out') }}
+                </flux:menu.item>
+            </form>
+        @endauth
+    </flux:menu>
+</flux:dropdown>
+
 
     </flux:header>
 
@@ -216,6 +235,23 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     @stack('scripts')
+
+    <script>
+    function renderLucideIcons() {
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", renderLucideIcons);
+
+    // Livewire 3 event after navigation (page transitions or component swaps)
+    document.addEventListener('livewire:navigated', renderLucideIcons);
+
+    // Livewire 3 event after a component is updated via wire interaction
+    document.addEventListener('livewire:updated', renderLucideIcons);
+</script>
+
 
 </body>
 

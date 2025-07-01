@@ -15,10 +15,25 @@ class OrderItems extends Component
 {
     use WithPagination;
 
-    public $catName, $cargoId, $orderNo, $masterIds, $qty_no, $currentQty;
+    public $catName;
+
+    public $cargoId;
+
+    public $orderNo;
+
+    public $masterIds;
+
+    public $qty_no;
+
+    public $currentQty;
+
     public string $search = '';
-    public string $title  = 'Order items';
-    public $param, $status;
+
+    public string $title = 'Order items';
+
+    public $param;
+
+    public $status;
 
     public function render()
     {
@@ -28,7 +43,12 @@ class OrderItems extends Component
             ->join('warehouse_items', 'warehouse_items.item_id', '=', 'items.id')
             ->join('supplier_items', 'supplier_items.item_id', '=', 'items.id')
             ->join('suppliers', 'suppliers.id', '=', 'supplier_items.supplier_id')
+            ->leftJoin('dimensions', 'dimensions.item_id', '=', 'items.id')
             ->where('supplier_items.is_default', 'Y');
+            //->where('items.is_dimension_special', 'Y')
+            //->whereNotNull('dimensions.item_id')
+           // ->get();
+       // dd($query);
 
         // Apply search (Livewire input)
         if (! empty($this->search)) {
@@ -47,8 +67,22 @@ class OrderItems extends Component
 
         // Filter by param (e.g., order number, item name, etc.)
         // Special case first
+
         if ($this->param === 'noCargo') {
             $query->whereNull('order_statuses.cargo_id');
+        } elseif ($this->param === 'specialRMBnoValue') {
+            $query->where('items.is_rmb_special', 'Y')
+                ->whereNull('order_statuses.rmb_special_price');
+
+        } elseif ($this->param === 'specialEUR_novalue') {
+            $query->where('items.is_eur_special', 'Y')
+                ->whereNull('order_statuses.eur_special_price');
+
+        } elseif ($this->param === 'specialDim_novalue') {
+            $query->where('items.is_dimension_special', 'Y')
+                ->whereNull('dimensions.item_id');
+                //->distinct();
+
         } elseif (! empty($this->param)) {
             $query->where(function ($q) {
                 $q->where('order_items.order_no', '=', "$this->param");
@@ -60,9 +94,9 @@ class OrderItems extends Component
             $query->where('order_statuses.status', $this->status);
         }
 
-        $orderItems = $query->select('order_items.id AS ID', 'order_items.order_no', 'order_items.qty', 'order_statuses.remarks_cn',
-            'order_statuses.cargo_id', 'order_statuses.status', 'order_items.remark_de', 'items.remark','order_statuses.master_id',
-            'order_statuses.qty_split', 'order_statuses.qty_label',
+        $orderItems = $query->select('order_items.id AS ID', 'items.id as item_id', 'order_items.order_no', 'order_items.qty', 'order_statuses.remarks_cn',
+            'order_statuses.cargo_id', 'order_statuses.status', 'order_items.remark_de', 'items.remark', 'order_statuses.master_id',
+            'order_statuses.qty_split', 'order_statuses.qty_label', 'order_statuses.supplier_order_id',
             'items.ean', 'supplier_items.note_cn', 'items.item_name', 'items.item_name_cn', 'supplier_items.price_rmb', 'suppliers.id AS supplierId', 'suppliers.name')
             ->orderBy('order_items.order_no', 'DESC')
             ->orderBy('items.item_name', 'ASC')
@@ -76,7 +110,7 @@ class OrderItems extends Component
 
     public function selectCargo($oNo)
     {
-        //dd($oNo);
+        // dd($oNo);
         $this->orderNo   = $oNo;
         $this->masterIds = Order_item::where('id', $this->orderNo)->pluck('master_id')->toArray();
 
@@ -99,27 +133,28 @@ class OrderItems extends Component
 
     public function splitDelivery($id)
     {
-        //$this->changId = $id;
-        $this->qty_no  = $id;
+        // $this->changId = $id;
+        $this->qty_no = $id;
         Flux::modal('edit-qty')->show();
-        $order    = Order_item::where('master_id', "$this->qty_no")->first();
-        //dd($order);
+        $order = Order_item::where('master_id', "$this->qty_no")->first();
+        // dd($order);
         $newOrder = $order->toArray();
         unset($newOrder['id']);
-        //unset($newOrder['master_id']);
+        // unset($newOrder['master_id']);
         $newOrder['master_id'] = $newOrder['master_id'] . '-1';
         $duplicateOrder        = Order_item::create($newOrder);
 
         $item = Order_status::where('master_id', "$this->qty_no")->first();
         $stat = $item->toArray();
         unset($stat['id']);
-        //unset($stat['master_id']);
+        // unset($stat['master_id']);
         $stat['master_id'] = $stat['master_id'] . '-1';
         $duplicateStat     = Order_status::create($stat);
         if ($duplicateStat) {
-            //Flux::modal('edit-qty')->close();
+            // Flux::modal('edit-qty')->close();
         }
     }
+
     public function updateQty()
     {
         $done = Order_status::where('master_id', "$this->qty_no")->first()

@@ -1,28 +1,33 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Stockvalue;
-use App\Models\WareHouse;
-use Livewire\Component;
+use App\Models\Warehouse;
 use Illuminate\Support\Facades\File;
+use Livewire\Component;
+
 class ImportWarehouse extends Component
 {
     // use exportable;
-    public $wItems, $valueDate;
+    public $wItems;
+
+    public $valueDate;
+
     public function render()
     {
-        //get the lsat date of warehouse synch from wawi.
-        //$filePath = '/var/www/html/public/wareHouseItems.csv';
-        $filePath = public_path('wareHouseItems.csv'); 
+        // get the lsat date of warehouse synch from wawi.
+        // $filePath = '/var/www/html/public/wareHouseItems.csv';
+        $filePath = public_path('wareHouseItems.csv');
 
         if (File::exists($filePath)) {
-            $this->valueDate = date("Y-m-d H:i:s", File::lastModified($filePath)); // Get last modified time
-            //dd($valueDate); 
+            $this->valueDate = date('Y-m-d H:i:s', File::lastModified($filePath)); // Get last modified time
+            // dd($valueDate);
         } else {
-            dd('no file found'); 
+            dd('no file found');
         }
 
-        $this->wItems = WareHouse::join('supplier_items', 'warehouse_items.item_id', '=', 'supplier_items.item_id')
+        $this->wItems = Warehouse::join('supplier_items', 'warehouse_items.item_id', '=', 'supplier_items.item_id')
             ->join('categories', 'warehouse_items.category_id', '=', 'categories.id') // Join with categories
             ->selectRaw('
             warehouse_items.category_id,
@@ -41,28 +46,30 @@ class ImportWarehouse extends Component
             [
 
                 'wItems' => $this->wItems,
-                'date'   => $this->valueDate,
+                'date' => $this->valueDate,
             ]
         );
     }
+
     public function importData()
     {
-        //dd('import is blocked temporary');
+        // dd('import is blocked temporary');
         if (empty($this->wItems)) {
             session()->flash('error', 'No data to import.');
+
             return;
         }
 
-        $now        = now();
+        $now = now();
         $insertData = [];
 
         foreach ($this->wItems as $data) {
             $insertData[] = [
-                'date'       => $now,
-                'category'   => $data['category_name'],
-                'rmb'        => round($data['RMB_Value'], 2), // Ensure two decimal places
-                'eur'        => round($data['EUR_Value'], 2),
-                'count'      => $data['Count'],
+                'date' => $now,
+                'category' => $data['category_name'],
+                'rmb' => round($data['RMB_Value'], 2), // Ensure two decimal places
+                'eur' => round($data['EUR_Value'], 2),
+                'count' => $data['Count'],
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
@@ -75,5 +82,4 @@ class ImportWarehouse extends Component
             session()->flash('error', 'No valid data to import.');
         }
     }
-
 }

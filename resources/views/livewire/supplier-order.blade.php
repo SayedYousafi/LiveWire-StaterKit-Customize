@@ -10,6 +10,7 @@
         <div class="flex">
             <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass"
                 placeholder="Search {{ $title }}" />
+        
         </div>
     </div>
 
@@ -32,6 +33,7 @@
     @include('partials.edit-check-problem')
     @include('partials.adjust-problem')
     @include('partials.set-special-price')
+    @include('partials.editDimentions')
 
     <table class="table-default mt-2.5">
         <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">

@@ -95,7 +95,6 @@
                         icon:trailing='arrow-right-circle' wire:click="showTable({{ $order->SUPPID }} ,'Normal')">
                         {{ $order->SUPPID }}
                     </flux:button>
-
                 </td>
                 <td>{{ $order->name }}</td>
                 <td>{{ $order->type_name }}</td>

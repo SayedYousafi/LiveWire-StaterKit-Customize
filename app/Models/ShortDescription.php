@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ShortDescription extends Model
 {
     use HasFactory;
-    protected $guarded =[];
+
+    protected $guarded = [];
+
     protected $table = 'short_descriptions';
+
     public $timestamps = true;
 }

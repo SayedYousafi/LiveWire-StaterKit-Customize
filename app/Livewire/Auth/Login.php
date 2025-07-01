@@ -42,13 +42,12 @@ class Login extends Component
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
-        if(Auth::user()->role !='admin'){
+        if (Auth::user()->role != 'admin') {
             $this->redirectIntended(default: route('so', absolute: false), navigate: true);
-        }
-        else{
+        } else {
             $this->redirectIntended(default: route('admin', absolute: false), navigate: true);
         }
-        
+
     }
 
     /**

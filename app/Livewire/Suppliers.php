@@ -5,9 +5,9 @@ namespace App\Livewire;
 use App\Models\Supplier;
 use App\Models\Supplier_type;
 use Flux\Flux;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Title;
 
 #[Title('Suppliers management')]
 class Suppliers extends Component
@@ -15,29 +15,64 @@ class Suppliers extends Component
     use WithPagination;
 
     public bool $enableEdit = false;
-    public bool $isUpdate=false;
-    
+
+    public bool $isUpdate = false;
+
     public $supplierId;
+
     public string $search = '';
+
     public string $title = 'Suppliers';
 
-    public $name, $name_cn, $company_name, $extra_note, $min_order_value, $order_type_id, $province;
-    public $is_fully_prepared, $is_tax_included, $is_freight_included, $city, $street, $full_address;
-    public $contact_person, $phone, $mobile, $email, $website;
+    public $name;
+
+    public $name_cn;
+
+    public $company_name;
+
+    public $extra_note;
+
+    public $min_order_value;
+
+    public $order_type_id;
+
+    public $province;
+
+    public $is_fully_prepared;
+
+    public $is_tax_included;
+
+    public $is_freight_included;
+
+    public $city;
+
+    public $street;
+
+    public $full_address;
+
+    public $contact_person;
+
+    public $phone;
+
+    public $mobile;
+
+    public $email;
+
+    public $website;
 
     protected array $rules = [
-        'name'           => 'required',
+        'name' => 'required',
         'contact_person' => 'required',
-        'full_address'   => 'required',
+        'full_address' => 'required',
     ];
 
     public function render()
     {
         return view('livewire.suppliers')->with([
-            'suppliers'    => Supplier::withCount('items')->search($this->search)->with('orderType')->orderBy('id')->paginate(100),
-            //'tarics' => Taric::withCount('items')->search($this->search)->paginate(25),
-            'title'        => $this->title,
-            'order_types'  => Supplier_type::all(),
+            'suppliers' => Supplier::withCount('items')->search($this->search)->with('orderType')->orderBy('id')->paginate(100),
+            // 'tarics' => Taric::withCount('items')->search($this->search)->paginate(25),
+            'title' => $this->title,
+            'order_types' => Supplier_type::all(),
         ]);
     }
 
@@ -49,6 +84,7 @@ class Suppliers extends Component
 
         if (! $created) {
             session()->flash('error', 'Something went wrong in creating new supplier');
+
             return;
         }
 
@@ -62,7 +98,7 @@ class Suppliers extends Component
         $supplier = Supplier::findOrFail($id);
 
         $this->supplierId = $id;
-        $this->isUpdate   = true;
+        $this->isUpdate = true;
         $this->fillSupplierData($supplier);
 
         Flux::modal('myModal')->show();
@@ -76,6 +112,7 @@ class Suppliers extends Component
 
         if (! $updated) {
             session()->flash('error', 'Something went wrong in updating supplier');
+
             return;
         }
 
@@ -97,7 +134,7 @@ class Suppliers extends Component
     public function cancel()
     {
         $this->isUpdate = false;
-         $this->reset();
+        $this->reset();
     }
 
     private function fillSupplierData(Supplier $supplier): void
@@ -106,7 +143,7 @@ class Suppliers extends Component
             'name', 'name_cn', 'company_name', 'extra_note', 'min_order_value',
             'order_type_id', 'province', 'is_fully_prepared', 'is_tax_included',
             'is_freight_included', 'city', 'street', 'full_address',
-            'contact_person', 'phone', 'mobile', 'email', 'website'
+            'contact_person', 'phone', 'mobile', 'email', 'website',
         ]));
     }
 
@@ -116,7 +153,7 @@ class Suppliers extends Component
             'name', 'name_cn', 'company_name', 'extra_note', 'min_order_value',
             'order_type_id', 'province', 'is_fully_prepared', 'is_tax_included',
             'is_freight_included', 'city', 'street', 'full_address',
-            'contact_person', 'phone', 'mobile', 'email', 'website'
+            'contact_person', 'phone', 'mobile', 'email', 'website',
         ])->mapWithKeys(fn ($field) => [$field => $this->{$field}])->toArray();
     }
 }

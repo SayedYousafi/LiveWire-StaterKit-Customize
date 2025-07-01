@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,6 +9,7 @@ class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory;
+
     protected $guarded = [];
 
     public function scopeSearch($query, $term)
@@ -15,8 +17,9 @@ class Order extends Model
         if (! $term) {
             return $query; // no filtering if no search term
         }
-        return $query->where('order_no', 'like', '%' . $term . '%')
-            ->orWhere('comment', 'like', '%' . $term . '%');
+
+        return $query->where('order_no', 'like', '%'.$term.'%')
+            ->orWhere('comment', 'like', '%'.$term.'%');
     }
 
     public function orderItems()
@@ -32,10 +35,9 @@ class Order extends Model
     public function getStatusCountsAttribute(): array
     {
         return $this->orderItems
-            ->filter(fn($item) => $item->status) // Only items with a related status
-            ->groupBy(fn($item) => $item->status->status)
-            ->map(fn($group) => $group->count())
+            ->filter(fn ($item) => $item->status) // Only items with a related status
+            ->groupBy(fn ($item) => $item->status->status)
+            ->map(fn ($group) => $group->count())
             ->toArray();
     }
-
 }

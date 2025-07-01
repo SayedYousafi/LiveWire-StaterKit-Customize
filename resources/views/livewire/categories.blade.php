@@ -67,7 +67,7 @@
                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
 
                     <td class="px-2 py-1">
-                        {{ $category->id }}
+                        {{ $category->id }} <a href="{{ route('items') }}/categoryID-{{$category->id}}"class="text-bold text-blue-700 hover:text-underline">  ({{ $category->items_count }})</a>
                     </td>
                     <td class="px-2 py-1">
                         {{ $category->name }}

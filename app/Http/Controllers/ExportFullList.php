@@ -14,6 +14,7 @@ class ExportFullList extends Controller
         $parentId = $request->input('parent_id');
 
         date_default_timezone_set('Europe/Berlin');
+
         $query = Parents::join('items', 'parents.id', '=', 'items.parent_id')
             ->join('variation_values', 'items.id', '=', 'variation_values.item_id')
             ->join('supplier_items', 'items.id', '=', 'supplier_items.item_id')
@@ -25,40 +26,36 @@ class ExportFullList extends Controller
             ])
             ->where('supplier_items.is_default', '=', 'Y');
 
-        // Apply export type filters
+        // Export filters
         switch ($exportType) {
             case 'updated':
                 $query->whereNotNull('items.updated_at')
                     ->whereColumn('items.synced_at', '<=', 'items.updated_at');
                 break;
-
             case 'isNew':
                 $query->where('items.is_new', '=', 'Y');
                 break;
-
-                // 'all' type does not require extra filters
         }
 
-        // Apply parent ID filter if needed
         if ($parentId) {
             $query->where('parents.id', '=', $parentId);
         }
 
-        // Clone the query for validation, then validate ShippingClass
-        if ($this->hasInvalidShippingClass(clone $query)) {
-            session()->flash('error', 'Cannot Export, There are some items where ShippingClass is NA!');
+        // Apply filtering based on shipping class
+        $result        = $this->filterValidShippingRecords(clone $query);
+        $records       = collect($result['valid'])->sortBy('item_id');
+        $excludedCount = $result['invalid_count'];
+
+        if ($records->isEmpty()) {
+            session()->flash('error', 'No valid records found for export.');
             return redirect()->back();
         }
 
-        $query->orderBy('items.id');
-        $records = $query->get();
+        // Optional flash message (remove redirect so export proceeds)
+        session()->flash('success', "Exported successfully. {$excludedCount} record(s) were excluded due to invalid shipping class.");
+        // return redirect()->back(); <-- Commented out to allow export to proceed
 
-        // Handle empty result
-        if ($records->isEmpty()) {
-            dd('No records found');
-        }
-
-        // Post-processing actions based on export type
+        // Mark items as exported if needed
         if ($exportType === 'isNew') {
             $this->updateExportedStatus($records->pluck('item_id')->toArray());
         }
@@ -67,7 +64,6 @@ class ExportFullList extends Controller
             $this->synced_at($records->pluck('ean')->toArray());
         }
 
-        // Determine filename
         $filenamePrefix = match ($exportType) {
             'updated' => 'updated_Item_List_',
             'isNew' => 'Export_NewItems_',
@@ -77,10 +73,10 @@ class ExportFullList extends Controller
         $filename = $filenamePrefix . date('Y-m-d_H-i-s') . '.csv';
 
         $headers = [
-            "Content-Type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=\"$filename\"",
-            "Pragma"              => "no-cache",
-            "Expires"             => "0",
+            'Content-Type'        => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+            'Pragma'              => 'no-cache',
+            'Expires'             => '0',
         ];
 
         $columns = [
@@ -219,7 +215,7 @@ class ExportFullList extends Controller
                 $SPdeNET1000 = $SPdeNET(1000);
                 $SPdeNET2000 = $SPdeNET(2000);
 
-// Calculated Shipping Weight
+                // Calculated Shipping Weight
                 $shipping_weight = (($SW / 100) * $Weight) + $Weight;
                 fputcsv($file, [
                     $record->item_id ?? '',                                          // ID
@@ -282,18 +278,18 @@ class ExportFullList extends Controller
                     number_format($SPdeNET2000 ?? 0, 2, '.', ''),                    // SP DE NET 2000
                     2, 5, 10, 25, 50, 100, 200, 500, 1000, 2000, 0,                  // Fixed Columns
                     $record->photo,
-                    "R:\\205.5_x_Product_pictures\\MIS_shop_by_EAN\\" . ($record->pix_path ?? ''),            // Image Path EAN
-                    "R:\\205.5_x_Product_pictures\\MIS_ebay_by_ItemID_DE\\" . ($record->pix_path_eBay ?? ''), // Image Path eBay
+                    'R:\\205.5_x_Product_pictures\\MIS_shop_by_EAN\\' . ($record->pix_path ?? ''),            // Image Path EAN
+                    'R:\\205.5_x_Product_pictures\\MIS_ebay_by_ItemID_DE\\' . ($record->pix_path_eBay ?? ''), // Image Path eBay
                     10000,                                                                                    // Max Quantity
                 ]);
             }
 
             fclose($file);
         };
-
-        return Response::stream($callback, 200, $headers);
-
+        session()->flash('success', "Exported successfully. {$excludedCount} record(s) were excluded due to invalid shipping class.");
+        return Response::stream($callback, 200, $headers);        
     }
+
     public function synced_at($itemIds)
     {
         date_default_timezone_set('Europe/Berlin');
@@ -309,7 +305,7 @@ class ExportFullList extends Controller
     // Function to update 'exported' column after successful export
     public function updateExportedStatus($itemIds)
     {
-        //dd($itemIds);
+        // dd($itemIds);
         Item::whereIn('id', $itemIds)->update(['is_new' => 'N']);
     }
 
@@ -327,6 +323,30 @@ class ExportFullList extends Controller
         }
 
         return false; // Continue export if no issues
+    }
+
+    private function filterValidShippingRecords($query)
+    {
+        $records = (clone $query)->get();
+
+        $validRecords = [];
+        $invalidCount = 0;
+
+        foreach ($records as $record) {
+            $shippingClass = ShippingClass($record->weight, $record->length, $record->width, $record->height);
+
+            if ($shippingClass === 'Na') {
+                $invalidCount++;
+                continue; // Skip this record
+            }
+
+            $validRecords[] = $record;
+        }
+
+        return [
+            'valid'         => $validRecords,
+            'invalid_count' => $invalidCount,
+        ];
     }
 
     // function to export confirms items

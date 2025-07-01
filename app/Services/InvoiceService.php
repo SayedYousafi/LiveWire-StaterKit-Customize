@@ -14,6 +14,7 @@ class InvoiceService
             ->join('customers', 'cargos.customer_id', '=', 'customers.id')
             ->join('order_statuses', 'order_statuses.cargo_id', '=', 'cargos.id')
             ->join('order_items', 'order_items.master_id', '=', 'order_statuses.master_id')
+           
             ->where('order_statuses.status', '!=', 'Invoiced')
             ->select(
                 'cargos.cargo_no',
@@ -37,8 +38,9 @@ class InvoiceService
             ->join('tarics', 'tarics.id', '=', 'items.taric_id')
             ->join('order_statuses', 'order_statuses.master_id', '=', 'order_items.master_id')
             ->join('cargos', 'cargos.id', '=', 'order_statuses.cargo_id')
-            ->join('cargo_types','cargo_types.id','=','cargos.cargo_type_id')
+            ->join('cargo_types', 'cargo_types.id', '=', 'cargos.cargo_type_id')
             ->join('customers', 'cargos.customer_id', '=', 'customers.id')
+            ->leftJoin('dimensions','dimensions.status_id','=','order_statuses.id')
             ->where('supplier_items.is_default', '=', 'Y')
             ->where('order_statuses.status', '!=', 'Invoiced');
     }
@@ -60,7 +62,12 @@ class InvoiceService
             'cargos.*',
             'customers.*',
             'cargo_types.cargo_type',
-            'order_statuses.id as sqrID'
+            'order_statuses.id as sqrID',
+            'dimensions.length AS dlength',
+            'dimensions.width AS dwidth',
+            'dimensions.height AS dheight',
+            'dimensions.weight AS dweight',
+            'dimensions.dimqty AS dimqty',
         ];
     }
 
@@ -107,7 +114,7 @@ class InvoiceService
                 ->orderBy('order_statuses.set_taric_code', 'ASC')
                 ->orderBy('tarics.name_en', 'ASC')
                 ->groupBy(
-                    DB::raw("CASE WHEN items.taric_id = 48 THEN order_statuses.taric_id ELSE tarics.id END"),
+                    DB::raw('CASE WHEN items.taric_id = 48 THEN order_statuses.taric_id ELSE tarics.id END'),
                     'order_statuses.set_taric_code',
                     'tarics.name_en'
                 );

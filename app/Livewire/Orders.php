@@ -1,24 +1,34 @@
 <?php
+
 namespace App\Livewire;
 
-use DB;
-use Flux\Flux;
 use App\Models\Cargo;
-use App\Models\Order;
-use Livewire\Component;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Order_item;
 use App\Models\Order_status;
-use Livewire\WithPagination;
+use Flux\Flux;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithPagination;
+
 #[Title('Orders')]
 class Orders extends Component
 {
     use WithPagination;
 
-    public $catName, $cargoId, $orderNo, $masterIds;
+    public $catName;
+
+    public $cargoId;
+
+    public $orderNo;
+
+    public $masterIds;
+
     public string $search = '';
-    public string $title  = 'Orders';
+
+    public string $title = 'Orders';
 
     public function render()
     {
@@ -36,15 +46,15 @@ class Orders extends Component
 
         $counts = [
             'totalItemOrders' => Order_item::count(),
-            'openOrders'      => $statusCounts['NSO'] ?? 0,
-            'problemOrders'   => ($statusCounts['P_Problem'] ?? 0) + ($statusCounts['C_Problem'] ?? 0),
-            'checkOrders'     => $statusCounts['Checked'] ?? 0,
-            'orderOrders'     => $statusCounts['SO'] ?? 0,
-            'printOrders'     => $statusCounts['Printed'] ?? 0,
-            'purchaseOrders'  => $statusCounts['Purchased'] ?? 0,
-            'shippedOrders'   => $statusCounts['Shipped'] ?? 0,
-            'paidOrders'      => $statusCounts['Paid'] ?? 0,
-            'invoicedOrders'  => $statusCounts['Invoiced'] ?? 0,
+            'openOrders' => $statusCounts['NSO'] ?? 0,
+            'problemOrders' => ($statusCounts['P_Problem'] ?? 0) + ($statusCounts['C_Problem'] ?? 0),
+            'checkOrders' => $statusCounts['Checked'] ?? 0,
+            'orderOrders' => $statusCounts['SO'] ?? 0,
+            'printOrders' => $statusCounts['Printed'] ?? 0,
+            'purchaseOrders' => $statusCounts['Purchased'] ?? 0,
+            'shippedOrders' => $statusCounts['Shipped'] ?? 0,
+            'paidOrders' => $statusCounts['Paid'] ?? 0,
+            'invoicedOrders' => $statusCounts['Invoiced'] ?? 0,
         ];
 
         $query = Order::query()
@@ -55,37 +65,39 @@ class Orders extends Component
 
         if ($this->catName) {
             $query->where('category_id', $this->catName);
-            }
+        }
 
         $orders = $query->paginate(100);
+
         return view('livewire.orders', array_merge($counts, [
             'orders' => $orders,
-            'title'  => $this->title,
-            'categories' => Category::pluck('name','de_cat'),
-            'cargos' => Cargo::where('cargo_status', 'Open')->pluck('cargo_no','id'),
+            'title' => $this->title,
+            'categories' => Category::pluck('name', 'de_cat'),
+            'cargos' => Cargo::where('cargo_status', 'Open')->pluck('cargo_no', 'id'),
         ]));
     }
 
     public function selectCargo($oNo)
     {
-        //dd($oNo);
+        // dd($oNo);
         $this->orderNo = $oNo;
         $this->masterIds = Order_item::where('order_no', "$this->orderNo")->pluck('master_id')->toArray();
-        //dd($this->masterIds);
-        //$this->cargoId = $this->masterIds['0']->first();
+        // dd($this->masterIds);
+        // $this->cargoId = $this->masterIds['0']->first();
         Flux::modal('myModal')->show();
     }
+
     public function changeCargo()
     {
-    date_default_timezone_set('Europe/Berlin');
-        
+        date_default_timezone_set('Europe/Berlin');
+
         Order_status::whereIn('master_id', $this->masterIds)
             ->update([
-                'cargo_id' => $this->cargoId,  
-                'cargo_date' => now(),  
+                'cargo_id' => $this->cargoId,
+                'cargo_date' => now(),
             ]);
 
-        session()->flash('success', 'Cargo assigned successfully.');;
+        session()->flash('success', 'Cargo assigned successfully.');
         Flux::modal('myModal')->close();
     }
 }

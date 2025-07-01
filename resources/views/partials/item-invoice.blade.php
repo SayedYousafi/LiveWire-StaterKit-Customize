@@ -1,7 +1,7 @@
 <div class="table-default overflow-y-auto">
-  <table class="table-nested">
-    <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800">
-      <tr class="table-highlighted">
+    <table class="table-nested">
+        <thead class="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800">
+            <tr class="table-highlighted">
                 <th>ID</th>
                 <th>EAN</th>
                 <th>Item Name</th>
@@ -15,13 +15,14 @@
                 <th>QTY</th>
                 <th>RMB</th>
                 <th>EK</th>
-               
             </tr>
         </thead>
         @php
         $totalQty = 0;
         $grandTotal = 0;
-        $volum = 0;
+        //$volum = 0;
+        $Tvolum = 0;
+        //$weight = 0;
         $Tweight = 0;
         // Cache for tariff lookups (only used when code is '0000000000')
         $tariffCache = [];
@@ -29,31 +30,51 @@
         <tbody>
             @foreach ($invoiceItems as $item)
             @php
+
             // Gather all numeric quantities
             $allQuantities = collect([
-            is_numeric($item->qty_split) ? $item->qty_split : null,
-            is_numeric($item->qty) ? $item->qty : null,
-            is_numeric($item->qty_label) ? $item->qty_label : null,
-            ])->reject(fn($q) => $q === null);
+            $item->qty_split,
+            $item->qty,
+            $item->qty_label,
+
+            ])->filter(fn($q) => is_numeric($q) && $q > 0);
 
             // Get unique values for display
             $quantities = $allQuantities->unique()->values();
             $displayQty = $quantities->implode('/');
 
-            // Get the first available numeric quantity for math
+            // Get the first available numeric quantity for calculations
             $numericQty = $allQuantities->first() ?? 0;
 
             // Accumulate totals
             $totalQty += $numericQty;
             $grandTotal += $numericQty * $item->price_rmb;
 
-            $width = $item->width;
-            $height = $item->height;
-            $length = $item->length;
-            $weight = $item->weight * $numericQty;
+            // Calculate volume and total weight
+        if ($item->is_dimension_special == 'N') {
 
-            $volum += ($width * $height * $length) * $numericQty;
-            $Tweight += $weight;
+        $width = floatval($item->width ?? 0);
+        $height = floatval($item->height ?? 0);
+        $length = floatval($item->length ?? 0);
+        $weight = floatval($item->weight ?? 0) * $numericQty;
+
+        $volum = ($width * $height * $length) * $numericQty;
+        $Tvolum += $volum;
+        $Tweight += $weight;
+        }
+        else {
+
+        $width = floatval($item->dwidth ?? 0);
+        $height = floatval($item->dheight ?? 0);
+        $length = floatval($item->dlength ?? 0);
+        $dimqty = (float) ($item->dimqty ?? 0);
+        // take care of zero or null dimqty
+        $weight = $dimqty != 0 ? floatval($item->dweight ?? 0) * $numericQty / $dimqty : 0;
+        $Tweight += $weight;
+
+        $volum = ($dimqty != 0) ? ($width * $height * $length) * ($numericQty / $dimqty) : 0;
+        $Tvolum += $volum;
+        }
             @endphp
 
             <tr @if(str_contains($item->master_id, '-1')) class="bg-blue-100 dark:bg-blue-900" @else wire:key="{{
@@ -69,7 +90,8 @@
                     <flux:button size="sm" icon='arrow-path' class="bg-indigo-600! text-white! hover:bg-indigo-500"
                         wire:click="reAssign('{{ $item->master_id }}')">ReAssign</flux:button>
                 </td>
-                <td>{{ $item->ean }}</td>
+                {{-- <td>{{ $item->ean }}</td> --}}
+                <td><a href="{{ route('itemEdit', $item->item_id) }}" target="_blank">{{ $item->ean }}</a></td>
 
                 @if ($item->code === '0000000000')
                 <td>{{ $item->item_name }}</td>
@@ -100,10 +122,11 @@
                 <td>{{ $item->order_no }}</td>
                 <td>{{ $item->supplier_order_id }}</td>
                 <td>{{ $item->status }}</td>
-                <td>{{ formatDecimal((($width * $height * $length) * $qty) / 1000) }}</td>
-                <td>{{ $weight }}</td>
-                <td>{{ $displayQty }}</td>
-                
+                {{-- <td>{{ formatDecimal((($width * $height * $length) * $qty) / 1000) }}</td> --}}
+                <td>{{ formatDecimal($volum/1000) }}</td>
+                <td>{{ formatDecimal($weight) }}</td>
+                <td>{{ $displayQty }} </td>
+
                 @php $price = $item->is_rmb_special == 'Y' ? $item->rmb_special_price : $item->price_rmb; @endphp
                 <td class=" {{ $item->is_rmb_special == 'Y' ? 'bg-yellow-300 dark:bg-yellow-700' : '' }}">
                     {{ $price }}@if($item->is_rmb_special == 'Y')<sup>*</sup>@endif
@@ -143,20 +166,16 @@
                 @endif
             </div>
             <tr class="mt-3 mb-3">
-                <td colspan="15" class="text-center  bg-gray-50 dark:bg-gray-800">
+                <td colspan="15" class="text-center  !bg-gray-50 dark:!bg-gray-800" align="center">
                     <b>SET EUR PRICE HERE</b>
                     <div class="my-2">
-                        <label for="eur_special_price">EUR Special Price:</label>
-                        <input type="number" wire:model="eur_special_price"
-                            class="border rounded  dark:bg-gray-700 dark:border-gray-600">
-                        @error('eur_special_price')
-                        <div class="text-red-500 text-sm mt-1">{{ $message }}</div>
-                        @enderror
+                        <flux:input type="number" wire:model="eur_special_price" label="EUR Special Price"/>
+
                     </div>
                     <div class="space-x-2">
                         <flux:button size="sm" icon='x-circle' wire:click="cancel">Cancel</flux:button>
                         <flux:button size="sm" icon="currency-euro"
-                            class="bg-green-600! text-white! hover:bg-green-500!" wire:click="eurSpecialPrice">Set Price
+                            class="!bg-green-600 !text-white hover:!bg-green-500" wire:click="eurSpecialPrice">Set Price
                         </flux:button>
                     </div>
                 </td>
@@ -167,8 +186,8 @@
         <tfoot class="bg-gray-100 dark:bg-gray-900 font-semibold">
             <tr>
                 <td colspan="8">Grand</td>
-                <td>{{ formatDecimal($volum / 1000) }}</td>
-                <td>{{ $Tweight }}</td>
+                <td>{{ formatDecimal($Tvolum / 1000) }}</td>
+                <td>{{ formatDecimal($Tweight) }}</td>
                 <td>{{ $totalQty }}</td>
             </tr>
         </tfoot>

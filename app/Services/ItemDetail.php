@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
@@ -19,8 +20,8 @@ class ItemDetail
                 'parents.*',
                 'parents.name_de as de_name',
                 'parents.name_de as en_name',
-                 'tarics.*', 'items.*', 'items.id as ItemID',
-                'categories.*', 'categories.name as cat_name','variation_values.*',
+                'tarics.*', 'items.*', 'items.id as ItemID',
+                'categories.*', 'categories.name as cat_name', 'variation_values.*',
                 'supplier_items.*', 'suppliers.*', 'warehouse_items.*'
             )
             ->where('items.id', $id)

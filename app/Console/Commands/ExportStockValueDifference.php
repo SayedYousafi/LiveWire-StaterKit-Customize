@@ -1,13 +1,15 @@
 <?php
+
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Stockvalue;
+use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
 class ExportStockValueDifference extends Command
 {
     protected $signature = 'export:stock-difference';
+
     protected $description = 'Export monthly stock value difference to CSV';
 
     public function handle()
@@ -21,7 +23,7 @@ class ExportStockValueDifference extends Command
             ->limit(1)
             ->get();
 
-        $filePath = storage_path('app/exports/WarehouseValueDifference_' . now()->format('Y-m-d') . '.csv');
+        $filePath = storage_path('app/exports/WarehouseValueDifference_'.now()->format('Y-m-d').'.csv');
         $file = fopen($filePath, 'w');
         fputcsv($file, ['Month', 'Difference']);
 

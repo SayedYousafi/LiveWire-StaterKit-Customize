@@ -11,12 +11,19 @@ use Livewire\Component;
 class Categories extends Component
 {
     public bool $enableEdit = false;
-    public bool $isUpdate=false;
-    public $name, $is_ignored_value,  $categoryId;
+
+    public bool $isUpdate = false;
+
+    public $name;
+
+    public $is_ignored_value;
+
+    public $categoryId;
+
     public function render()
     {
         return view('livewire.categories')->with([
-            'categories' => Category::all(),
+            'categories' => Category::withCount('items')->get(),
         ]);
     }
 
@@ -27,8 +34,7 @@ class Categories extends Component
             'is_ignored_value' => 'required',
         ]);
         $done = Category::create($validated);
-        if($done)
-        {
+        if ($done) {
             session()->flash('success', 'Category added successfully !');
             Flux::modal('myModal')->close();
         }
@@ -52,8 +58,7 @@ class Categories extends Component
             'is_ignored_value' => 'required',
         ]);
         $done = Category::where('id', $this->categoryId)->update($validated);
-        if($done)
-        {
+        if ($done) {
             session()->flash('success', 'Category updated successfully !');
             Flux::modal('myModal')->close();
         }
@@ -65,16 +70,16 @@ class Categories extends Component
     {
         dd($id);
         $category = Category::findOrFail($id);
-        $done= $category->delete();
-        if($done){
+        $done = $category->delete();
+        if ($done) {
             session()->flash('success', 'Category deleted successfully !');
-        }   
+        }
     }
 
-      public function cancel()
+    public function cancel()
     {
         $this->isUpdate = false;
         $this->enableEdit = false;
-         $this->reset();
+        $this->reset();
     }
 }

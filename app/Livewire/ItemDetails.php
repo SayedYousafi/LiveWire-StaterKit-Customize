@@ -2,13 +2,13 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Services\ItemDetail;
+use Livewire\Component;
 
 class ItemDetails extends Component
 {
     public $itemId;
-    
+
     protected ItemDetail $ItemDetail;
 
     public function boot(ItemDetail $ItemDetail)
@@ -18,8 +18,9 @@ class ItemDetails extends Component
 
     public function render()
     {
-         $item = $this->ItemDetail->getItemDetial($this->itemId);
-         //dd($item);
+        $item = $this->ItemDetail->getItemDetial($this->itemId);
+
+        // dd($item);
         return view('livewire.item-details')->with([
             'itemDetail' => $item,
         ]);

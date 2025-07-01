@@ -2,6 +2,7 @@
 namespace App\Livewire;
 
 use App\Models\Confirm;
+use App\Models\Dimension;
 use App\Models\Item;
 use App\Models\Order_status;
 use App\Models\Supplier;
@@ -19,16 +20,86 @@ use Livewire\WithPagination;
 class SupplierOrder extends Component
 {
     use WithPagination;
+
     public $itemOrders = [];
 
-    public $cargoId, $orderNo, $masterIds, $supplierId, $tableId, $terms;
-    public $order_type_id, $npr_remark, $selectedSupplierName, $supplier_id;
-    public $probNo, $checkNo, $chkDetails, $purchaseDetails = false, $purchaseDetailsNo, $editDetails, $chkDetailsNo, $m_id, $count_item, $count_purchased;
-    public $ref_no, $supplierOrderId, $item_ID, $txtProblem, $problemId, $problemType, $checkId;
-    public $currentQty, $qtyIdForChange, $remarks_cn, $remark, $newStatus, $qty, $SOID;
+    public $cargoId;
+
+    public $orderNo;
+
+    public $masterIds;
+
+    public $supplierId;
+
+    public $tableId;
+
+    public $terms;
+
+    public $order_type_id;
+
+    public $npr_remark;
+
+    public $selectedSupplierName;
+
+    public $supplier_id;
+
+    public $probNo;
+
+    public $checkNo;
+
+    public $chkDetails;
+
+    public $purchaseDetails = false;
+
+    public $purchaseDetailsNo;
+
+    public $editDetails;
+
+    public $chkDetailsNo;
+
+    public $m_id;
+
+    public $count_item;
+
+    public $count_purchased;
+
+    public $ref_no;
+
+    public $supplierOrderId;
+
+    public $item_ID;
+
+    public $txtProblem;
+
+    public $problemId;
+
+    public $problemType;
+
+    public $checkId;
+
+    public $currentQty;
+
+    public $qtyIdForChange;
+
+    public $remarks_cn;
+
+    public $remark;
+
+    public $newStatus;
+
+    public $qty;
+
+    public $SOID;
+
     public string $search = '';
-    public string $title  = 'Suppler Orders';
-    public $param, $status;
+
+    public string $title = 'Suppler Orders';
+
+    public $param;
+
+    public $status;
+
+    public $statusId, $ean, $item_id, $weight, $length, $width, $height;
 
     protected OrderItemService $orderItemService;
 
@@ -59,7 +130,7 @@ class SupplierOrder extends Component
     public function refreshItemOrders()
     {
         $items = $this->orderItemService->getItemOrders($this->supplierId)->get();
-        //dd($items);
+        // dd($items);
         $this->itemOrders        = $items;
         $this->count_item        = $items->count();
         $this->count_purchased   = $items->where('status', 'Purchased')->count();
@@ -89,6 +160,7 @@ class SupplierOrder extends Component
         Flux::modal('edit-so')->show();
 
     }
+
     public function updateSO()
     {
         Supplier_order::where('id', $this->supplierOrderId)
@@ -115,24 +187,24 @@ class SupplierOrder extends Component
     public function payOrder($id)
     {
         $items = $this->orderItemService->getItemOrders($id)->get();
-        //dd($items);
+        // dd($items);
         $allPurchased = true;
         foreach ($items as $item) {
             if ($item->price_rmb == '0' || $item->price_rmb == '') {
                 session()->flash('error', 'there are items with zero RMB Price !!!');
                 break;
-            } elseif ($item->status !== "Purchased") {
+            } elseif ($item->status !== 'Purchased') {
                 $allPurchased = false;
-                //dd($allPurchased);
+                // dd($allPurchased);
                 session()->flash('error', 'Some ordered item(s) are not yet Purchased or are in diffrent status !!!');
                 break; // Exit the loop early if any item is not purchases
-            } elseif ($item->status === "Paid") {
+            } elseif ($item->status === 'Paid') {
                 session()->flash('success', 'Already Paid !!!');
             }
 
             if ($allPurchased) {
                 // make it all paid
-                //dd('good to go for payment');
+                // dd('good to go for payment');
                 Order_status::where('supplier_order_id', $id)->update(
                     [
                         'status' => 'Paid',
@@ -146,12 +218,15 @@ class SupplierOrder extends Component
         }
         $this->refreshItemOrders();
     }
+
     public function cancel()
     {
         $this->tableId           = '';
         $this->purchaseDetails   = false;
         $this->purchaseDetailsNo = '';
+        Flux::modal('itemDimentions')->close();
     }
+
     public function setBackSO($id)
     {
         Order_status::where('master_id', "$id")->update(
@@ -170,7 +245,7 @@ class SupplierOrder extends Component
                     ->whereColumn('order_statuses.supplier_order_id', 'supplier_orders.id');
             })
             ->delete();
-        //session()->flash('success', 'Supplier order set back to NSO successfully !');
+        // session()->flash('success', 'Supplier order set back to NSO successfully !');
         $this->refreshItemOrders();
     }
 
@@ -182,13 +257,14 @@ class SupplierOrder extends Component
         $this->remarks_cn     = $qtyToChange->remarks_cn;
         Flux::modal('edit-qty')->show();
     }
+
     public function updateQty()
     {
         $this->validate([
             'currentQty' => 'required',
             'remarks_cn' => 'required',
         ]);
-        //\Log::info('updateQty called with qty: ' . $this->qty . ' and remarks: ' . $this->remarks_cn); // Debugging line
+        // \Log::info('updateQty called with qty: ' . $this->qty . ' and remarks: ' . $this->remarks_cn); // Debugging line
         Order_status::where('id', $this->qtyIdForChange)->update(
             [
                 'qty_label'  => $this->currentQty,
@@ -202,7 +278,7 @@ class SupplierOrder extends Component
 
     public function openDetails($id)
     {
-        //dd($id);
+        // dd($id);
         $this->purchaseDetailsNo = $id;
         $this->purchaseDetails   = true;
         $this->probNo            = null;
@@ -235,7 +311,7 @@ class SupplierOrder extends Component
     public function setNprRemark($itemID)
     {
         date_default_timezone_set('Europe/Berlin');
-        //dd($itemID);
+        // dd($itemID);
         Item::where('id', "$itemID")->update(
             [
                 'is_npr'     => 'Y',
@@ -253,6 +329,7 @@ class SupplierOrder extends Component
         $this->ref_no          = $so->ref_no;
         Flux::modal('edit-refNo')->show();
     }
+
     public function updateRefNo()
     {
 
@@ -271,17 +348,19 @@ class SupplierOrder extends Component
         Flux::modal('edit-refNo')->close();
         $this->refreshItemOrders(); // Fetch items again for next operation
     }
+
     public function openCheck($id)
     {
-        //dd('Hi', $id);
+        // dd('Hi', $id);
         $this->chkDetailsNo = $id;
         $this->chkDetails   = true;
         $this->probNo       = null;
 
     }
+
     public function checkDetails($id)
     {
-        //dd($id, 'checking strats here');
+        // dd($id, 'checking strats here');
         Order_status::where('master_id', $id)->update(
             [
                 'status' => 'Checked',
@@ -314,6 +393,7 @@ class SupplierOrder extends Component
         $this->refreshItemOrders();
 
     }
+
     public function cProblem($id)
     {
         $this->checkId    = $id;
@@ -340,7 +420,7 @@ class SupplierOrder extends Component
     {
         $this->m_id = $m_id;
         $edit       = Order_status::where('id', $m_id)->first();
-        //dd($edit);
+        // dd($edit);
         $this->newStatus   = $edit->status;
         $this->problemType = $edit->status;
         $this->remark      = $edit->problems;
@@ -349,13 +429,15 @@ class SupplierOrder extends Component
         $this->remarks_cn  = $edit->remarks_cn;
         Flux::modal('adjust-problem')->show();
 
-        //dd($this->m_id , 'waiting for Joschua Busniss logic');
+        // dd($this->m_id , 'waiting for Joschua Busniss logic');
     }
+
     public function editProblem()
     {
         // Check if the m_id is empty and show an error message
         if (empty($this->m_id)) {
             session()->flash('error', 'You need to refresh your page!');
+
             return; // Stop further execution if there's no m_id
         }
 
@@ -388,7 +470,10 @@ class SupplierOrder extends Component
         $this->refreshItemOrders();
     }
 
-    public $priceId, $rmb_special_price;
+    public $priceId;
+
+    public $rmb_special_price;
+
     public function specialPriceSelected($id)
     {
         $this->priceId           = $id;
@@ -396,6 +481,7 @@ class SupplierOrder extends Component
         $this->rmb_special_price = $rmb->rmb_special_price;
         Flux::modal('edit-price')->show();
     }
+
     public function setSpecialPrice()
     {
         $this->validate(['rmb_special_price' => 'required|gte:0|lte:9999']);
@@ -405,6 +491,40 @@ class SupplierOrder extends Component
         session()->flash('success', 'Special price set successfully !');
         Flux::modal('edit-price')->close();
         $this->rmb_special_price = '';
+    }
+
+    public function dimensions($id, $ean, $item_id)
+    {
+        $this->statusId = $id;
+        $this->ean   = $ean;
+        $this->item_id   = $item_id;
+        $dim            = Dimension::where('status_id', $id)->first();
+
+        $this->weight   = $dim->weight ?? '';
+        $this->length   = $dim->length ?? '';
+        $this->width    = $dim->width ?? '';
+        $this->height   = $dim->height ?? '';
+        $this->qty      = $dim->dimqty ?? '';
+
+        Flux::modal('itemDimentions')->show();
+    }
+
+    public function update()
+    {
+        Dimension::updateOrCreate(
+            ['status_id' => $this->statusId],
+            [
+                'item_id' => $this->item_id,
+                'weight'  => $this->weight,
+                'length'  => $this->length,
+                'width'   => $this->width,
+                'height'  => $this->height,
+                'dimqty'  => $this->qty,
+            ]
+        );
+
+        session()->flash('success', 'Item dimensions updated successfully!');
+        Flux::modal('itemDimentions')->close();
     }
 
 }

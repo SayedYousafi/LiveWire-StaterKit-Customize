@@ -35,6 +35,7 @@
                 <th>Remarks</th>
                 <th>Status</th>
                 <th>Cargo</th>
+                <th>SOID</th>
                 <th colspan="2">Actions</th>
             </tr>
 
@@ -57,7 +58,7 @@
             @endphp
             <tr wire:key="{{ $order->ID }}" >
                 <td>{{ $loop->iteration }}</td>
-                <td>{{ $order->ean }}</td>
+                <td><a href="{{ route('itemEdit', $order->item_id) }}" target="_blank" class="!text-blue-600 hover:!underline">{{ $order->ean }}</a> </td>
                 <td class="text-left! whitespace-normal break-words">{{ $order->item_name }}
                     / {{ $order->item_name_cn }}
                 </td>
@@ -71,6 +72,7 @@
                 </td>
                 <td>{{ $order->status }}</td>
                 <td>{{ $order->cargo_id }}</td>
+                <td>{{ $order->supplier_order_id }}</td>
                 <td>
                     <flux:button size="sm" icon='share' class="bg-yellow-600! text-white! hover:bg-yellow-500"
                     wire:confirm='Are you sure spliting this?' wire:click="splitDelivery('{{ $order->master_id }}')">
@@ -82,15 +84,7 @@
                     class=" bg-gray-500! hover:bg-gray-400! text-white!"
                     size='sm' icon='arrow-uturn-left'>ReAssign</flux:button></td>
             </tr>
-            {{-- @if ($qty_no == $order->master_id)
-            <tr>
-                <td colspan="14" class="text-center  bg-gray-50 dark:bg-gray-800">
-                    <b>Change QTY for EAN: {{ $order->ean }}</b><br>
-                   
-                     @include('partials.edit-qty')
-                </td>
-            </tr>
-            @endif --}}
+
             @empty
             <tr>
                 <td colspan="19">No records found</td>

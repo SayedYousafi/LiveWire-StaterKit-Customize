@@ -101,6 +101,9 @@
               <td><strong>SHIP TO:</strong></td>
             </tr>
             <tr>
+              <td>{{ $item->delivery_company_name  }}</td>
+            </tr>
+            <tr>
               <td>{{ $item->delivery_address_line1 }}</td>
             </tr>
             <tr>
@@ -113,7 +116,7 @@
               <td> {{  $item->delivery_country }} </td>
             </tr>
             <tr>
-              <td>{{ $item->contact_phone }}</td>
+              <td>{{ $item->delivery_contact_phone }}</td>
             </tr>
           </table>
         </td>
@@ -242,6 +245,12 @@
           <td nowrap="nowrap">
             <pre>{{ $data->filter(fn($item) => !is_null($item->REMARK))->first()->REMARK ?? 'No remark available' }}
           </pre>
+          </td>
+        </tr>
+        <tr>
+          <td></td><td></td>
+          <td colspan="5">
+            We hereby confirm that no raw material from Russia were used <br> in the production of the goods mentioned in this invoice.
           </td>
         </tr>
       </tbody>

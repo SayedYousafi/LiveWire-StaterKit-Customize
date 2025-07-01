@@ -67,11 +67,11 @@
                     <a href="{{ url('export') }}" class="text-blue-600 hover:underline flex items-center gap-2">
                         <i data-lucide="list-checks" class="w-4 h-4"></i>Export Full items list
                     </a>
-                        <a href="{{ url('export/isNew') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                    <a href="{{ url('export/isNew') }}" class="text-blue-600 hover:underline flex items-center gap-2">
                         <i data-lucide="list-checks" class="w-4 h-4"></i>Export New items list
                     </a>
                     <a href="{{ url('export/updated') }}" class="text-blue-600 hover:underline flex items-center gap-2">
-                        <i data-lucide="users" class="w-4 h-4"></i> Exported updated item list
+                        <i data-lucide="users" class="w-4 h-4"></i> Export updated item list
                     </a>
                     <a href="{{ url('confirmed') }}" class="text-blue-600 hover:underline flex items-center gap-2">
                         <i data-lucide="list-checks" class="w-4 h-4"></i>Export confirmed items list

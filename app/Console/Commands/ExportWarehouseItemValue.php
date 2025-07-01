@@ -1,21 +1,23 @@
 <?php
+
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\Warehouse;
+use Illuminate\Console\Command;
 
 class ExportWarehouseItemValue extends Command
 {
     protected $signature = 'export:warehouse-items';
+
     protected $description = 'Export detailed warehouse item values to CSV';
 
     public function handle()
     {
         $wareHouse = WareHouse::with('supplierItem', 'category')->get();
-        $filePath = storage_path('app/exports/WarehouseItemValue_' . now()->format('Y-m-d') . '.csv');
+        $filePath = storage_path('app/exports/WarehouseItemValue_'.now()->format('Y-m-d').'.csv');
         $file = fopen($filePath, 'w');
 
-        fputcsv($file, ["ID", "ItemID", "ID_DE", "EAN", "Category", "Item Name", "Qty", "RMB", "Total RMB", "EUR", "Total EUR"]);
+        fputcsv($file, ['ID', 'ItemID', 'ID_DE', 'EAN', 'Category', 'Item Name', 'Qty', 'RMB', 'Total RMB', 'EUR', 'Total EUR']);
 
         foreach ($wareHouse as $record) {
             $categoryName = optional($record->category)->name;

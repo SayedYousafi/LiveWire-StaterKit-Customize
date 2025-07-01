@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Supplier_type extends Model
 {
-    protected $guarded =[];
+    protected $guarded = [];
 }

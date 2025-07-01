@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Item;
@@ -13,15 +14,41 @@ class DefaultSupplier extends Component
     use WithPagination;
 
     public $id;
+
     public bool $enableEdit = false;
-    public bool $isUpdate   = true;
-    public $itemId, $item_id, $supplier_id, $supplier_name, $item_name;
-    public $is_default, $moq, $oi, $is_po, $price_rmb, $note_cn, $url, $lead_time;
+
+    public bool $isUpdate = true;
+
+    public $itemId;
+
+    public $item_id;
+
+    public $supplier_id;
+
+    public $supplier_name;
+
+    public $item_name;
+
+    public $is_default;
+
+    public $moq;
+
+    public $oi;
+
+    public $is_po;
+
+    public $price_rmb;
+
+    public $note_cn;
+
+    public $url;
+
+    public $lead_time;
 
     public function mount($id = null): void
     {
         $this->id = $id;
-        //dd($this->id);
+        // dd($this->id);
     }
 
     public function render()
@@ -30,7 +57,7 @@ class DefaultSupplier extends Component
             'supplierItems' => Supplier_item::with(['item', 'supplier'])
                 ->where('item_id', $this->id)
                 ->paginate(50),
-            'suppliers'     => Supplier::all(),
+            'suppliers' => Supplier::all(),
         ]);
     }
 
@@ -41,7 +68,7 @@ class DefaultSupplier extends Component
 
     public function getSuppItem($id): void
     {
-        $this->supplier_id=$id;
+        $this->supplier_id = $id;
         $this->loadSupplierItem($id);
         Flux::modal('defaultModal')->show();
     }
@@ -57,28 +84,28 @@ class DefaultSupplier extends Component
         $supplierItem = Supplier_item::with(['item', 'supplier'])->findOrFail($id);
 
         $this->supplier_name = $supplierItem->supplier->name;
-        $this->item_name     = "{$supplierItem->item->item_name} / {$supplierItem->item->item_name_cn}";
-        $this->is_default    = $supplierItem->is_default;
-        $this->moq           = $supplierItem->moq;
-        $this->is_po         = $supplierItem->is_po;
-        $this->price_rmb     = $supplierItem->price_rmb;
-        $this->note_cn       = $supplierItem->note_cn;
-        $this->url           = $supplierItem->url;
-        $this->oi           = $supplierItem->oi;
-        $this->lead_time     = $supplierItem->lead_time;
-        $this->itemId        = $supplierItem->suppItemId ?? $supplierItem->id;
-        $this->item_id       = $supplierItem->item_id;
+        $this->item_name = "{$supplierItem->item->item_name} / {$supplierItem->item->item_name_cn}";
+        $this->is_default = $supplierItem->is_default;
+        $this->moq = $supplierItem->moq;
+        $this->is_po = $supplierItem->is_po;
+        $this->price_rmb = $supplierItem->price_rmb;
+        $this->note_cn = $supplierItem->note_cn;
+        $this->url = $supplierItem->url;
+        $this->oi = $supplierItem->oi;
+        $this->lead_time = $supplierItem->lead_time;
+        $this->itemId = $supplierItem->suppItemId ?? $supplierItem->id;
+        $this->item_id = $supplierItem->item_id;
     }
 
     public function editSuppItem(): void
     {
         Supplier_item::where('id', $this->supplier_id)->update([
-            'moq'       => $this->moq,
+            'moq' => $this->moq,
             'price_rmb' => $this->price_rmb,
-            'url'       => $this->url,
-            'note_cn'   => $this->note_cn,
-            'is_po'     => $this->is_po,
-            'oi'     => $this->oi,
+            'url' => $this->url,
+            'note_cn' => $this->note_cn,
+            'is_po' => $this->is_po,
+            'oi' => $this->oi,
             'lead_time' => $this->lead_time,
         ]);
 
@@ -92,16 +119,16 @@ class DefaultSupplier extends Component
     public function store($item_id): void
     {
         Supplier_item::create([
-            'item_id'     => $item_id,
+            'item_id' => $item_id,
             'supplier_id' => $this->supplier_id,
-            'is_default'  => 'N',
-            'moq'         => $this->moq,
-            'oi'          => $this->oi,
-            'price_rmb'   => $this->price_rmb,
-            'url'         => $this->url,
-            'note_cn'     => $this->note_cn,
-            'is_po'       => $this->is_po,
-            'lead_time'   => $this->lead_time,
+            'is_default' => 'N',
+            'moq' => $this->moq,
+            'oi' => $this->oi,
+            'price_rmb' => $this->price_rmb,
+            'url' => $this->url,
+            'note_cn' => $this->note_cn,
+            'is_po' => $this->is_po,
+            'lead_time' => $this->lead_time,
         ]);
         Flux::modal('defaultModal')->close();
         session()->flash('success', 'New supplier inserted successfully!');

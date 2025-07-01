@@ -1,28 +1,63 @@
 <?php
+
 namespace App\Livewire;
 
+use App\Models\Parents as Parentz;
 use Flux\Flux;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Title;
-use App\Models\Parents as Parentz;
 
 #[Title('Parents')]
 class Parents extends Component
 {
     use WithPagination;
 
-    public bool $active     = true;
+    public bool $active = true;
+
     public bool $enableEdit = false;
-    public bool $isUpdate   = false;
+
+    public bool $isUpdate = false;
 
     public string $search = '';
-    public string $title  = 'Parents';
 
-    public $parentId, $de_id, $de_no, $id, $is_active, $is_nwv, $is_var_unilingual;
-    public $name_cn, $name_de, $name_en, $rank, $taric_id;
-    public $var_de_1, $var_de_2, $var_de_3;
-    public $var_en_1, $var_en_2, $var_en_3;
+    public string $title = 'Parents';
+
+    public $parentId;
+
+    public $de_id;
+
+    public $de_no;
+
+    public $id;
+
+    public $is_active;
+
+    public $is_nwv;
+
+    public $is_var_unilingual;
+
+    public $name_cn;
+
+    public $name_de;
+
+    public $name_en;
+
+    public $rank;
+
+    public $taric_id;
+
+    public $var_de_1;
+
+    public $var_de_2;
+
+    public $var_de_3;
+
+    public $var_en_1;
+
+    public $var_en_2;
+
+    public $var_en_3;
 
     protected array $rules = [
 
@@ -34,18 +69,18 @@ class Parents extends Component
     public function render()
     {
         $parentsQuery = Parentz::query();
-            if($this->active!=0){
-                $parentsQuery->where('is_active', 1);
-            }else{
-                $parentsQuery->where('is_active', 0);
-            }
-            
-            $parentsQuery->search($this->search) // Now this works properly as a scope
+        if ($this->active != 0) {
+            $parentsQuery->where('is_active', 1);
+        } else {
+            $parentsQuery->where('is_active', 0);
+        }
+
+        $parentsQuery->search($this->search) // Now this works properly as a scope
             ->withCount('items');
 
         return view('livewire.parents')->with([
             'Parents' => $parentsQuery->orderBy('id', 'desc')->paginate(100),
-            'title'   => $this->title,
+            'title' => $this->title,
         ]);
     }
 
@@ -57,6 +92,7 @@ class Parents extends Component
 
         if (! $created) {
             session()->flash('error', 'Something went wrong in creating new Parent');
+
             return;
         }
 
@@ -84,6 +120,7 @@ class Parents extends Component
 
         if (! $updated) {
             session()->flash('error', 'Something went wrong in updating Parent');
+
             return;
         }
 
@@ -110,22 +147,22 @@ class Parents extends Component
     private function getParentData(): array
     {
         return [
-            'de_id'             => $this->de_id,
-            'de_no'             => $this->de_no,
-            'is_active'         => $this->is_active,
-            'is_nwv'            => $this->is_nwv,
+            'de_id' => $this->de_id,
+            'de_no' => $this->de_no,
+            'is_active' => $this->is_active,
+            'is_nwv' => $this->is_nwv,
             'is_var_unilingual' => $this->is_var_unilingual,
-            'name_en'           => $this->name_en,
-            'name_cn'           => $this->name_cn,
-            'name_de'           => $this->name_de,
-            'rank'              => $this->rank,
-            'taric_id'          => $this->taric_id,
-            'var_de_1'          => $this->var_de_1,
-            'var_de_2'          => $this->var_de_2,
-            'var_de_3'          => $this->var_de_3,
-            'var_en_1'          => $this->var_en_1,
-            'var_en_2'          => $this->var_en_2,
-            'var_en_3'          => $this->var_en_3,
+            'name_en' => $this->name_en,
+            'name_cn' => $this->name_cn,
+            'name_de' => $this->name_de,
+            'rank' => $this->rank,
+            'taric_id' => $this->taric_id,
+            'var_de_1' => $this->var_de_1,
+            'var_de_2' => $this->var_de_2,
+            'var_de_3' => $this->var_de_3,
+            'var_en_1' => $this->var_en_1,
+            'var_en_2' => $this->var_en_2,
+            'var_en_3' => $this->var_en_3,
         ];
     }
 }

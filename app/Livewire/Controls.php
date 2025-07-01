@@ -25,7 +25,7 @@ class Controls extends Component
     public function xRate(): array
     {
         return Cache::remember('xrate', now()->addHours(1), function () {
-            $response = $this->client->get("https://api.exchangerate-api.com/v4/latest/EUR");
+            $response = $this->client->get('https://api.exchangerate-api.com/v4/latest/EUR');
             $rates    = json_decode($response->getBody()->getContents(), true)['rates'];
 
             return $this->filterRates($rates);
@@ -47,10 +47,12 @@ class Controls extends Component
         // dd($test);
         return view('livewire.controls', [
 
-            'confirmed'          => $this->getConfirmedCount(),
+            //'confirmed' => $this->getConfirmedCount(),
+            'specialRmb_noValue' => $this->getCountSpecialRMB(),
+            'specialEUR_novalue' => $this->getCountSpecialEUR(),
             'zeroRmb'            => $this->getZeroRmbCount(),
             'count_supp'         => $this->getMissingSuppliersCount(),
-
+            'specialDim_novalue' => $this->getCountSpecialDim(),
             'countNpr'           => $this->getNprCount(),
             'rates'              => $this->xRate(),
             'unusedImages'       => $this->getImageDiffs()[0],
@@ -101,7 +103,7 @@ class Controls extends Component
 
     protected function getNullPictures()
     {
-        //return Cache::remember('null_pictures', 600, function () {
+        // return Cache::remember('null_pictures', 600, function () {
         $noPics = Item::select('id', 'photo')
             ->where('isActive', 'Y')
             ->where(function ($query) {
@@ -110,8 +112,45 @@ class Controls extends Component
             })
             ->get();
 
+        // });
+        return $noPics;
+    }
+
+    protected function getCountSpecialRMB()
+    {
+        return Cache::remember('specialRmb_count', 600, function () {
+            return Item::join('order_statuses as os', 'os.ItemID_DE', '=', 'items.ItemID_DE')
+                ->where('items.is_rmb_special', 'Y')
+                ->whereNull('os.rmb_special_price')
+                ->count();
+        });
+    }
+
+    protected function getCountSpecialEUR()
+    {
+        return Cache::remember('specialEUR_count', 600, function () {
+            return Item::join('order_statuses as os', 'os.ItemID_DE', '=', 'items.ItemID_DE')
+
+                ->where('items.is_eur_special', 'Y')
+                ->whereNull('os.eur_special_price')
+                ->count();
+        });
+    }
+
+    protected function getCountSpecialDim()
+    {
+        //return Cache::remember('specialDim_count', 600, function () {
+
+        $count = Item::where('items.is_dimension_special', 'Y')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('dimensions')
+                    ->whereColumn('dimensions.item_id', 'items.id')->distinct();
+            })
+            ->count();
+
+        return $count;
         //});
-        return ($noPics);
     }
 
     protected function getImageDiffs(): array
@@ -129,7 +168,7 @@ class Controls extends Component
 
             $unusedImages = array_values(array_diff($server_images, $images));
 
-            //dd( $unusedImages);
+            // dd( $unusedImages);
             return [$unusedImages];
         });
     }
@@ -147,8 +186,7 @@ class Controls extends Component
 
     protected function getNprCount()
     {
-        return Cache::remember('npr_count', 600, fn() =>
-            Item::where('is_npr', 'Y')->where('isActive', 'Y')->count());
+        return Cache::remember('npr_count', 600, fn() => Item::where('is_npr', 'Y')->where('isActive', 'Y')->count());
     }
 
     protected function getMissingEnglishValuesCount()
@@ -204,10 +242,12 @@ class Controls extends Component
     {
         return Cache::remember('count_null_cargo', 600, fn() => Status::whereNull('cargo_id')->count());
     }
+
     protected function getCountNaclass()
     {
-        return $naClass = Item::whereRaw("ShippingClass(items.weight, items.length,items.width, items.height) = 'Na'");
+        return $naClass = Item::where('isActive', 'Y')->whereRaw("ShippingClass(items.weight, items.length,items.width, items.height) = 'Na'");
     }
+
     protected function getDuplicatePhotos()
     {
         return Cache::remember('duplicate_photos', 600, function () {
@@ -222,5 +262,4 @@ class Controls extends Component
                 ->get();
         });
     }
-
 }

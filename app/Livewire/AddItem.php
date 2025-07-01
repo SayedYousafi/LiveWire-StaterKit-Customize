@@ -3,36 +3,111 @@
 namespace App\Livewire;
 
 use App\Models\ean;
-use App\Models\Taric;
+use App\Models\Item;
 use App\Models\Parents;
-use Livewire\Component;
 use App\Models\Supplier;
+use App\Models\Supplier_item;
+use App\Models\Taric;
 use App\Models\VarVal;
 use App\Models\WareHouse;
-use App\Models\Supplier_item;
-use App\Models\Item;
-use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Title('Item - Insert new item')]
 class AddItem extends Component
 {
     use WithFileUploads;
 
-    public $search = '', $showresult = true, $records, $parentDetails;
-    public $itemID, $item_name, $item_name_de, $item_name_en, $item_name_cn;
-    public $de_v1, $value_de_2, $value_de_3;
-    public $en_v1, $value_en_2, $value_en_3;
-    public $is_qty_dividable = 'N', $is_stock_item = 'N', $is_pu_item, $is_meter_item, $is_SnSI = 'Y';
-    public $remark, $isbn = 0, $height, $length, $weight, $width, $foq, $fsq, $pix_path_eBay, $pix_path;
-    public $de_no, $supp_cat, $taric_id, $many_components = 1, $effort_rating = 3, $rmb_special_price, $RMB_Price;
-    public $supplier_id, $is_po, $url;
-    public $photo, $is_npr = 'Y';
+    public $search = '';
+
+    public $showresult = true;
+
+    public $records;
+
+    public $parentDetails;
+
+    public $itemID;
+
+    public $item_name;
+
+    public $item_name_de;
+
+    public $item_name_en;
+
+    public $item_name_cn;
+
+    public $de_v1;
+
+    public $value_de_2;
+
+    public $value_de_3;
+
+    public $en_v1;
+
+    public $value_en_2;
+
+    public $value_en_3;
+
+    public $is_qty_dividable = 'N';
+
+    public $is_stock_item = 'N';
+
+    public $is_pu_item;
+
+    public $is_meter_item;
+
+    public $is_SnSI = 'Y';
+
+    public $remark;
+
+    public $isbn = 0;
+
+    public $height;
+
+    public $length;
+
+    public $weight;
+
+    public $width;
+
+    public $foq;
+
+    public $fsq;
+
+    public $pix_path_eBay;
+
+    public $pix_path;
+
+    public $de_no;
+
+    public $supp_cat;
+
+    public $taric_id;
+
+    public $many_components = 1;
+
+    public $effort_rating = 3;
+
+    public $rmb_special_price;
+
+    public $RMB_Price;
+
+    public $supplier_id;
+
+    public $is_po;
+
+    public $url;
+
+    public $photo;
+
+    public $is_npr = 'Y';
+
     private $dummyPhoto = 'DummyPicture.jpg';
 
     public function searchResult()
     {
-        $this->records = !empty($this->search)
+        $this->records = ! empty($this->search)
             ? Parents::where('de_no', 'like', "%$this->search%")->orderBy('de_no')->limit(50)->get()
             : collect();
 
@@ -42,16 +117,17 @@ class AddItem extends Component
     public function fetchParentDetail($id)
     {
         $record = Parents::with(['items.values'])->find($id);
-        //dd($record);
-        if (!$record) {
+        // dd($record);
+        if (! $record) {
             session()->flash('error', 'No parent record found.');
+
             return;
         }
         $this->de_no = $record->de_no;
         $this->parentDetails = $record;
-       
+
         $item = $record->items->first();
-//dd($item);
+        // dd($item);
         $this->itemID = $item->id ?? null;
         $this->item_name = $this->item_name_en = $record->name_en;
         $this->item_name_de = $record->name_de;
@@ -90,7 +166,7 @@ class AddItem extends Component
     public function save($id, $ean, $item_no_de)
     {
         $this->supp_cat = $this->supp_cat ?? substr($item_no_de, 0, 3);
-        if (!in_array($this->supp_cat, ['TES','TEW','TLE','TMS','TMT','TOP','TSC','TTI'])) {
+        if (! in_array($this->supp_cat, ['TES', 'TEW', 'TLE', 'TMS', 'TMT', 'TOP', 'TSC', 'TTI'])) {
             $this->supp_cat = 'STD';
         }
 
@@ -117,16 +193,16 @@ class AddItem extends Component
             $this->is_npr = 'Y';
             $this->photo = $this->pix_path = $this->pix_path_eBay = $this->dummyPhoto;
         } else {
-            $filename = $this->photo . '.jpg';
+            $filename = $this->photo.'.jpg';
             $this->is_npr = 'N';
             $this->photo = $filename;
-            $this->pix_path = $filename . '-1s.jpg';
-            $this->pix_path_eBay = $filename . '-1e.jpg';
+            $this->pix_path = $filename.'-1s.jpg';
+            $this->pix_path_eBay = $filename.'-1e.jpg';
         }
 
         if ($this->parentDetails->is_NwV === 'Y') {
-            $suffixEn = $this->en_v1 . $this->value_en_2 . $this->value_en_3;
-            $suffixDe = $this->de_v1 . $this->value_de_2 . $this->value_de_3;
+            $suffixEn = $this->en_v1.$this->value_en_2.$this->value_en_3;
+            $suffixDe = $this->de_v1.$this->value_de_2.$this->value_de_3;
             $this->item_name .= $suffixEn;
             $this->item_name_en .= $suffixEn;
             $this->item_name_de .= $suffixDe;
@@ -196,7 +272,7 @@ class AddItem extends Component
 
         $this->reset([
             'de_v1', 'value_de_2', 'value_de_3', 'en_v1', 'value_en_2', 'value_en_3',
-            'height', 'length', 'weight', 'width', 'foq', 'fsq', 'photo'
+            'height', 'length', 'weight', 'width', 'foq', 'fsq', 'photo',
         ]);
 
         $this->usedEan($ean);

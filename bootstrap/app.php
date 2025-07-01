@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //RedirectIfAuthenticated::redirectUsing(fn() => route('admin'));
+        // RedirectIfAuthenticated::redirectUsing(fn() => route('admin'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

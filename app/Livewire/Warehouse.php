@@ -1,28 +1,43 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Stockvalue;
-use App\Models\WareHouse as ModelsWareHouse;
-use Illuminate\Support\Facades\DB;
+use App\Models\Warehouse as ModelsWareHouse;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Warehouse extends Component
 {
     use WithPagination;
-    protected $paginationTheme = 'bootstrap';
 
-    public $table  = false, $chart  = false;
+   
+
+    public $table = false;
+
+    public $chart = false;
+
     public $wItems = [];
+
     public $stocks = [];
-    public $date, $category, $rmb, $eur, $count;
+
+    public $date;
+
+    public $category;
+
+    public $rmb;
+
+    public $eur;
+
+    public $count;
+
     public function render()
     {
         $this->wItems = ModelsWareHouse::join('supplier_items', 'warehouse_items.item_id', '=', 'supplier_items.item_id')
             ->join('categories', 'warehouse_items.category_id', '=', 'categories.id') // Join with categories
             ->selectRaw('
             warehouse_items.category_id,
-            categories.cat_name AS category_name,
+            categories.name AS category_name,
             COUNT(warehouse_items.item_id) AS Count,
             SUM(supplier_items.price_rmb * warehouse_items.stock_qty) AS RMB_Value,
            
@@ -30,30 +45,30 @@ class Warehouse extends Component
 
         ')
             ->where('categories.is_ignored_value', '!=', 'Y')               // Filter out ignored categories
-            ->groupBy('warehouse_items.category_id', 'categories.cat_name') // Group by category_id and category_name
+            ->groupBy('warehouse_items.category_id', 'categories.name') // Group by category_id and category_name
             ->orderBy('warehouse_items.category_id')
             ->get()
             ->toArray();
 
-            $this->stocks = Stockvalue::selectRaw("
+        $this->stocks = Stockvalue::selectRaw("
             DATE_FORMAT(created_at, '%Y-%m') as month, 
             category, 
             SUM(eur) as total_eur
         ")
+            ->groupBy('month', 'category')
+            ->orderBy('month')
+            ->orderByRaw('SUM(eur) DESC')
+            ->get()
+            ->toArray();
+        // dd($this->stocks);
 
-        ->groupBy('month', 'category')
-        ->orderBy('month')
-        ->orderByRaw("SUM(eur) DESC")
-        ->get()
-        ->toArray();
-            //dd($this->stocks);
-    
         $wareHouses = ModelsWareHouse::with('supplierItem', 'category')->paginate(15);
+
         return view('livewire.warehouse')->with(
             [
                 'wareHouses' => $wareHouses,
-                'wItems'     => $this->wItems,
-                'stocks'     => $this->stocks,
+                'wItems' => $this->wItems,
+                'stocks' => $this->stocks,
             ]
         );
     }
@@ -66,11 +81,12 @@ class Warehouse extends Component
         $this->wItems;
 
     }
+
     public function displayChart()
     {
         $this->wItems;
         $this->table = false;
         $this->chart = true;
-        //$this->dispatch('renderChart');
+        // $this->dispatch('renderChart');
     }
 }

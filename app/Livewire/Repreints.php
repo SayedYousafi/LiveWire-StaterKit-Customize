@@ -2,15 +2,16 @@
 
 namespace App\Livewire;
 
-use Flux\Flux;
 use App\Models\Order_status;
+use App\Services\OrderItemService;
+use Flux\Flux;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Services\OrderItemService;
 
 class Repreints extends Component
 {
     use WithPagination;
+
     protected OrderItemService $orderItemService;
 
     public function boot(OrderItemService $orderItemService)
@@ -18,15 +19,18 @@ class Repreints extends Component
         $this->orderItemService = $orderItemService;
     }
 
-    public $search='';
-    public $qty_no, $currentQty;
+    public $search = '';
+
+    public $qty_no;
+
+    public $currentQty;
 
     public function render()
     {
         $labels = $this->orderItemService->getItemsData(($this->search))
-        ->where('order_statuses.status', 'Printed')->paginate(50);
-        
-        //dd($labels);
+            ->where('order_statuses.status', 'Printed')->paginate(50);
+
+        // dd($labels);
         return view('livewire.repreints')->with([
             'labels' => $labels,
         ]);
@@ -36,6 +40,7 @@ class Repreints extends Component
     {
         $this->resetPage();
     }
+
     public function clearSearch()
     {
         $this->search = '';
@@ -45,12 +50,13 @@ class Repreints extends Component
 
     public function selectQtyDelivery($id)
     {
-        $this->qty_no     = $id;
-        
-        $qty              = Order_status::where('master_id', "$this->qty_no")->first();
+        $this->qty_no = $id;
+
+        $qty = Order_status::where('master_id', "$this->qty_no")->first();
         $this->currentQty = $qty->qty_label;
         Flux::modal('edit-qty')->show();
     }
+
     public function updateQty()
     {
         $done = Order_status::where('master_id', "$this->qty_no")->first()

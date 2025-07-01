@@ -113,7 +113,7 @@
                 <tr>
                     <th class="px-6 py-3">ID</th>
                     <th class="px-6 py-3">Cargo No</th>
-                    
+                    <th class="px-6 py-3">Status</th>
                     <th class="px-6 py-3">Type</th>
                     <th class="px-6 py-3">Customer</th>
                     <th class="px-6 py-3">Departure</th>
@@ -129,7 +129,7 @@
                     class="border-b dark:border-gray-700 border-gray-200 bg-white dark:bg-gray-800">
                     <td class="px-2 py-1">{{ $cargo->id }}</td>
                     <td class="px-2 py-1">{{ $cargo->cargo_no }}</td>
-                    
+                    <td class="px-2 py-1">{{ $cargo->cargo_status }}</td>
                     <td class="px-2 py-1">{{ $cargo->cargo_type_id }}</td>
                     <td class="px-2 py-1">{{ $cargo->customer_id }}</td>
                     <td class="px-2 py-1">{{ $cargo->dep_date }}</td>

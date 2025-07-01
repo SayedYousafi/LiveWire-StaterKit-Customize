@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Cci_invoice extends Model
 {
-    public $table='cci_invoices';
-    protected $guarded=[];
-    
+    public $table = 'cci_invoices';
+
+    protected $guarded = [];
+
     public function customer()
     {
-        return  $this->hasMany(Cci_customer::class, 'customer_id', 'cci_customer_id');
+        return $this->hasMany(Cci_customer::class, 'customer_id', 'cci_customer_id');
     }
 }

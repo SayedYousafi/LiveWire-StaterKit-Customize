@@ -1,13 +1,16 @@
 <?php
+
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use Log;
 use App\Models\Warehouse;
 use App\Models\Stockvalue;
+use Illuminate\Console\Command;
 
 class ImportWarehouseValueSummary extends Command
 {
     protected $signature = 'import:warehouse-summary';
+
     protected $description = 'Import warehouse category summary into the stockvalue table';
 
     public function handle()
@@ -32,21 +35,21 @@ class ImportWarehouseValueSummary extends Command
 
         foreach ($wItems as $data) {
             $insertData[] = [
-                'date'       => $now,
-                'category'   => $data['category_name'],
-                'rmb'        => round($data['RMB_Value'], 2),
-                'eur'        => round($data['EUR_Value'], 2),
-                'count'      => $data['Count'],
+                'date' => $now,
+                'category' => $data['category_name'],
+                'rmb' => round($data['RMB_Value'], 2),
+                'eur' => round($data['EUR_Value'], 2),
+                'count' => $data['Count'],
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
         }
 
-        if (!empty($insertData)) {
+        if (! empty($insertData)) {
             Stockvalue::insert($insertData);
-            \Log::info("Warehouse value summary imported successfully.");
+            Log::info('Warehouse value summary imported successfully.');
         } else {
-            \Log::info("No data available to import.");
+            \Log::info('No data available to import.');
         }
     }
 }

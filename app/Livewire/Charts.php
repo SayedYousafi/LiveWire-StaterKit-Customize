@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Stockvalue;
@@ -7,14 +8,16 @@ use Livewire\Component;
 
 class Charts extends Component
 {
-    public $stocks           = [];
+    public $stocks = [];
+
     public $totalStockValues = [];
+
     public function render()
     {
-// Get the date range for the last 13 months
+        // Get the date range for the last 13 months
         $startDate = now()->subMonths(12)->startOfMonth();
 
-// Query to get stocks data within the last 13 months, including total EUR per month
+        // Query to get stocks data within the last 13 months, including total EUR per month
         $this->stocks = Stockvalue::selectRaw("
         DATE_FORMAT(created_at, '%Y-%m') as month,
         category,
@@ -51,7 +54,7 @@ class Charts extends Component
             ->toArray();
 
         return view('livewire.charts')->with([
-            'stocks'           => $this->stocks,
+            'stocks' => $this->stocks,
             'totalStockValues' => $this->totalStockValues,
         ]);
     }

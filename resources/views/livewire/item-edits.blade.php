@@ -166,54 +166,69 @@
 
         <!-- Special Item Section -->
         <fieldset class="border border-gray-300 dark:border-gray-600 p-4 mt-6 rounded">
-            @if($successMessage === 'Special price set successfully !!!')
+            @if($successMessage === 'Item speciality set successfully !!!')
             <flux:callout variant="success" heading="{{ $successMessage }}" class="mb-3" />
             @endif
             <legend class="text-lg font-semibold px-2 bg-white dark:bg-gray-900 text-black dark:text-white">Is Special
                 Item?
             </legend>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">EUR Special</label>
-                    <div class="text-gray-900 dark:text-gray-100">{{ $itemDetail->is_eur_special }}</div>
+
+                    {{-- <div class="text-gray-900 dark:text-gray-100">EUR Special:{{ $itemDetail->is_eur_special }}
+                    </div> --}}
                     <flux:dropdown>
-                        <flux:button icon:trailing="chevron-down">Change to:
-                            {{-- {{ $is_eur_special === 'Y' ? 'Yes' : ($is_eur_special === 'N' ? 'No' : 'Select') }}
-                            --}}
+                        <flux:button icon:trailing="chevron-down">EUR Special:
+                            {{ $is_eur_special === 'Y' ? 'Y' : ($is_eur_special === 'N' ? 'N' : 'Select') }}
+
                         </flux:button>
                         <flux:menu>
                             <flux:menu.item wire:click="$set('is_eur_special', 'Y')">Yes</flux:menu.item>
                             <flux:menu.item wire:click="$set('is_eur_special', 'N')">No</flux:menu.item>
                         </flux:menu>
                     </flux:dropdown>
-                    {{ $is_eur_special }}
+                    {{-- {{ $is_eur_special }} --}}
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">RMB Special</label>
-                    <div class="text-gray-900 dark:text-gray-100">{{ $itemDetail->is_rmb_special }}</div>
+
+                    {{-- <div class="text-gray-900 dark:text-gray-100">RMB Special:{{ $itemDetail->is_rmb_special }}
+                    </div> --}}
                     <flux:dropdown>
-                        <flux:button icon:trailing="chevron-down">Change to:
-                            {{-- {{ $is_rmb_special === 'Y' ? 'Yes' : ($is_rmb_special === 'N' ? 'No' : 'Select') }}
-                            --}}
+                        <flux:button icon:trailing="chevron-down">RMB Special:
+                            {{ $is_rmb_special === 'Y' ? 'Y' : ($is_rmb_special === 'N' ? 'N' : 'Select') }}
+
                         </flux:button>
                         <flux:menu>
                             <flux:menu.item wire:click="$set('is_rmb_special', 'Y')">Yes</flux:menu.item>
                             <flux:menu.item wire:click="$set('is_rmb_special', 'N')">No</flux:menu.item>
                         </flux:menu>
                     </flux:dropdown>
-                    {{ $is_rmb_special }}
+                    {{-- {{ $is_rmb_special }} --}}
+
+
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">EK Net</label>
+
                     <div class="text-gray-900 dark:text-gray-100">
                         @php $EK_net = EK_net($itemDetail->price_rmb, $itemDetail->cat_id); @endphp
-                        {{ $EK_net }}
+                        EK Net: {{ $EK_net }}
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Price RMB</label>
-                    <div class="text-gray-900 dark:text-gray-100">{{ $itemDetail->price_rmb }}</div>
+                    {{-- <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Price RMB</label>
+                    --}}
+                    <div class="text-gray-900 dark:text-gray-100">RMB: {{ $itemDetail->price_rmb }}</div>
                 </div>
+            </div>
+            <flux:navmenu.separator />
+            <div class="flex justify-between">
+                <flux:text>Is this special dimension? {{ $is_dimension_special }}</flux:text>
+
+                <flux:select wire:model="is_dimension_special">
+                    <flux:select.option>Yes/No</flux:select.option>
+                    <flux:select.option>Y</flux:select.option>
+                    <flux:select.option>N</flux:select.option>
+                </flux:select>
             </div>
             <div class="text-right mt-4">
                 <flux:button wire:click="setPrice({{ $itemDetail->item_id }})"
@@ -223,7 +238,7 @@
     </div>
     <!-- Dimensions / Others Section -->
     <fieldset class="border border-gray-300 dark:border-gray-600 p-4 mt-6 rounded">
-        @if($successMessage === 'Item Dimentions Updated Successfully !!!')
+        @if($successMessage === 'Item Dimensions Updated Successfully !!!')
         <flux:callout variant="success" heading="{{ $successMessage }}" class="mb-3" />
         @endif
         <legend class="text-lg font-semibold px-2 bg-white dark:bg-gray-900 text-black dark:text-white">

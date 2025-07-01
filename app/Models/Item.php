@@ -10,31 +10,33 @@ class Item extends Model
 {
     protected $guarded = [];
 
-    public function warehouse():HasOne
+    public function warehouse(): HasOne
     {
         return $this->hasOne(Warehouse::class);
     }
 
-    public function supplierItem():HasOne
+    public function supplierItem(): HasOne
     {
         return $this->hasOne(Supplier_item::class);
     }
 
-    public function categories():BelongsTo
+    public function categories(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'cat_id', 'id');
     }
-    public function tarics():BelongsTo
+
+    public function tarics(): BelongsTo
     {
         return $this->belongsTo(Taric::class);
     }
+
     public function parents()
     {
         return $this->belongsTo(Parents::class, 'parent_id', 'id');
     }
+
     public function values()
     {
         return $this->hasMany(VarVal::class, 'item_id', 'id');
     }
 }
-

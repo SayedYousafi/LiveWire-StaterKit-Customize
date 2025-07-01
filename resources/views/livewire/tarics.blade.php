@@ -96,7 +96,8 @@
                 <tr wire:key='{{ $taric->id }}' class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
 
                     <td class="px-2 py-1">
-                        {{ $taric->id }} <span class=" text-blue-700 text-bold ">({{ $taric->items_count }})</span> 
+                        {{ $taric->id }} 
+                        <a href="{{ route('items') }}/taricID-{{ $taric->id }}" class=" text-blue-700 text-bold ">({{ $taric->items_count }})</@aware(['propName'])> 
                     </td>
                     <td class="px-2 py-1">
                         {{ $taric->code }}

@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 return [
     'PV1' => 8,
     'PV4' => 8,
@@ -9,7 +10,5 @@ return [
     'PV9' => 5,
     'PV10' => 1,
     'PV11' => 3,
-    'SW' => 3, //in percent shipping_weight = weight + ((SW/100) * weight)
+    'SW' => 3, // in percent shipping_weight = weight + ((SW/100) * weight)
 ];
-
-?>

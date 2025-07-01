@@ -2,11 +2,11 @@
 
 namespace App\Livewire;
 
-use Flux\Flux;
 use App\Models\Cargo;
 use App\Models\Cargo_type;
-use Livewire\Component;
 use App\Models\Customer;
+use Flux\Flux;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class Cargos extends Component
@@ -14,12 +14,30 @@ class Cargos extends Component
     use WithPagination;
 
     public $cargoId;
+
     public string $search = '';
+
     public string $title = 'Cargos';
+
     public $isUpdate = false;
+
     public bool $enableEdit = false;
 
-    public $cargo_no, $cargo_status, $cargo_type_id, $customer_id, $dep_date, $pickup_date, $remark, $shipped_at;
+    public $cargo_no;
+
+    public $cargo_status='Open';
+
+    public $cargo_type_id;
+
+    public $customer_id;
+
+    public $dep_date;
+
+    public $pickup_date;
+
+    public $remark;
+
+    public $shipped_at;
 
     public function render()
     {
@@ -30,7 +48,7 @@ class Cargos extends Component
         return view('livewire.cargos')->with([
             'cargos' => $cargos,
             'customers' => $customers,
-            'cargo_types' =>$cargo_types,
+            'cargo_types' => $cargo_types,
         ]);
     }
 
@@ -39,13 +57,14 @@ class Cargos extends Component
         $validate = $this->validate([
             'cargo_no' => 'required',
             'customer_id' => 'required',
-            'cargo_type_id' => 'required'
+            'cargo_type_id' => 'required',
         ]);
 
         $created = Cargo::create($this->getCargoData());
 
         if (! $created) {
             session()->flash('error', 'Something went wrong in creating new Cargo');
+
             return;
         }
 
@@ -70,13 +89,14 @@ class Cargos extends Component
         $validated = $this->validate([
             'cargo_no' => 'required',
             'customer_id' => 'required',
-            'cargo_type_id' => 'required'
+            'cargo_type_id' => 'required',
         ]);
 
         $updated = Cargo::where('id', $this->cargoId)->update($this->getCargoData());
 
         if (! $updated) {
             session()->flash('error', 'Something went wrong in updating Cargo');
+
             return;
         }
 
@@ -105,14 +125,14 @@ class Cargos extends Component
     private function getCargoData(): array
     {
         return [
-            'cargo_no'      => $this->cargo_no,
-            'cargo_status'  => $this->cargo_status,
+            'cargo_no' => $this->cargo_no,
+            'cargo_status' => $this->cargo_status,
             'cargo_type_id' => $this->cargo_type_id,
-            'customer_id'   => $this->customer_id,
-            'dep_date'      => $this->dep_date,
-            'pickup_date'   => $this->pickup_date,
-            'remark'        => $this->remark,
-            'shipped_at'    => $this->shipped_at,
+            'customer_id' => $this->customer_id,
+            'dep_date' => $this->dep_date,
+            'pickup_date' => $this->pickup_date,
+            'remark' => $this->remark,
+            'shipped_at' => $this->shipped_at,
         ];
     }
 }

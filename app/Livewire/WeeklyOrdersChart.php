@@ -3,8 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\Order;
-use Livewire\Component;
 use Carbon\Carbon;
+use Livewire\Component;
 
 class WeeklyOrdersChart extends Component
 {
@@ -34,7 +34,7 @@ class WeeklyOrdersChart extends Component
             )->count();
 
             $weeks[] = [
-                'label' => $start->format('M j') . ' - ' . $end->format('M j'),
+                'label' => $start->format('M j').' - '.$end->format('M j'),
                 'count' => $count,
             ];
 

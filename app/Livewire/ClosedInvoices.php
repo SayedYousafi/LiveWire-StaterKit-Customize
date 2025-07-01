@@ -4,16 +4,39 @@ namespace App\Livewire;
 
 use App\Models\Cargo;
 use App\Models\Cci_invoice;
-use Livewire\Component;
 use App\Models\Order_status;
 use Illuminate\Support\Facades\DB;
-//use DB;
+use Livewire\Component;
+
+// use DB;
 
 class ClosedInvoices extends Component
 {
-    public string $title  = 'invoicesClosed';
-    public $cargo_id, $ciNo, $cust_id, $taricNo, $sn, $invNo, $invSerialNo, $myDate,
-    $description = 'Freight Cost', $total_price, $remark, $myId;
+    public string $title = 'invoicesClosed';
+
+    public $cargo_id;
+
+    public $ciNo;
+
+    public $cust_id;
+
+    public $taricNo;
+
+    public $sn;
+
+    public $invNo;
+
+    public $invSerialNo;
+
+    public $myDate;
+
+    public $description = 'Freight Cost';
+
+    public $total_price;
+
+    public $remark;
+
+    public $myId;
 
     public function render()
     {
@@ -22,7 +45,7 @@ class ClosedInvoices extends Component
         $results = DB::table('cci_customers')
             ->join('cci_invoices', 'cci_customers.id', '=', 'cci_invoices.cci_customer_id')
             ->join('cargos', 'cci_invoices.cargo_id', '=', 'cargos.id')
-            //->join('order_statuses', 'order_statuses.cargo_id', '=', '')
+            // ->join('order_statuses', 'order_statuses.cargo_id', '=', '')
             ->select(
                 'cci_customers.id',
                 'cci_customers.customer_id',
@@ -39,43 +62,47 @@ class ClosedInvoices extends Component
                 \DB::raw('SUM(cci_invoices.item_count) AS item_count'),
             )
             ->whereColumn('cci_invoices.invSerialNo', 'cci_customers.invSerialNo')
-            ->groupBy('cci_customers.id', )
-            ->orderBy('cci_customers.id','DESC')->get();
+            ->groupBy('cci_customers.id')
+            ->orderBy('cci_customers.id', 'DESC')->get();
 
         $data = $results;
-        //dd($data);
-        
+        // dd($data);
+
         $items = $this->showCiItem($this->ciNo, $this->sn);
         $results = $this->showItems($this->taricNo, $this->sn);
+
         return view('livewire.closed-invoices',
             compact('data', 'items', 'results')
-            ); 
+        );
     }
+
     public function showCiItem($id, $sn)
     {
         DB::statement('SET SESSION sql_mode = ""');
         $this->ciNo = $id;
-        $this->sn =  $sn;
+        $this->sn = $sn;
         $taricItems = DB::table('cci_invoices')
             ->join('cci_customers', 'cci_customers.id', '=', 'cci_invoices.cci_customer_id')
             ->where('cci_invoices.invSerialNo', $sn)
             ->select('cci_invoices.cci_customer_id',
                 'cci_invoices.taric_code AS code',
                 'cci_invoices.taric_nameEN AS TarifName',
-                 DB::raw('SUM(cci_invoices.total_qty) AS total_qty'),
-                 DB::raw('SUM(cci_invoices.total_price) AS total_price')
+                DB::raw('SUM(cci_invoices.total_qty) AS total_qty'),
+                DB::raw('SUM(cci_invoices.total_price) AS total_price')
             )
             ->groupBy('cci_invoices.cci_customer_id', 'cci_invoices.taric_code',
-               
+
             )
             ->orderBy('cci_invoices.taric_nameEN')
             ->get();
-        //dd($taricItems);
+
+        // dd($taricItems);
         return $taricItems;
     }
+
     public function showItems($id, $sn)
     {
-        //dd($id);
+        // dd($id);
         $this->taricNo = $id;
         $this->sn = $sn;
         $result = \DB::table('cci_customers')
@@ -90,19 +117,21 @@ class ClosedInvoices extends Component
                 'cci_items.qty', 'cci_items.rmb', 'cci_items.eur', )
             ->orderBy('cci_items.item_name')
             ->get();
-        //dd($result);
+
+        // dd($result);
         return $result;
 
     }
+
     public function shipCI($id)
     {
         $itemsToShip = \DB::table('order_statuses')
             ->where('order_statuses.status', 'Invoiced')
             ->where('order_statuses.cargo_id', $id)
             ->get();
-            //dd($itemsToShip);
+        // dd($itemsToShip);
 
-        if (!empty($itemsToShip)) {
+        if (! empty($itemsToShip)) {
             foreach ($itemsToShip as $item) {
                 Order_status::where('id', $item->id)
                     ->update(
@@ -115,11 +144,11 @@ class ClosedInvoices extends Component
         }
         // set the status of cargos to shipped.
         Cargo::where('id', $id)
-                    ->update(
-                        [
-                            'cargo_status' => 'Shipped',
-                            'shipped_at' => now(),
-                        ]);
+            ->update(
+                [
+                    'cargo_status' => 'Shipped',
+                    'shipped_at' => now(),
+                ]);
         session()->flash('success', 'Items shipped successfully !!!');
     }
 
@@ -127,21 +156,21 @@ class ClosedInvoices extends Component
     {
         $this->invNo = $id;
         $this->sn = $sn;
-        //dd($this->invNo, $sn);
+        // dd($this->invNo, $sn);
         $results = DB::table('cci_customers')
             ->join('cci_invoices', 'cci_invoices.cci_customer_id', '=', 'cci_customers.id')
             ->where('cci_customers.id', $this->invNo)
             ->where('cci_invoices.invSerialNo', $this->sn)
             ->get();
-        //dd($results);
+        // dd($results);
         $this->myId = $results->last()->id;
-        //dd(($results->last()->id));
+        // dd(($results->last()->id));
         if ($results->last()->total_price === null && $results->last()->id === $this->myId) {
             session()->flash('error', 'Freight cost is zero, fill the required field below!');
             // call update data function
-            //$this->getData($this->myId, $sn);
+            // $this->getData($this->myId, $sn);
         } else {
-            return redirect('/invoice/' . $this->invNo . '/' . $this->sn);
+            return redirect('/invoice/'.$this->invNo.'/'.$this->sn);
         }
     }
 
@@ -149,17 +178,18 @@ class ClosedInvoices extends Component
     {
         $this->invNo = $id;
         $this->sn = $sn;
-        //dd($this->invNo,$this->sn=$sn );
+        // dd($this->invNo,$this->sn=$sn );
         $results = DB::table('cci_customers')
             ->join('cci_invoices', 'cci_invoices.cci_customer_id', '=', 'cci_customers.id')
             ->where('cci_customers.id', $this->invNo)
             ->where('cci_invoices.invSerialNo', $this->sn)
             ->get();
-        //dd($results);
+        // dd($results);
         $this->myId = $results->last()->id;
-        $this->description =  $results->last()->taric_nameEN;
+        $this->description = $results->last()->taric_nameEN;
         $this->total_price = $results->last()->total_price;
         $this->remark = $results->last()->remark;
+
         return $results;
     }
 
@@ -171,9 +201,9 @@ class ClosedInvoices extends Component
             'remark' => 'required',
         ]);
         Cci_invoice::where('id', $this->myId)
-        //->whereColumn('cargo_date',$tci_created_at)
+        // ->whereColumn('cargo_date',$tci_created_at)
             ->update([
-                //'invSerialNo'=>$this->invSerialNo,
+                // 'invSerialNo'=>$this->invSerialNo,
                 'cci_customer_id' => $this->invNo,
                 'taric_nameEN' => $this->description,
                 'total_price' => $this->total_price,
@@ -186,7 +216,8 @@ class ClosedInvoices extends Component
         session()->flash('success', 'Extra data saved successfully in this invoice !!!');
         $this->cancel();
     }
-    //protected $rules =
+
+    // protected $rules =
     public function cancel()
     {
         $this->ciNo = null;
@@ -196,5 +227,4 @@ class ClosedInvoices extends Component
         $this->total_price = '';
         $this->remark = '';
     }
-
 }

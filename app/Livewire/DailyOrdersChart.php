@@ -1,16 +1,18 @@
 <?php
+
 namespace App\Livewire;
 
 use App\Models\Order;
 use Livewire\Component;
 
 class DailyOrdersChart extends Component
-{public $days = [];
+{
+    public $days = [];
 
     public function mount()
     {
         $startOfMonth = now()->startOfMonth();
-        $endOfMonth   = now()->endOfMonth();
+        $endOfMonth = now()->endOfMonth();
 
         for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addWeek()) {
             $count = Order::whereRaw("
@@ -38,11 +40,12 @@ class DailyOrdersChart extends Component
                 'count' => $count,
             ];
         }
-        
+
     }
 
     public function render()
     {
 
         return view('livewire.daily-orders-chart');
-    }}
+    }
+}

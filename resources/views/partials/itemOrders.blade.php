@@ -13,7 +13,7 @@
             <th>RMB</th>
             <th>Total</th>
             <th>Status</th>
-            <th colspan="3">Actions</th>
+            <th colspan="4">Actions</th>
         </tr>
     </thead>
 
@@ -21,71 +21,83 @@
         @php
         $totalQty = 0;
         $grandTotal = 0;
-        $volum = 0;
+        $weight = 0;
         $Tweight = 0;
+        $volum = 0;
+        $Tvolum =0;
         @endphp
 
-        @if(!empty($itemOrders))
+        @if (!empty($itemOrders))
         @foreach ($itemOrders as $itemOrder)
-
         @php
         // Set status
         $order_state = $itemOrder->status;
 
         // Gather all numeric quantities
         $allQuantities = collect([
-        is_numeric($itemOrder->qty_split) ? $itemOrder->qty_split : null,
-        is_numeric($itemOrder->qty) ? $itemOrder->qty : null,
-        is_numeric($itemOrder->qty_label) ? $itemOrder->qty_label : null,
-        ])->reject(fn($q) => $q === null);
+        //$itemOrder->qty_split,
+        $itemOrder->qty,
+        $itemOrder->qty_label,
+
+        ])->filter(fn($q) => is_numeric($q) && $q > 0);
 
         // Get unique values for display
         $quantities = $allQuantities->unique()->values();
         $displayQty = $quantities->implode('/');
 
-        // Get the first available numeric quantity for math
+        // Get the first available numeric quantity for calculations
         $numericQty = $allQuantities->first() ?? 0;
 
         // Accumulate totals
         $totalQty += $numericQty;
-        $grandTotal += $numericQty * $itemOrder->price_rmb;
+        $grandTotal += $numericQty * floatval($itemOrder->price_rmb ?? 0);
 
-        $width = $itemOrder->width;
-        $height = $itemOrder->height;
-        $length = $itemOrder->length;
-        $weight = $itemOrder->weight * $numericQty;
+        // Calculate volume and total weight
+        if ($itemOrder->is_dimension_special == 'N') {
 
-        $volum += ($width * $height * $length) * $numericQty;
+        $width = floatval($itemOrder->width ?? 0);
+        $height = floatval($itemOrder->height ?? 0);
+        $length = floatval($itemOrder->length ?? 0);
+        $weight = floatval($itemOrder->weight ?? 0) * $numericQty;
+
+        $volum = ($width * $height * $length) * $numericQty;
+        $Tvolum += $volum;
         $Tweight += $weight;
-        @endphp
+        }
+        else {
 
-        <tr wire:key="status-buttons-{{ $itemOrder->master_id }}-{{ $itemOrder->status }}" 
-            @if(str_contains($itemOrder->comment, 'express')) class="bg-red-50 dark:bg-red-900" @endif>
+        $width = floatval($itemOrder->dwidth ?? 0);
+        $height = floatval($itemOrder->dheight ?? 0);
+        $length = floatval($itemOrder->dlength ?? 0);
+        $dimqty = (float) ($itemOrder->dimqty ?? 0);
+        // take care of zero or null dimqty
+        $weight = $dimqty != 0 ? floatval($itemOrder->dweight ?? 0) * $numericQty / $dimqty : 0;
+        $Tweight += $weight;
+        $volum = ($dimqty != 0) ? ($width * $height * $length) * ($numericQty / $dimqty) : 0;
+        $Tvolum += $volum;
+        }
+        @endphp
+        <tr wire:key="status-buttons-{{ $itemOrder->master_id }}-{{ $itemOrder->status }}" @if(str_contains($itemOrder->
+            comment, 'express')) class="bg-red-50 dark:bg-red-900" @endif>
             <td>{{ $loop->iteration }}</td>
             <td>
-                @if ($itemOrder->status=='SO')
+                @if ($order_state=='SO')
                 <flux:button icon='arrow-left-start-on-rectangle' size='sm'
                     wire:click="setBackSO('{{$itemOrder->master_id}}')" wire:confirm='Are you sure?' variant="danger">
                     NSO
                 </flux:button>
                 @endif
-                {{ $itemOrder->ean }}
+                <a href="{{ route('itemEdit', $itemOrder->item_id) }}" target="_blank" class="!text-blue-600 hover:!underline">{{ $itemOrder->ean }}</a>
             </td>
             <td>{{ $itemOrder->item_name }}</td>
             <td>{{ $itemOrder->remark_de }} / {{ $itemOrder->remarks_cn }} / {{ $itemOrder->remark }}</td>
             <td>{{ $itemOrder->order_no }}</td>
             <td>{{ $itemOrder->cargo_id }}</td>
-            <td>{{ formatDecimal((($width*$height*$length)*$numericQty)/1000) }}</td>
-            <td>{{ $weight }}</td>
+            {{-- <td>{{ formatDecimal((($width*$height*$length)*$numericQty)/1000) }}</td> --}}
+            <td>{{ formatDecimal($volum/1000) }}</td>
+            <td>{{ formatDecimal($weight) }}</td>
             <td>
-                {{-- @if (str_contains($itemOrder->master_id, '-1'))
-                {{ $itemOrder->qty_split }}/{{ $itemOrder->qty }}/{{ $itemOrder->qty_label }}
-                @else
-                {{ $itemOrder->qty }}{{ $itemOrder->qty != $itemOrder->qty_label ? '/' . $itemOrder->qty_label : '' }}
-                @endif --}}
-
                 {{ $displayQty }}
-
             </td>
 
             @if ($itemOrder->is_rmb_special=='Y')
@@ -101,13 +113,21 @@
             @if (!in_array($order_state, ['Invoiced', 'Shipped']))
             @if ($itemOrder->is_rmb_special=='Y')
             <td nowrap>
-                <flux:button size='sm' icon='currency-dollar' class=" bg-red-500! hover:bg-red-400! text-white!"
+                <flux:button size='sm' icon='currency-dollar' variant="danger"
                     wire:click="specialPriceSelected({{$itemOrder->sqrID}})">
                     Set price
                 </flux:button>
             </td>
             @endif
-             
+
+            @if ($itemOrder->is_dimension_special=='Y')
+            <td nowrap>
+                <flux:button size='sm' icon='adjustments-horizontal' class="!bg-cyan-600 hover:!bg-cyan-700 !text-white"
+                    wire:click="dimensions({{$itemOrder->sqrID}}, {{ $itemOrder->ean }}, {{ $itemOrder->item_id }})">
+                    DIM
+                </flux:button>
+            </td>
+            @endif
             <td>
                 <flux:button class=" bg-gray-500! hover:bg-gray-400! text-white!" size='sm' icon='pencil'
                     wire:click="changeQty({{ $itemOrder->sqrID}})">
@@ -138,7 +158,7 @@
                 </flux:button>
                 <flux:button wire:click="getRefNo('{{$itemOrder->supplier_order_id}}')" size='sm' icon='receipt-refund'
                     class="bg-purple-500! hover:bg-purple-400! text-white!">
-                    Refrence#
+                    Ref No.
                 </flux:button>
             </td>
             @elseif ($order_state=='Purchased')
@@ -217,9 +237,9 @@
         @endif
         @endforeach
         <tr>
-            <th colspan="5">Grand</th>
-            <td><strong>{{ formatDecimal($volum/1000) }}</strong></td>
-            <td><strong>{{ $Tweight }}</strong></td>
+            <th colspan="6">Grand</th>
+            <td><strong>{{ formatDecimal($Tvolum/1000) }}</strong></td>
+            <td><strong>{{ formatDecimal($Tweight) }}</strong></td>
             <td align="left" valign="middle"><strong>{{ $totalQty }}</strong></td>
             <td></td>
             <td><strong>{{ $grandTotal }}</strong></td>

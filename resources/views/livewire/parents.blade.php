@@ -116,7 +116,8 @@
         <table class="table-default mt-3">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>Parent_ID</th>
+                    <th>Parent_no</th>
                     <th>Name EN</th>
                     <th>Name DE</th>
                     <th>Name CN</th>
@@ -134,7 +135,11 @@
                     {{--
                 <tr wire:key="{{ $parent->id }}"
                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200"> --}}
-                    <td>{{ $parent->id }} ({{ $parent->items_count }})</td>
+                    <td>
+                        {{ $parent->id }}
+                        (<a href="{{ route('items')}}/parentID-{{ $parent->id }}" class="!text-bold !text-blue-700 hover:!text-underline">{{$parent->items_count}}</a>)
+                    </td>
+                    <td>{{ $parent->de_no }}</td>
                     <td>{{ $parent->name_en }}</td>
                     <td>{{ $parent->name_de }}</td>
                     <td>{{ $parent->name_cn }}</td>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
@@ -9,7 +10,7 @@ class OrderItemService
     {
         return DB::table('order_items')
             ->join('order_statuses', 'order_statuses.master_id', '=', 'order_items.master_id')
-        //->join('supplier_orders','supplier_orders.id','=','order_statuses.supplier_order_id')
+            ->leftJoin('dimensions','dimensions.status_id','=','order_statuses.id')
             ->join('items', 'items.ItemID_DE', '=', 'order_items.ItemID_DE')
             ->join('supplier_items', 'supplier_items.item_id', '=', 'items.id')
             ->join('warehouse_items', 'warehouse_items.item_id', '=', 'items.id')
@@ -17,7 +18,6 @@ class OrderItemService
             ->join('supplier_types', 'suppliers.order_type_id', '=', 'supplier_types.id')
             ->join('orders', 'order_items.order_no', '=', 'orders.order_no')
             ->where('supplier_items.is_default', 'Y');
-            
 
     }
 
@@ -63,6 +63,7 @@ class OrderItemService
             'items.photo',
             'items.id AS item_id',
             'items.is_rmb_special',
+            'items.is_dimension_special',
             'items.item_name',
             'items.taric_id',
             'items.item_name_cn',
@@ -73,7 +74,6 @@ class OrderItemService
             'suppliers.id AS SUPPID',
             'supplier_items.note_cn',
             'suppliers.name',
-
             'suppliers.website',
             'suppliers.order_type_id',
             'supplier_types.type_name',
@@ -82,6 +82,11 @@ class OrderItemService
             'order_statuses.supplier_order_id',
             'order_statuses.rmb_special_price',
             'order_statuses.problems',
+            'dimensions.length AS dlength',
+            'dimensions.width AS dwidth',
+            'dimensions.height AS dheight',
+            'dimensions.weight AS dweight',
+            'dimensions.dimqty AS dimqty',
         );
     }
 
@@ -105,6 +110,7 @@ class OrderItemService
     {
         $query = $this->rawOrderQuery(clone $this->baseOrderQuery())
             ->where('order_statuses.supplier_order_id', $supplierId);
+
         return $query->orderBy('items.item_name');
     }
 
@@ -120,11 +126,10 @@ class OrderItemService
                     ->orWhere('order_statuses.status', 'like', "%$search%")
                     ->orWhere('orders.order_no', 'like', "%$search%")
                     ->orWhere('items.remark', 'like', "%$search%");
-                //->orWhere('warehouse_items.parent_no_de', 'like', "%$search%");
+                // ->orWhere('warehouse_items.parent_no_de', 'like', "%$search%");
             });
         }
 
         return $query->orderBy('items.id', 'desc');
     }
-
 }

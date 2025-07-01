@@ -14,19 +14,34 @@ $users = computed(fn()=>User::all());
     <table class="table-default">
         <thead>
             <tr>
+                <th>#</th>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th colspan="2">Action</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($this->users as $user )
             <tr>
+                <td>{{ $loop->iteration }}</td>
                 <td>{{ $user->id }}</td>
                 <td>{{ $user->name }}</td>
                 <td>{{ $user->email }}</td>
                 <td>{{ $user->role }}</td>
+                <td><flux:button 
+                    icon='x-circle'
+                    size='sm'
+                    variant='danger'>
+                    Delete</flux:button>
+                </td>
+                <td><flux:button 
+                    icon='pencil-square'
+                    size='sm'
+                    variant='primary'>
+                    Edit</flux:button>
+                </td>
             </tr>
             @endforeach
         </tbody>
