@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
@@ -49,7 +48,7 @@ class ItemService
             'suppliers.website',
             'suppliers.order_type_id',
             'supplier_types.type_name',
-
+            'warehouse_items.item_no_de'
         );
     }
 
@@ -86,8 +85,9 @@ class ItemService
                 $q->where('items.item_name', 'like', "%$search%")
                     ->orWhere('items.item_name_cn', 'like', "%$search%")
                     ->orWhere('items.ean', 'like', "%$search%")
-                    ->orWhere('items.remark', 'like', "%$search%");
-                // ->orWhere('warehouse_items.parent_no_de', 'like', "%$search%");
+                    ->orWhere('items.ItemID_DE', 'like', "%$search%")
+                    ->orWhere('items.remark', 'like', "%$search%")
+                    ->orWhere('warehouse_items.item_no_de', 'like', "%$search%");
             });
         }
 

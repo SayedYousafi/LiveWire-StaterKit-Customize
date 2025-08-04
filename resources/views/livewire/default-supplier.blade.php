@@ -30,6 +30,9 @@
                 </tr>
             </thead>
             <tbody>
+                @php
+                    //dd($supplierItems)
+                @endphp
                 @forelse ($supplierItems as $item)
                 <tr wire:key="{{ $item->id }}" >
                     <td class="px-3 py-2">{{ $item->id }}</td>
@@ -44,7 +47,7 @@
                     <td class="px-3 py-2">{{ $item->oi }}</td>
                     <td class="px-3 py-2">{{ $item->is_po }}</td>
                     <td class="px-3 py-2">
-                        <flux:button wire:click="getSuppItem({{ $item->id }})" 
+                        <flux:button wire:click="getSuppItem({{ $item->id }}, {{ $item->supplier_id }})" 
                         icon='pencil-square' size="sm" class="!bg-blue-600 !text-white hover:bg-blue-500!">Edit</flux:button>
                     </td>
                     <td class="px-3 py-2">

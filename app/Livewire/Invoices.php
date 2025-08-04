@@ -425,6 +425,7 @@ class Invoices extends Component
                 if ($tariff) {
                     $taricCode = $tariff->code;
                     $taricNameEN = $tariff->name_en;
+                    $taric_name_cn = $tariff->name_cn;
                 } else {
                     $taricCode = 'n/a';
                     $taricNameEN = 'Unknown Tariff';
@@ -444,6 +445,7 @@ class Invoices extends Component
                 } else {
                     $taricCode = $item->code;
                     $taricNameEN = $item->name_en;
+                    $taric_name_cn = $item->name_cn;
                 }
             }
 
@@ -456,6 +458,7 @@ class Invoices extends Component
                 'cargo_type' => $item->cargo_type,
                 'taric_code' => $taricCode,
                 'taric_nameEN' => $taricNameEN,
+                'taric_name_cn' =>$taric_name_cn,
                 'item_count' => $itemCount,
                 'total_qty' => $item->totalQty,
                 'total_price' => $item->totalValue,

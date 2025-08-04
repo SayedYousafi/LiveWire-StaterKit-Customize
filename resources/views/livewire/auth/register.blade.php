@@ -47,6 +47,15 @@
             :placeholder="__('Confirm password')"
             viewable
         />
+        @php
+            $profiles = App\Models\WorkProfile::pluck('name', 'id')->toArray();
+        @endphp
+        <flux:select wire:model='work_profile_id' label="Work profile" headings="Select work profile">
+            <flux:select.option value="" selected>Select work profile</flux:select.option>
+            @foreach ($profiles as $id=> $profile)
+                <flux:select.option value="{{ $id }}">{{ $profile }}</flux:select.option>
+            @endforeach
+        </flux:select>
 
         <div class="flex items-center justify-end">
             <flux:button type="submit" variant="primary" icon="plus-circle" class="w-full">

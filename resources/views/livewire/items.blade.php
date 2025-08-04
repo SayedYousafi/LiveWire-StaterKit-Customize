@@ -126,7 +126,6 @@
                     </flux:button>
                 </td>
             </tr>
-
             <!-- Conditional Supplier Component -->
             @if ($selectedSupplier === $item->itemId)
             <tr wire:key="{{ $item->itemId }}">

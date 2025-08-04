@@ -50,6 +50,7 @@ class ClosedInvoices extends Component
                 'cci_customers.id',
                 'cci_customers.customer_id',
                 'cci_invoices.cargo_id',
+                'cci_invoices.id as myId',
                 'cci_invoices.created_at AS InvoiceDate',
                 'cargos.cargo_no',
                 'cargos.cargo_status',
@@ -66,7 +67,7 @@ class ClosedInvoices extends Component
             ->orderBy('cci_customers.id', 'DESC')->get();
 
         $data = $results;
-        // dd($data);
+        //dd($data);
 
         $items = $this->showCiItem($this->ciNo, $this->sn);
         $results = $this->showItems($this->taricNo, $this->sn);
@@ -167,10 +168,10 @@ class ClosedInvoices extends Component
         // dd(($results->last()->id));
         if ($results->last()->total_price === null && $results->last()->id === $this->myId) {
             session()->flash('error', 'Freight cost is zero, fill the required field below!');
-            // call update data function
-            // $this->getData($this->myId, $sn);
+
         } else {
-            return redirect('/invoice/'.$this->invNo.'/'.$this->sn);
+            //return redirect('/invoice/'.$this->invNo.'/'.$this->sn);
+            return '/invoice/' . $this->invNo . '/' . $this->sn;
         }
     }
 

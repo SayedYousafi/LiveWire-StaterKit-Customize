@@ -29,6 +29,9 @@
             @if (!empty($data))
 
             @foreach ($data as $ci )
+            @php
+            $invoice_no = "CI2500".$ci->myId;
+            @endphp
             <tr wire:key={{ $ci->id }}>
                 <td>
                     <flux:button wire:click="showCiItem({{$ci->customer_id}}, {{$ci->invSerialNo }})"
@@ -46,13 +49,17 @@
                         $ci->item_count}}</a></td>
                 <td>{{ $ci->total_qty }}</td>
                 <td>{{ $ci->total_price}}</td>
-                <td class="text text-center">
-
-                    <flux:button wire:click='checkPrice({{ $ci->id }},{{$ci->invSerialNo}})'>
-                        {{-- class="bg-blue-600! text-white! hover:bg-blue-500!" icon='document-duplicate' size='sm'> --}}
+                <td class="text text-center" x-data>
+                    <button @click="$wire.checkPrice({{ $ci->id }}, {{ $ci->invSerialNo }})
+            .then(url => {
+                if (url) {
+                    window.open(url, '_blank');
+                }
+            })">
                         <img src="{{ asset('img/icon_download_PDF.svg') }}" alt="MySVG" class="w-10 h-10">
-                    </flux:button>
+                    </button>
                 </td>
+
                 <td>
 
                     <flux:button wire:click='getData({{ $ci->id }}, {{$ci->invSerialNo}})' variant="primary" size='sm'
@@ -63,13 +70,19 @@
                 </td>
                 <td class="text text-center fw-bold">
                     @if ($ci->cargo_status=='Shipped')
-                        <flux:button wire:confirm='Are you sure? shipment will happen?'
-                            wire:navigate href="{{ route('packingList', $ci->cargo_id) }}" icon='numbered-list' size='sm'>
-                            Pack List
-                        </flux:button> 
+                    <flux:button wire:confirm='Are you sure? shipment will happen?' wire:navigate
+                        href="{{ route('packingList', $ci->cargo_id) }}" icon='numbered-list' size='sm'>
+                        Create packing list
+                    </flux:button>
+                    @elseif ($ci->cargo_status=='Packed')
+                    <flux:button class="bg-pink-400! text-white! hover:bg-pink-500!"
+                        href="{{ route('packList', ['id' => $ci->cargo_id, 'name' => $invoice_no]) }}" icon='eye'
+                        size='sm' target="_blank">
+                        View packing list
+                    </flux:button>
                     @else
-                    <flux:button wire:confirm='Ready to Make Packing List?'
-                        wire:click="shipCI({{ $ci->cargo_id }})" variant='danger' icon='x-circle' size='sm'>
+                    <flux:button wire:confirm='Ready to Make Packing List?' wire:click="shipCI({{ $ci->cargo_id }})"
+                        variant='danger' icon='x-circle' size='sm'>
                         Ship
                     </flux:button>
                     @endif

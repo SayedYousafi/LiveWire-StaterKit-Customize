@@ -21,7 +21,7 @@ class Repreints extends Component
 
     public $search = '';
 
-    public $qty_no;
+    public $qty_no, $remarks_cn;
 
     public $currentQty;
 
@@ -54,6 +54,7 @@ class Repreints extends Component
 
         $qty = Order_status::where('master_id', "$this->qty_no")->first();
         $this->currentQty = $qty->qty_label;
+        $this->remarks_cn = $qty->remarks_cn;
         Flux::modal('edit-qty')->show();
     }
 
@@ -63,6 +64,7 @@ class Repreints extends Component
             ->update(
                 [
                     'qty_label' => $this->currentQty,
+                    'remarks_cn' => $this->remarks_cn,
                 ]);
         if ($done) {
             session()->flash('success', 'QTY delivery set successfully !');

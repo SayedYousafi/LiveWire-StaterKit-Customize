@@ -47,8 +47,17 @@
                     @endif
                 </div>
                 <div class="space-y-2 mt-2">
+                    <a href="{{ route('workprofile') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                        <i data-lucide="settings" class="w-4 h-4"></i> Work profiles 
+                    </a>
+                    <a href="{{ route('holidays') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                        <i data-lucide="sailboat" class="w-4 h-4"></i>Public Holidays 
+                    </a>
+                    <a href="{{ route('leaves') }}" class="text-blue-600 hover:underline flex items-center gap-2">
+                        <i data-lucide="tent-tree" class="w-4 h-4"></i> Users leave requests
+                    </a>
                     <a href="{{ url('users') }}" class="text-blue-600 hover:underline flex items-center gap-2">
-                        <i data-lucide="user-cog" class="w-4 h-4"></i> Administrators and users
+                        <i data-lucide="user-cog" class="w-4 h-4"></i> Admins and users
                     </a>
 
                     <a href="{{ route('register') }}" class="text-blue-600 hover:underline flex items-center gap-2">

@@ -45,7 +45,7 @@
             @php
             // Gather all numeric quantities
             $allQuantities = collect([
-            is_numeric($order->qty_split) ? $order->qty_split : null,
+            //is_numeric($order->qty_split) ? $order->qty_split : null,
             is_numeric($order->qty) ? $order->qty : null,
             is_numeric($order->qty_label) ? $order->qty_label : null,
             ])->reject(fn($q) => $q === null);

@@ -10,7 +10,6 @@
 
         <div class="flex">
             <flux:spacer />
-
             <flux:button wire:click='updateQty' type="submit" variant="primary">Save QTY changes</flux:button>
         </div>
     </div>

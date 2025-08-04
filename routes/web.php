@@ -13,6 +13,7 @@ use App\Livewire\Charts;
 use App\Livewire\ClosedInvoices;
 use App\Livewire\Controls;
 use App\Livewire\Customers;
+use App\Livewire\Holidays;
 use App\Livewire\ImportWarehouse;
 use App\Livewire\Invoices;
 use App\Livewire\ItemDescription;
@@ -27,7 +28,9 @@ use App\Livewire\PackingLists;
 use App\Livewire\Parents;
 use App\Livewire\Problems;
 use App\Livewire\ReportList;
+use App\Livewire\Leaves;
 use App\Livewire\Settings\Appearance;
+use App\Livewire\Settings\LeaveRequests;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\SupplierOrder;
@@ -35,14 +38,17 @@ use App\Livewire\Suppliers;
 use App\Livewire\Tarics;
 use App\Livewire\Teams;
 use App\Livewire\Warehouse;
+use App\Livewire\WorkingProfiles;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 // Route::get('/', function () { return view('welcome'); })->name('home');
 Route::view('dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
-
+Route::get('admin', Admin::class)->middleware(['auth', 'role:admin'])->name('admin');
+Route::get('leaves', Leaves::class )->middleware(['auth', 'role:admin'])->name('leaves');
 // directly calling the login page.
 Route::get('/', Login::class)->name('home');
+
 Route::middleware(['auth'])->group(function () {
     Volt::route('/users', 'users')->name('users');
     Route::get('/missingImages', MissingImages::class)->name('missingImages');
@@ -64,15 +70,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('invoices', Invoices::class)->name('invoices');
     Route::get('invoicesClosed', ClosedInvoices::class)->name('invoicesClosed');
     Route::get('controls', Controls::class)->name('controls');
-    Route::get('admin', Admin::class)->name('admin');
+    
     Route::get('problems', Problems::class)->name('problems');
     Route::get('customers', Customers::class)->name('customers');
-    Route::get('shortdesc/{parent_id?}', ItemDescription::class)->name('shortdesc');
+    Route::get('shortdesc/{parent_id?}/{p_no?}', ItemDescription::class)->name('shortdesc');
     Route::get('packingList/{packingId?}', PackingLists::class)->name('packingList');
 
     Route::get('print/{id}', [PrintController::class, 'print'])->name('print');
     Route::get('invoice/{id}/{sn}', [PrintController::class, 'newInvoice'])->name('invoice');
-    Route::get('packList/{date}', [PrintController::class, 'packList'])->name('packList');
+    Route::get('packList/{id}/{name}', [PrintController::class, 'packList'])->name('packList');
 
     Route::get('/export', [ExportFullList::class, 'exportCSV']);
     Route::get('/export/{isNew}', [ExportFullList::class, 'exportCSV']);
@@ -86,17 +92,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('WarehouseValue', Charts::class);
     Route::get('import', ImportWarehouse::class);
 
+
+    Route::redirect('settings', 'settings/profile');
+    Route::get('settings/profile', Profile::class)->name('settings.profile');
+    Route::get('settings/password', Password::class)->name('settings.password');
+    // Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
+    Route::get('leaveRequest', LeaveRequests::class)->name('leaveRequest');
+    Route::get('holidays', Holidays::class)->name('holidays');
+    Route::get('workprofile', WorkingProfiles::class)->name('workprofile');
+
+});
+
+require __DIR__ . '/auth.php';
+
 // ETL Processes
     Route::get('etl', [EtlController::class, 'findTargetDate']);         
     Route::get('updateRecords', [EtlController::class, 'statusRemark']); 
     Route::get('synchIDs', [EtlController::class, 'MisIds']);            
     Route::get('importWareHouse', [EtlController::class, 'whareHouseSync']);
 
-    Route::redirect('settings', 'settings/profile');
-
-    Route::get('settings/profile', Profile::class)->name('settings.profile');
-    Route::get('settings/password', Password::class)->name('settings.password');
-    Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
-});
-
-require __DIR__ . '/auth.php';
+//Route::get('exp', [PrintController::class, 'exportPackingList'])->name('exp');

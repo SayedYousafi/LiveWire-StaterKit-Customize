@@ -73,7 +73,7 @@
                 @endforeach
                 <fieldset class="border border-gray-300 p-4 rounded">
                     <legend class="font-semibold text-gray-700 px-2">Item Basic Info</legend>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
                         <flux:input label="Parent Item No" wire:model="de_no" readonly />
                         <flux:input label="EAN" value="{{ $ean->ean }}" readonly />
                         <flux:input label="Item No. DE" value="{{ $item_no_de }}" readonly />
@@ -89,7 +89,8 @@
                         @else
                         @php $supp_cat = $myString; @endphp
                         @endif
-
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                         <flux:input label="Item Name DE" wire:model="item_name_de" autofocus />
                         <flux:input label="Item Name EN" wire:model="item_name_en" />
                         <flux:input label="Item Name CN" wire:model="item_name_cn" />
@@ -144,19 +145,19 @@
                 <fieldset class="border border-gray-300 p-4 rounded">
                     <legend class="font-semibold text-gray-800 px-2">Item Details</legend>
 
-                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-2">
 
                         {{-- Dimensions & Weight --}}
                         <flux:select label="Weight Estimated" wire:model="isbn">
                             <option value="0">No</option>
                             <option value="1">Yes</option>
                         </flux:select>
-                        <flux:input label="Weight (kg)" wire:model="weight" type="number" />
-                        <flux:input label="Height (cm)" wire:model="height" type="number" />
-                        <flux:input label="Width (cm)" wire:model="width" type="number" />
-                        <flux:input label="Length (cm)" wire:model="length" type="number" />
+                        <flux:input label="Weight (kg)" wire:model="weight"  />
+                        <flux:input label="Height (cm)" wire:model="height" />
+                        <flux:input label="Width (cm)" wire:model="width"  />
+                        <flux:input label="Length (cm)" wire:model="length" />
 
-                        <flux:input label="Purchase Price (RMB)" wire:model="RMB_Price" type="number" />
+                        <flux:input label="Purchase Price (RMB)" wire:model="RMB_Price" />
 
                         {{-- Item Rating --}}
                         <flux:select label="Many Component" wire:model="many_components">

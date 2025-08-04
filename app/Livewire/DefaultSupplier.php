@@ -17,7 +17,7 @@ class DefaultSupplier extends Component
 
     public bool $enableEdit = false;
 
-    public bool $isUpdate = true;
+    public bool $isUpdate = false;
 
     public $itemId;
 
@@ -66,9 +66,10 @@ class DefaultSupplier extends Component
         Flux::modal('defaultModal')->close();
     }
 
-    public function getSuppItem($id): void
+    public function getSuppItem($id, $supId): void
     {
-        $this->supplier_id = $id;
+        $this->isUpdate = true;
+        $this->supplier_id = $supId;
         $this->loadSupplierItem($id);
         Flux::modal('defaultModal')->show();
     }
@@ -99,7 +100,9 @@ class DefaultSupplier extends Component
 
     public function editSuppItem(): void
     {
-        Supplier_item::where('id', $this->supplier_id)->update([
+        //dd($this->itemId, $this->id);
+        Supplier_item::where('id', $this->itemId)->update([
+            'supplier_id' => $this->supplier_id,
             'moq' => $this->moq,
             'price_rmb' => $this->price_rmb,
             'url' => $this->url,

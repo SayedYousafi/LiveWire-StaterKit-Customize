@@ -1,8 +1,9 @@
 <?php
-
 namespace App\Livewire;
 
 use App\Models\Team;
+use App\Models\User;
+use App\Models\WorkProfile;
 use Flux\Flux;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -76,33 +77,44 @@ class Teams extends Component
     public $user_id;
 
     public $zip_code;
+    public $work_profile_id;
 
     protected array $rules = [
-        'first_name' => 'required',
+        'first_name'    => 'required',
         'email_private' => 'required',
-        'mobile' => 'required',
+        'mobile'        => 'required',
+        'join_date'     => 'required',
     ];
 
     public function render()
     {
-        $query = Team::query()->search($this->search);
+        $users = User::whereDoesntHave('teams')->get();
 
+        $workProfiles = WorkProfile::pluck('name', 'id')->toArray();
+        $query        = Team::with('user.workProfile')->search($this->search);
         $query->where('status', $this->active == 0 ? 0 : 1);
-
         $teams = $query->orderBy('id')->paginate(100);
 
         return view('livewire.teams')->with([
-            'Teams' => $teams,
-            'title' => $this->title,
+            'Teams'        => $teams,
+            'title'        => $this->title,
+            'workProfiles' => $workProfiles,
+            'users'        => $users,
+
         ]);
     }
 
     public function save()
     {
-        if ($this->status = 'Active') {
+        if ($this->work_profile_id != null) {
+            $updated = User::where('id', $this->user_id)->update([
+                'work_profile_id' => $this->work_profile_id,
+            ]);
+        }
+        if ($this->status == 'Active') {
             $this->status = 1;
         }
-        if ($this->status = 'inActive') {
+        if ($this->status == 'inActive') {
             $this->status = 0;
         }
 
@@ -112,48 +124,73 @@ class Teams extends Component
 
         if (! $created) {
             session()->flash('error', 'Something went wrong in creating new Team');
-
             return;
         }
 
         Flux::modal('myModal')->close();
         session()->flash('success', 'Team added successfully');
+        $this->updateWorkProfile();
         $this->reset();
     }
 
     public function edit($id)
     {
-        $Team = Team::findOrFail($id);
 
-        $this->TeamId = $id;
+        $Team          = Team::findOrFail($id);
+        $this->user_id = $Team->user_id;
+        //dd($this->user_id);
+        $this->TeamId   = $id;
         $this->isUpdate = true;
         $this->fillTeamData($Team);
-
+        $this->userJoinDateUpdate();
         Flux::modal('myModal')->show();
     }
 
     public function update()
     {
-        //dd($this->status);
-        if ($this->status = 'Active') {
-            $this->status = 1;
-        }else{
-            $this->status = 0;
+        if ($this->work_profile_id != null) {
+            $updated = User::where('id', $this->user_id)->update([
+                'work_profile_id' => $this->work_profile_id,
+            ]);
         }
-        
+
+        //dd($this->status);
+        if ($this->status == 'Active') {
+            $this->status = 1;
+            $updated = User::where('id', $this->user_id)->update([
+                'isActive' => 1,
+            ]);
+        } 
+        if ($this->status == 'inActive') {
+            $this->status = 0;
+            //set user too as inActive
+            $updated = User::where('id', $this->user_id)->update([
+                'isActive' => 0,
+            ]);
+        }
+
         $this->validate();
 
         $updated = Team::where('id', $this->TeamId)->update($this->getTeamData());
 
         if (! $updated) {
             session()->flash('error', 'Something went wrong in updating Team');
-
             return;
         }
 
         Flux::modal('myModal')->close();
         session()->flash('success', 'Team updated successfully');
+
+        $this->userJoinDateUpdate();
         $this->reset();
+    }
+    //update join_date of users table;
+    public function userJoinDateUpdate()
+    {
+        // dd($this->user_id, $this->join_date);
+        User::where('id', $this->user_id)->update([
+            'join_date' => $this->join_date,
+        ]);
     }
 
     public function delete($id)
@@ -206,6 +243,6 @@ class Teams extends Component
             'street',
             'user_id',
             'zip_code',
-        ])->mapWithKeys(fn ($field) => [$field => $this->{$field}])->toArray();
+        ])->mapWithKeys(fn($field) => [$field => $this->{$field}])->toArray();
     }
 }

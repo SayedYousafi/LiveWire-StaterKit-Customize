@@ -159,7 +159,7 @@ class ExportFullList extends Controller
         $callback = function () use ($records, $columns) {
             $file = fopen('php://output', 'w');
             fprintf($file, "\xEF\xBB\xBF"); // Add UTF-8 BOM
-            fputcsv($file, $columns);
+            fputcsv($file, $columns, ';');  // Use semicolon delimiter for header row
 
             foreach ($records as $record) {
                 // Constants
@@ -217,77 +217,81 @@ class ExportFullList extends Controller
 
                 // Calculated Shipping Weight
                 $shipping_weight = (($SW / 100) * $Weight) + $Weight;
+
                 fputcsv($file, [
-                    $record->item_id ?? '',                                          // ID
-                    $record->ean ?? '',                                              // EAN
-                    $record->parent_no_de ?? '',                                     // Parent No DE
-                    $record->item_no_de ?? '',                                       // Item No DE
-                    $supplier ?? '',                                                 // Supplier
-                    $record->item_name_de ?? '',                                     // Item Name DE
-                    $record->variation_de_1 ?? '',                                   // Variation DE 1
-                    $record->value_de ?? '',                                         // Value DE
-                    $record->variation_de_2 ?? '',                                   // Variation DE 2
-                    $record->value_de_2 ?? '',                                       // Value DE 2
-                    $record->variation_de_3 ?? '',                                   // Variation DE 3
-                    $record->value_de_3 ?? '',                                       // Value DE 3
-                    $record->item_name_en ?? '',                                     // Item Name EN
-                    $record->item_name ?? '',                                        // Item Name
-                    $record->variation_en_1 ?? '',                                   // Variation EN 1
-                    $record->value_en ?? '',                                         // Value EN
-                    $record->variation_en_2 ?? '',                                   // Variation EN 2
-                    $record->value_en_2 ?? '',                                       // Value EN 2
-                    $record->variation_en_3 ?? '',                                   // Variation EN 3
-                    $record->value_en_3 ?? '',                                       // Value EN 3
-                    $record->code ?? '',                                             // Code
-                    $record->ISBN ?? '',                                             // ISBN
-                    $record->width ?? '',                                            // Width
-                    $record->height ?? '',                                           // Height
-                    $record->length ?? '',                                           // Length
-                    $record->weight ?? '',                                           // Weight
-                    (($SW / 100) * ($record->weight ?? 0)) + ($record->weight ?? 0), // Shipping Weight
-                    $ShippingClass ?? '',                                            // Shipping Class
-                    $record->is_qty_dividable ?? '',                                 // Is Qty Dividable
-                    $record->is_stock_item ?? '',                                    // Is Stock Item
-                    $record->FOQ ?? '',                                              // FOQ
-                    $record->FSQ ?? '',                                              // FSQ
-                    $MSQ ?? '',                                                      // MSQ
-                    $moq_result ?? '',                                               // MOQ Result
-                    $interval ?? '',                                                 // Interval
-                    $buffer_result ?? '',                                            // Buffer Result
-                    $record->price_rmb ?? '',                                        // Price RMB
-                    'Y',                                                             // Y/N (Constant)
-                    $record->many_components ?? '',                                  // Many Components
-                    $record->effort_rating ?? '',                                    // Effort Rating
-                    $EK_net ?? '',                                                   // EK Net
-                    number_format($ItemVolumeDM3 ?? 0, 2, '.', ''),                  // Item Volume (dm³)
-                    number_format($FreightCostsVolume ?? 0, 2, '.', ''),             // Freight Costs Volume
-                    number_format($FreightCostsWeight ?? 0, 2, '.', ''),             // Freight Costs Weight
-                    number_format($FreightCosts ?? 0, 2, '.', ''),                   // Freight Costs
-                    number_format($ImportDutyChargeEUR ?? 0, 2),                     // Import Duty Charge (EUR)
-                    number_format($SPebay ?? 0, 2, '.', ''),                         // SP eBay
-                    number_format($SPdeNET1 ?? 0, 2, '.', ''),                       // SP DE NET 1
-                    number_format($SPdeNET2 ?? 0, 2, '.', ''),                       // SP DE NET 2
-                    number_format($SPdeNET5 ?? 0, 2, '.', ''),                       // SP DE NET 5
-                    number_format($SPdeNET10 ?? 0, 2, '.', ''),                      // SP DE NET 10
-                    number_format($SPdeNET25 ?? 0, 2, '.', ''),                      // SP DE NET 25
-                    number_format($SPdeNET50 ?? 0, 2, '.', ''),                      // SP DE NET 50
-                    number_format($SPdeNET100 ?? 0, 2, '.', ''),                     // SP DE NET 100
-                    number_format($SPdeNET200 ?? 0, 2, '.', ''),                     // SP DE NET 200
-                    number_format($SPdeNET500 ?? 0, 2, '.', ''),                     // SP DE NET 500
-                    number_format($SPdeNET1000 ?? 0, 2, '.', ''),                    // SP DE NET 1000
-                    number_format($SPdeNET2000 ?? 0, 2, '.', ''),                    // SP DE NET 2000
-                    2, 5, 10, 25, 50, 100, 200, 500, 1000, 2000, 0,                  // Fixed Columns
+                    $record->item_id ?? '',                              // ID
+                    $record->ean ?? '',                                  // EAN
+                    $record->parent_no_de ?? '',                         // Parent No DE
+                    $record->item_no_de ?? '',                           // Item No DE
+                    $supplier ?? '',                                     // Supplier
+                    $record->item_name_de ?? '',                         // Item Name DE
+                    $record->variation_de_1 ?? '',                       // Variation DE 1
+                    $record->value_de ?? '',                             // Value DE
+                    $record->variation_de_2 ?? '',                       // Variation DE 2
+                    $record->value_de_2 ?? '',                           // Value DE 2
+                    $record->variation_de_3 ?? '',                       // Variation DE 3
+                    $record->value_de_3 ?? '',                           // Value DE 3
+                    $record->item_name_en ?? '',                         // Item Name EN
+                    $record->item_name ?? '',                            // Item Name
+                    $record->variation_en_1 ?? '',                       // Variation EN 1
+                    $record->value_en ?? '',                             // Value EN
+                    $record->variation_en_2 ?? '',                       // Variation EN 2
+                    $record->value_en_2 ?? '',                           // Value EN 2
+                    $record->variation_en_3 ?? '',                       // Variation EN 3
+                    $record->value_en_3 ?? '',                           // Value EN 3
+                    $record->code ?? '',                                 // Code
+                    $record->ISBN ?? '',                                 // ISBN
+                    $record->width ?? '',                                // Width
+                    $record->height ?? '',                               // Height
+                    $record->length ?? '',                               // Length
+                    $record->weight ?? '',                               // Weight
+                    $shipping_weight,                                    // Shipping Weight
+                    $ShippingClass ?? '',                                // Shipping Class
+                    $record->is_qty_dividable ?? '',                     // Is Qty Dividable
+                    $record->is_stock_item ?? '',                        // Is Stock Item
+                    $record->FOQ ?? '',                                  // FOQ
+                    $record->FSQ ?? '',                                  // FSQ
+                    $MSQ ?? '',                                          // MSQ
+                    $moq_result ?? '',                                   // MOQ Result
+                    $interval ?? '',                                     // Interval
+                    $buffer_result ?? '',                                // Buffer Result
+                    $record->price_rmb ?? '',                            // Price RMB
+                    'Y',                                                 // Y/N (Constant)
+                    $record->many_components ?? '',                      // Many Components
+                    $record->effort_rating ?? '',                        // Effort Rating
+                    $EK_net ?? '',                                       // EK Net
+                    number_format($ItemVolumeDM3 ?? 0, 2, '.', ''),      // Item Volume (dm³)
+                    number_format($FreightCostsVolume ?? 0, 2, '.', ''), // Freight Costs Volume
+                    number_format($FreightCostsWeight ?? 0, 2, '.', ''), // Freight Costs Weight
+                    number_format($FreightCosts ?? 0, 2, '.', ''),       // Freight Costs
+                    number_format($ImportDutyChargeEUR ?? 0, 2),         // Import Duty Charge (EUR)
+                    number_format($SPebay ?? 0, 2, '.', ''),             // SP eBay
+                    number_format($SPdeNET1 ?? 0, 2, '.', ''),           // SP DE NET 1
+                    number_format($SPdeNET2 ?? 0, 2, '.', ''),           // SP DE NET 2
+                    number_format($SPdeNET5 ?? 0, 2, '.', ''),           // SP DE NET 5
+                    number_format($SPdeNET10 ?? 0, 2, '.', ''),          // SP DE NET 10
+                    number_format($SPdeNET25 ?? 0, 2, '.', ''),          // SP DE NET 25
+                    number_format($SPdeNET50 ?? 0, 2, '.', ''),          // SP DE NET 50
+                    number_format($SPdeNET100 ?? 0, 2, '.', ''),         // SP DE NET 100
+                    number_format($SPdeNET200 ?? 0, 2, '.', ''),         // SP DE NET 200
+                    number_format($SPdeNET500 ?? 0, 2, '.', ''),         // SP DE NET 500
+                    number_format($SPdeNET1000 ?? 0, 2, '.', ''),        // SP DE NET 1000
+                    number_format($SPdeNET2000 ?? 0, 2, '.', ''),        // SP DE NET 2000
+                    2, 5, 10, 25, 50, 100, 200, 500, 1000, 2000, 0,      // Fixed Columns
                     $record->photo,
-                    'R:\\205.5_x_Product_pictures\\MIS_shop_by_EAN\\' . ($record->pix_path ?? ''),            // Image Path EAN
-                    'R:\\205.5_x_Product_pictures\\MIS_ebay_by_ItemID_DE\\' . ($record->pix_path_eBay ?? ''), // Image Path eBay
-                    10000,                                                                                    // Max Quantity
-                ]);
+                    // Image Path EAN
+                    'R:\\205.6_Pictures_&_Videos\\205.6.1_Product_pictures\\205.6.1.2_ChildPictures\\MIS_shop_by_EAN\\' . ($record->pix_path ?? ''),
+                    // Image Path eBay
+                    'R:\\205.6_Pictures_&_Videos\\205.6.1_Product_pictures\\205.6.1.2_ChildPictures\\MIS_ebay_by_ItemID_DE\\' . ($record->pix_path_eBay ?? ''),
+                    10000,   // Max Quantity
+                ], ';'); // Use semicolon delimiter for each data row
             }
 
             fclose($file);
         };
+
         session()->flash('success', "Exported successfully. {$excludedCount} record(s) were excluded due to invalid shipping class.");
-        return Response::stream($callback, 200, $headers);        
+        return Response::stream($callback, 200, $headers);
     }
 
     public function synced_at($itemIds)

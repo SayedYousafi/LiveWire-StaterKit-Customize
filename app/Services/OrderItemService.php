@@ -125,6 +125,7 @@ class OrderItemService
                     ->orWhere('items.ean', 'like', "%$search%")
                     ->orWhere('order_statuses.status', 'like', "%$search%")
                     ->orWhere('orders.order_no', 'like', "%$search%")
+                    ->orWhere('order_statuses.remarks_cn', 'like', "%$search%")
                     ->orWhere('items.remark', 'like', "%$search%");
                 // ->orWhere('warehouse_items.parent_no_de', 'like', "%$search%");
             });

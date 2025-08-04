@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class ItemDescription extends Component
 {
-    public $parent_id = 263;
+    public $parent_id, $p_no;
 
     public $shortDescs = [];
 
@@ -45,7 +45,7 @@ class ItemDescription extends Component
 
         $items = Parents::with(['items:id,ean,item_name,model,parent_id'])
             ->where('id', $this->parent_id)
-            ->get(['id', 'name_de'])
+            ->get(['id', 'name_de', 'name_en'])
             ->toArray();
 
         foreach ($items as $parent) {
@@ -67,6 +67,7 @@ class ItemDescription extends Component
                             'model' => $item['model'] ?? null,
                             'parent_id' => $this->parent_id,
                             'parent_name' => $parent['name_de'],
+                            'parent_name_en' => $parent['name_en'],
                         ]);
                     }
                 }
@@ -84,37 +85,39 @@ class ItemDescription extends Component
         return response()->streamDownload(function () {
             $output = fopen('php://output', 'w');
             fprintf($output, "\xEF\xBB\xBF"); // Add UTF-8 BOM
-            fputcsv($output, ['EAN', 'Short Description EN', 'Short Description DE']);
+            //fputcsv($output, ['EAN', 'Short Description DE', 'Short Description EN']);
+            fputcsv($output, ['EAN', 'Short Description DE', 'Short Description EN'], ';');
 
-            $shortDescs = ShortDescription::all();
+            $shortDescs = ShortDescription::where('parent_id', $this->parent_id)->get();
             $groupedItems = $shortDescs->groupBy('ean');
 
             foreach ($groupedItems as $ean => $items) {
-                // $filteredItems = $items->filter(fn($item) => ! ($item->type == 6 && is_null($item->model)));
+                // <strong>Download {$item->value} {$item->parent_name_en}.pdf</strong> // <strong>Download {$item->value2} {$item->parent_name}.pdf</strong>
                 $filteredItems = $items->filter(fn ($item) => ! ($item->type == 6 && empty($item->model)));
                 $fullTextEn = $filteredItems->map(fn ($item) => match ($item->type) {
                     1 => "<p>{$item->value}</p>",
-                    2 => "<p>{$item->value} <strong><a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'>{$item->parent_name} Inquiry</a></strong></p>",
-                    3 => "<p><a href='https://data.gtech-shop.de/CAD/".str_replace(' ', '_', $item->item_name).".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value} \"{$item->item_name}.stp\"</strong></a></p>",
-                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/".str_replace(' ', '_', $item->parent_name).".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /> <strong>Download {$item->value} {$item->parent_name}.pdf</strong></a></p>",
+                    2 => "<p>{$item->value} <strong><a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name_en}'>{$item->parent_name_en} Inquiry</a></strong></p>",
+                    3 => "<p><a href='https://data.gtech-shop.de/CAD/".str_replace(' ', '_', $item->parent_name).".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value} \"{$item->parent_name}.stp\"</strong></a></p>",
+                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/".str_replace(' ', '_', $item->parent_name).".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /><strong>Download  {$item->parent_name}.pdf</strong> </a></p>",
                     5 => "<p><a href='https://data.gtech-shop.de/Datasheets/{$item->value}.pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_Norm_Icon.jpg' /> <strong>Download {$item->value}.pdf</strong></a></p>",
-                    6 => "<p><a href='https://data.gtech-shop.de/CAD/{$item->model}.stp'><img alt='' src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download \"{$item->model}.stp\"</strong></a> <a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'><strong>Inquire other {$item->parent_name} CAD files</strong></a></p>",
+                    6 => "<p><a href='https://data.gtech-shop.de/CAD/{$item->model}.stp'><img alt='STP_Icon' src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download \"{$item->model}.stp\"</strong></a> <a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name_en}'></a></p>",
                 })->implode('');
 
                 $fullTextDe = $filteredItems->map(fn ($item) => match ($item->type) {
                     1 => "<p>{$item->value2}</p>",
-                    2 => "<p>{$item->value2} <strong><a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'>{$item->parent_name} Inquiry</a></strong></p>",
-                    3 => "<p><a href='https://data.gtech-shop.de/CAD/".str_replace(' ', '_', $item->item_name).".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value2} \"{$item->item_name}.stp\"</strong></a></p>",
-                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/".str_replace(' ', '_', $item->parent_name).".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /> <strong>Download {$item->value2} {$item->parent_name}.pdf</strong></a></p>",
-                    5 => "<p><a href='https://data.gtech-shop.de/Datasheets/{$item->value2}.pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_Norm_Icon.jpg' /> <strong>Download {$item->value2}.pdf</strong></a></p>",
-                    6 => "<p><a href='https://data.gtech-shop.de/CAD/{$item->model}.stp'><img alt='' src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download \"{$item->model}.stp\"</strong></a> <a href='mailto:info@gtech.de?subject=Inquiry {$item->parent_name}'><strong>Inquire other {$item->parent_name} CAD files</strong></a></p>",
+                    2 => "<p>{$item->value2} <strong><a href='mailto:info@gtech.de?subject=Anfrage {$item->parent_name}'>{$item->parent_name} Anfrage</a></strong></p>",
+                    3 => "<p><a href='https://data.gtech-shop.de/CAD/".str_replace(' ', '_', $item->parent_name).".stp'><img src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download {$item->value2} \"{$item->parent_name}.stp\"</strong></a></p>",
+                    4 => "<p><a href='https://data.gtech-shop.de/Datasheets/".str_replace(' ', '_', $item->parent_name).".pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_GT_Icon.jpg' /><strong>Download  {$item->parent_name}.pdf</strong> </a></p>",
+                    5 => "<p><a href='https://data.gtech-shop.de/Datasheets/{$item->value2}.pdf' target='_blank'><img src='https://data.gtech-shop.de/data/Icons/Datenblatt_Norm_Icon.jpg' /> <strong>Download {$item->value2}.pdf</strong><strong>Download  {$item->parent_name}.pdf</strong></a></p>",
+                    6 => "<p><a href='https://data.gtech-shop.de/CAD/{$item->model}.stp'><img alt='STP_Icon' src='https://data.gtech-shop.de/data/Icons/STP_Icon.jpg' /> <strong>Download \"{$item->model}.stp\"</strong></a> <a href='mailto:info@gtech.de?subject=Anfrage {$item->parent_name}'></a></p>",
                 })->implode('');
 
-                fputcsv($output, [$ean, $fullTextEn, $fullTextDe]);
+                //fputcsv($output, [$ean, $fullTextDe, $fullTextEn ]);
+                fputcsv($output, [$ean, $fullTextDe, $fullTextEn], ';');
             }
 
             fclose($output);
-        }, 'short_descriptions.csv');
+        }, "Short_Description.csv");
     }
 
     public function render()

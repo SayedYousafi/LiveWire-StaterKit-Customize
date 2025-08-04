@@ -22,6 +22,7 @@ class Login extends Component
     public string $password = '';
 
     public bool $remember = false;
+    public bool $isActive = true;
 
     /**
      * Handle an incoming authentication request.
@@ -32,7 +33,7 @@ class Login extends Component
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password, 'isActive' => $this->isActive], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

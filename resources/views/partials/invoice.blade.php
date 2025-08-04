@@ -85,13 +85,8 @@
 
   <div class="content">
     
-    <table>
-      <tr>
-        @foreach ($data as $item)
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      </tr>
+    <table> 
+      @foreach ($data as $item)
       <tr>
         @if(!empty($item->delivery_address_line1))
         <td><strong>BILL TO:</strong></td>
@@ -164,7 +159,7 @@
         <tr class="myFontSize">
           <th nowrap>No &nbsp;</th>
           <th  align="left">&nbsp; Description</th>
-          <th style="word-wrap: break-word;">Taric <br> (EU HS code)</th>
+          <th style="word-wrap: break-word;">(EU HS code)</th>
           <th >Qty <br> (pcs)</th>
           <th >Unit <br> (€)*</th>
           <th  align="right">Price <br> (€)</th>

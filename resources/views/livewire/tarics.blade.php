@@ -22,7 +22,7 @@
             <div class="grid grid-cols-4 gap-2">
 
                 <div class="col-span-1">
-                    <flux:input size="sm" wire:model='code' label="Taric code:" placeholder="Taric code" autofocus/>
+                    <flux:input size="sm" wire:model='code' label="Taric code:" placeholder="Taric code" autofocus />
                 </div>
                 <div class="col-span-1">
                     <flux:input size="sm" wire:model='duty_rate' label="Duty rate:" placeholder="Duty rate " />
@@ -37,7 +37,9 @@
                 <div class="col-span-4">
                     <flux:input size="sm" wire:model='name_de' label="Taric Name DE" placeholder="Taric name DE" />
                 </div>
-
+                <div class="col-span-4">
+                    <flux:input size="sm" wire:model='name_cn' label="Taric Name Chinese" placeholder="Taric name CN" />
+                </div>
                 <div class="col-span-4">
                     <flux:input size="sm" wire:model='description_en' label="Description EN:"
                         placeholder="Taric Description EN" />
@@ -84,6 +86,9 @@
                         Name DE
                     </th>
                     <th scope="col" class="px-6 py-3">
+                        Name In Chinese
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Duty rate
                     </th>
                     <th colspan="2" scope="col" class="px-6 py-3">
@@ -93,11 +98,13 @@
             </thead>
             <tbody>
                 @forelse ($tarics as $taric )
-                <tr wire:key='{{ $taric->id }}' class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
+                <tr wire:key='{{ $taric->id }}'
+                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
 
                     <td class="px-2 py-1">
-                        {{ $taric->id }} 
-                        <a href="{{ route('items') }}/taricID-{{ $taric->id }}" class=" text-blue-700 text-bold ">({{ $taric->items_count }})</@aware(['propName'])> 
+                        {{ $taric->id }}
+                        <a href="{{ route('items') }}/taricID-{{ $taric->id }}" class=" text-blue-700 text-bold ">({{
+                            $taric->items_count }})</@aware(['propName'])>
                     </td>
                     <td class="px-2 py-1">
                         {{ $taric->code }}
@@ -108,10 +115,11 @@
                     <td class="px-2 py-1">
                         {{ $taric->name_de }}
                     </td>
+                    <td class="px-2 py-1">{{ $taric->name_cn }}</td>
                     <td class="px-2 py-1">
                         {{ $taric->duty_rate }}
                     </td>
-                    
+
                     <td class="px-2 py-1">
                         <flux:button variant='primary' icon='pencil-square' wire:click='edit({{ $taric->id }})'
                             size='sm'>Details</flux:button>

@@ -154,7 +154,7 @@
                             wire:confirm="Are you sure deleting this record?" size="sm">Delete</flux:button>
                     </td> --}}
                     <td>
-                        <flux:button as href="{{ route('shortdesc', $parent->id) }}" size='sm' class=" bg-blue-600! text-white! hove:bg-blue-500!" >Description</flux:button>
+                        <flux:button as href="{{ route('shortdesc', [$parent->id,$parent->de_no ]) }}" icon='bars-3-bottom-right' size='sm' class=" bg-blue-600! text-white! hove:bg-blue-500!" >Description</flux:button>
                     </td>
                 </tr>
                 @empty

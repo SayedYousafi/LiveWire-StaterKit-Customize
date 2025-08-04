@@ -33,11 +33,11 @@
             @endphp
             @if ($fixedCode)
             <td>{{ $fixedCode->name_en }}</td>
-            <td class="border border-gray-300 !dark:border-gray-700 p-1 bg-yellow-200 !dark:bg-yellow-700">{{
+            <td class="!border !border-gray-300 !dark:border-gray-700 p-1 bg-yellow-200 !dark:bg-yellow-700">{{
                 $fixedCode->code }}</td>
             @else
-            <td class="border border-gray-300 !dark:border-gray-700 p-1 text-red-500">Tariff Name Missing</td>
-            <td class="border border-gray-300 !dark:border-gray-700 p-1 bg-yellow-200 !dark:bg-yellow-700 text-red-500">
+            <td class="!border !border-gray-300 !dark:border-gray-700 p-1 text-red-500">Tariff Name Missing</td>
+            <td class="!border !border-gray-300 !dark:border-gray-700 p-1 bg-yellow-200 !dark:bg-yellow-700 text-red-500">
                 Code Missing</td>
             @endif
             @else
@@ -52,11 +52,14 @@
             @endif
 
             <td>{{ $item->totalQty }}</td>
-            <td>{{ number_format($item->totalValue / $item->totalQty, 2) }}</td>
+            <td>
+                {{ $item->totalQty != 0 ? number_format($item->totalValue / $item->totalQty, 2) : '0.00' }}
+            </td>
+
             <td>{{ number_format($item->totalValue, 2) }}</td>
             <td>
-                @if ($item->totalValue < $myValue) 
-                <flux:button class="bg-blue-600! text-white! hover:bg-blue-500!" size='sm' icon='cog-8-tooth'
+                @if ($item->totalValue < $myValue) <flux:button class="bg-blue-600! text-white! hover:bg-blue-500!"
+                    size='sm' icon='cog-8-tooth'
                     wire:click="selectTotalPrice({{ $item->itemTaricId }}, {{ $item->setItemId }})">
                     Set taric
                     </flux:button>

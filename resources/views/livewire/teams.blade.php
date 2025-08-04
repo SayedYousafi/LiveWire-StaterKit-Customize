@@ -31,10 +31,29 @@
             @endif
             <div class="grid grid-cols-4 gap-4">
                 <div class="col-span-2">
-                    <flux:select wire:model="status" placeholder="Active / Inactive"
+                    <flux:select wire:model="user_id" placeholder="Select user" label="User Profile"
+                        :disabled="$enableEdit">
+                        <flux:select.option value="" selected>Select user</flux:select.option>
+                        @foreach ($users as $user )
+                        <flux:select.option value="{{ $user->id }}">{{ $user->name }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </div>
+                <div class="col-span-2">
+                    <flux:select wire:model="work_profile_id" label="Work profile"
                         :disabled="$isUpdate && !$enableEdit">
-                        <flux:select.option>Active</flux:flux:select.option>
-                        <flux:select.option>InActive</flux:flux:select.option>
+                        <flux:select.option value="" selected>Select work profile</flux:select.option>
+                        @foreach ($workProfiles as $id => $name )
+                        <flux:select.option value="{{ $id }}">{{ $name }}</flux:select.option>
+                        @endforeach
+                    </flux:select>
+                </div>
+                <div class="col-span-2">
+                    <flux:select wire:model="status" placeholder="Active/Inactive" label="Active/Inactive"
+                        :disabled="$isUpdate && !$enableEdit">
+                        <flux:select.option>Select Status</flux:select.option>
+                        <flux:select.option value="1">Active</flux:select.option>
+                        <flux:select.option value="0">InActive</flux:select.option>
                     </flux:select>
                 </div>
                 {{-- <div class="grid grid-cols-4 gap-4"> --}}
@@ -120,12 +139,12 @@
                             class="w-full" :disabled="$isUpdate && !$enableEdit" />
                     </div>
                     <div class="col-span-2">
-                        <flux:input type='text' wire:model="street" label="Street" placeholder="Street"
-                            class="w-full" :disabled="$isUpdate && !$enableEdit" />
+                        <flux:input type='text' wire:model="street" label="Street" placeholder="Street" class="w-full"
+                            :disabled="$isUpdate && !$enableEdit" />
                     </div>
                     <div class="col-span-2">
-                        <flux:input type='text' wire:model="city" label="City" placeholder="City"
-                            class="w-full" :disabled="$isUpdate && !$enableEdit" />
+                        <flux:input type='text' wire:model="city" label="City" placeholder="City" class="w-full"
+                            :disabled="$isUpdate && !$enableEdit" />
                     </div>
                     <div class="col-span-2">
                         <flux:input type='text' wire:model="country" label="Country" placeholder="Country"
@@ -163,6 +182,7 @@
                 <tr>
                     <th class="px-6 py-3">ID</th>
                     <th class="px-6 py-3">Name</th>
+                    <th class="px-6 py-3">Work profile</th>
                     <th class="px-6 py-3">Email</th>
                     <th class="px-6 py-3">Mobile</th>
                     <th class="px-6 py-3">Emergency contact</th>
@@ -181,6 +201,7 @@
                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                     <td class="px-2 py-1">{{ $team->id }}</td>
                     <td class="px-2 py-1">{{ $team->first_name }} {{ $team->last_name }}</td>
+                    <td class="px-2 py-1">{{ $team->user?->workProfile?->name ?? '-' }}</td>
                     <td class="px-2 py-1">{{ $team->email_business }}</td>
                     <td class="px-2 py-1">{{ $team->mobile }}</td>
                     <td class="px-2 py-1">{{ $team->contact_number }}</td>
@@ -210,7 +231,7 @@
                 @endforelse
                 @if($active ==0)
                 <tr>
-                    <td colspan="7" align="center">
+                    <td colspan="10" align="center">
                         <em>May they all be filled with loving-kindness.<br>
                             May they all be free from suffering.<br>
                             May theý all be well.<br>

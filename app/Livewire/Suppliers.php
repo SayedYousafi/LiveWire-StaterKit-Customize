@@ -70,7 +70,6 @@ class Suppliers extends Component
     {
         return view('livewire.suppliers')->with([
             'suppliers' => Supplier::withCount('items')->search($this->search)->with('orderType')->orderBy('id')->paginate(100),
-            // 'tarics' => Taric::withCount('items')->search($this->search)->paginate(25),
             'title' => $this->title,
             'order_types' => Supplier_type::all(),
         ]);
@@ -84,7 +83,6 @@ class Suppliers extends Component
 
         if (! $created) {
             session()->flash('error', 'Something went wrong in creating new supplier');
-
             return;
         }
 
@@ -112,7 +110,6 @@ class Suppliers extends Component
 
         if (! $updated) {
             session()->flash('error', 'Something went wrong in updating supplier');
-
             return;
         }
 

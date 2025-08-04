@@ -209,6 +209,19 @@ class ItemEdits extends Component
         $this->successMessage = 'Item pix paths updated successfully !!!';
     }
 
+        public function editNpr($id)
+    {
+        date_default_timezone_set('Europe/Berlin');
+        Item::where('id', $this->id)->update([
+
+            'is_npr' => $this->is_npr,
+            'npr_remark' => null,
+           
+        ]);
+
+        session()->flash('success', "Item NPR set to $this->is_npr successfully !!!");
+    }
+
     public function editNames($id)
     {
         date_default_timezone_set('Europe/Berlin');
@@ -467,7 +480,7 @@ date_default_timezone_set('Europe/Berlin');
         $itemDetail = $query->first();
 
         // dd($itemDetail);
-        $this->item_name_de = $itemDetail->name_de;
+        $this->item_name_de = $itemDetail->item_name_de;
         $this->item_name_en = $itemDetail->item_name_en;
         $this->item_name = $itemDetail->item_name;
         $this->item_name_cn = $itemDetail->item_name_cn;
@@ -524,7 +537,7 @@ date_default_timezone_set('Europe/Berlin');
         
         $this->stock_qty = $itemDetail->stock_qty;
         $this->model = $itemDetail->model;
-$this->is_dimension_special = $itemDetail->is_dimension_special;
+        $this->is_dimension_special = $itemDetail->is_dimension_special;
         $tarics = Taric::all();
         $categories = Category::pluck('name', 'id');
 

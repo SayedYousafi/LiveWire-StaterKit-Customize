@@ -1,9 +1,4 @@
 <div class="p-6 bg-white dark:bg-gray-900 rounded shadow">
-    @if(session('success'))
-    <flux:callout variant='success' heading="{{ session('success') }}" />
-
-    @endif
-
     @php
 
     $disabled = ($itemDetail->parent_no_de == 'NONE') ? 'disabled' : '';
@@ -21,6 +16,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">EAN</label>
                 <div class="mt-1 text-gray-900 dark:text-gray-100">{{ $itemDetail->ean }}</div>
+                
             </div>
             <div>
                 <flux:input wire:model="item_name" label="Item Name" placeholder="Item Name" class="w-full" />
@@ -448,6 +444,9 @@
 
     <!-- Paths and isNPR Section -->
     <fieldset class="border border-gray-300 dark:border-gray-600 p-4 mt-6 rounded">
+    @if(session('success'))
+        <flux:callout variant='success' heading="{{ session('success') }}" />
+    @endif
         @if($successMessage === 'Item pix paths updated successfully !!!')
         <flux:callout variant="success" heading="{{ $successMessage }}" class="mb-3" />
         @endif
@@ -456,7 +455,7 @@
         </legend>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">isNPR</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">isNPR?</label>
                 <flux:dropdown>
                     <flux:button icon:trailing="chevron-down">
                         {{ $is_npr === 'Y' ? 'Yes' : ($is_npr === 'N' ? 'No' : 'Select') }}
@@ -466,6 +465,8 @@
                         <flux:menu.item wire:click="$set('is_npr', 'N')">No</flux:menu.item>
                     </flux:menu>
                 </flux:dropdown>
+                <flux:button class="px-4 py-2 bg-gray-800! text-white! rounded! hover:bg-gray-700!"
+                wire:click='editNpr({{ $itemDetail->item_id }})'>Save</flux:button>
             </div>
             <div>
                 <flux:input wire:model="npr_remark" label="NPR remark" placeholder="Enter remarks here" />
@@ -480,7 +481,7 @@
         </div>
         <div class="text-right mt-4">
             <flux:button class="px-4 py-2 bg-gray-800! text-white! rounded! hover:bg-gray-700!"
-                wire:click='editPixPath({{ $itemDetail->supp_id }})'>Save</flux:button>
+                wire:click='editPixPath({{ $itemDetail->item_id }})'>Save</flux:button>
         </div>
 
     </fieldset>

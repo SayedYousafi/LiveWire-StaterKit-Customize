@@ -16,7 +16,6 @@
         <flux:callout variant="danger" icon="x-circle" heading="{{ session('error') }}" />
     </div>
     @endif
-    {{-- @include('partials.adjust-problem') --}}
     @include('partials.edit-qty')
     <table class="table-default mt-2">
         <thead>

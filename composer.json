@@ -11,6 +11,9 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^3.1",
+        "dompdf/dompdf": "^3.1",
+        "dompdf/php-font-lib": "^1.0",
+        "dompdf/php-svg-lib": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/flux": "^2.1.1",

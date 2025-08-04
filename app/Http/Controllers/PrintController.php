@@ -1,10 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Cci_customer;
 use App\Models\Order_status;
+use App\Models\PackingList;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
@@ -67,7 +66,7 @@ class PrintController extends Controller
         // dd($id, $sn);
         $data = DB::table('cci_invoices')
             ->join('cci_customers', 'cci_invoices.cci_customer_id', '=', 'cci_customers.id')
-        // ->join('tcustomers', 'tcustomers.id', '=', 'cci_customers.customer_id')
+
             ->where('cci_invoices.cci_customer_id', $id)
             ->where('cci_invoices.invSerialNo', $sn)
             ->select(
@@ -88,34 +87,26 @@ class PrintController extends Controller
         // Create the PDF
         $pdf       = Pdf::loadView('partials.invoice', compact('data'));
         $file_name = 'invoice.pdf';
-
-        return $pdf->stream();
+        //return $pdf->download();  
+        return $pdf->stream($file_name);
     }
-    public function packList($date)
+    public function packList($id, $name)
     {
-
-        // Format the date to only keep the Y-m-d part
-        //$formattedDate = Carbon::parse($date)->format('Y-m-d');
-
+        
         $packList = DB::table('packing_lists as t1')
             ->join('cci_customers as c', 'c.customer_id', '=', 't1.customer_id')
-            ->where('t1.created_at', $date)
+            ->where('t1.cargo_id', $id)
             ->select(
                 't1.id',
+                't1.invoice_no',
+                't1.cargo_no',
                 't1.customer_id',
-                DB::raw("CASE
-                        WHEN t1.item_qty = 0 AND EXISTS (
-                            SELECT 1
-                            FROM packing_lists t2
-                            WHERE t2.item_description = t1.item_description
-                              AND t2.item_qty != 0
-                        )
-                        THEN NULL
-                        ELSE t1.item_description
-                    END AS item_description"),
+                't1.item_description',
+                't1.cn_description',
                 't1.item_qty',
                 't1.client1',
                 't1.pallet',
+                't1.ptype',
                 't1.weight',
                 't1.length',
                 't1.width',
@@ -130,17 +121,16 @@ class PrintController extends Controller
                 'c.country',
                 'c.contact_phone'
             )
+            ->orderBy('t1.item_description')
             ->distinct()
             ->get();
         //dd($packList);
+        $pdf = Pdf::loadView('partials.packList', compact('packList'));
 
-        //$countZeroQty = $packList->where('packing_lists.item_qty', '=', 0)->count();
-        $countZeroQty = $packList->where('item_qty', 0)->count();
-
-        $pdf = Pdf::loadView('partials.packList', compact('packList', 'countZeroQty'))
-            ->setPaper('a4', 'landscape');
-        $file_name = 'PackingList.pdf';
-
-        return $pdf->stream();
+        $file_name = 'PL_' . $name . '.pdf';
+        //dd($file_name);
+        return $pdf->stream("$file_name");
+        //return $pdf->download($file_name);
     }
+
 }

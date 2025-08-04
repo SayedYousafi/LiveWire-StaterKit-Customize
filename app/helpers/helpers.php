@@ -361,4 +361,14 @@ if (! function_exists('SPebay')) {
 
         return $Price;
     }
+
 }
+
+
+if (!function_exists('round_up')) {
+    function round_up($number, $precision = 2) {
+        $factor = pow(10, $precision);
+        return ceil($number * $factor) / $factor;
+    }
+}
+

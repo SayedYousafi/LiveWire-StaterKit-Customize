@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -23,6 +22,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'location',
+        'join_date',
+        'work_profile_id'
     ];
 
     /**
@@ -44,7 +46,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
@@ -55,7 +57,22 @@ class User extends Authenticatable
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+    public function leaves()
+    {
+        return $this->belongsTo(LeaveRequest::class, 'id', 'user_id');
+    }
+
+    public function workProfile()
+    {
+        return $this->belongsTo(WorkProfile::class);
+    }
+
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
     }
 }

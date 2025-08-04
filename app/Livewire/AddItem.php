@@ -9,7 +9,8 @@ use App\Models\Supplier;
 use App\Models\Supplier_item;
 use App\Models\Taric;
 use App\Models\VarVal;
-use App\Models\WareHouse;
+
+use App\Models\Warehouse;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -18,7 +19,6 @@ use Livewire\WithFileUploads;
 class AddItem extends Component
 {
     use WithFileUploads;
-
     public $search = '';
 
     public $showresult = true;
@@ -170,7 +170,7 @@ class AddItem extends Component
             $this->supp_cat = 'STD';
         }
 
-        if ($id == 262) {
+        if ($id != 262) {
             $this->validate([
                 'en_v1' => 'required',
                 'de_v1' => 'required',
@@ -249,7 +249,7 @@ class AddItem extends Component
             'value_en_3' => $this->value_en_3,
         ]);
 
-        WareHouse::create([
+        Warehouse::create([
             'item_id' => $item->id,
             'ean' => $ean,
             'item_no_de' => $item_no_de,

@@ -24,6 +24,7 @@ class Tarics extends Component
     public $name_en;
 
     public $name_de;
+    public $name_cn;
 
     public $reguler_artikel;
 
@@ -50,6 +51,7 @@ class Tarics extends Component
         $done = Taric::create([
             'name_en' => $this->name_en,
             'name_de' => $this->name_de,
+            'name_cn' => $this->name_cn,
             'reguler_artikel' => $this->reguler_artikel,
             'duty_rate' => $this->duty_rate,
             'description_de' => $this->description_de,
@@ -71,6 +73,7 @@ class Tarics extends Component
         Flux::modal('myModal')->show();
         $taric = Taric::findOrFail($id);
         $this->name_en = $taric->name_en;
+         $this->name_cn = $taric->name_cn;
         $this->name_de = $taric->name_de;
         $this->description_de = $taric->description_de;
         $this->description_en = $taric->description_en;
@@ -89,6 +92,7 @@ class Tarics extends Component
         ]);
         $done = Taric::where('id', $this->taricId)->update([
             'name_en' => $this->name_en,
+            'name_cn' => $this->name_cn,
             'name_de' => $this->name_de,
             'reguler_artikel' => $this->reguler_artikel,
             'duty_rate' => $this->duty_rate,

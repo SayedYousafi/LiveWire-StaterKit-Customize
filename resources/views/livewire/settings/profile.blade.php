@@ -1,7 +1,8 @@
 <section class="w-full">
     @include('partials.settings-heading')
 
-    <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
+    <x-settings.layout :user="Auth::user()->name" :heading="__('Profile')" :subheading="__('Update your name and email address')">
+        
         <form wire:submit="updateProfileInformation" class="my-6 w-full space-y-6">
             <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
 
@@ -26,6 +27,13 @@
                     </div>
                 @endif
             </div>
+            {{-- <div>
+                <flux:select size='sm' wire:model="location" label="Location" placeholder="Choose location...">
+                    <flux:select.option>Germany</flux:select.option>
+                    <flux:select.option>Cyprus</flux:select.option>
+                    <flux:select.option>China</flux:select.option>
+                </flux:select>
+            </div> --}}
 
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
@@ -38,6 +46,6 @@
             </div>
         </form>
 
-        <livewire:settings.delete-user-form />
+        {{-- <livewire:settings.delete-user-form /> --}}
     </x-settings.layout>
 </section>
