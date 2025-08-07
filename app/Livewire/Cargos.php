@@ -33,7 +33,7 @@ class Cargos extends Component
 
     public $dep_date;
 
-    public $pickup_date;
+    public $eta;
 
     public $remark;
 
@@ -41,7 +41,7 @@ class Cargos extends Component
 
     public function render()
     {
-        $cargos = Cargo::orderBy('id', 'desc')->paginate(15);
+        $cargos = Cargo::with('cargoType', 'customer')->orderBy('id', 'desc')->paginate(25);
         $customers = Customer::all();
         $cargo_types = Cargo_type::all();
 
@@ -64,7 +64,6 @@ class Cargos extends Component
 
         if (! $created) {
             session()->flash('error', 'Something went wrong in creating new Cargo');
-
             return;
         }
 
@@ -76,7 +75,7 @@ class Cargos extends Component
     public function edit($id)
     {
         $cargo = Cargo::findOrFail($id);
-
+        
         $this->cargoId = $id;
         $this->isUpdate = true;
         $this->fill($cargo->only(array_keys($this->getCargoData())));
@@ -90,13 +89,13 @@ class Cargos extends Component
             'cargo_no' => 'required',
             'customer_id' => 'required',
             'cargo_type_id' => 'required',
+            
         ]);
 
         $updated = Cargo::where('id', $this->cargoId)->update($this->getCargoData());
 
         if (! $updated) {
             session()->flash('error', 'Something went wrong in updating Cargo');
-
             return;
         }
 
@@ -130,9 +129,9 @@ class Cargos extends Component
             'cargo_type_id' => $this->cargo_type_id,
             'customer_id' => $this->customer_id,
             'dep_date' => $this->dep_date,
-            'pickup_date' => $this->pickup_date,
+            'eta' =>'12121212',
             'remark' => $this->remark,
-            'shipped_at' => $this->shipped_at,
+            'shipped_at' =>'12121212',
         ];
     }
 }

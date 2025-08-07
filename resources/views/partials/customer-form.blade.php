@@ -1,5 +1,7 @@
+<flux:modal name="customerEditModal" class="max-w-6xl">
 <form wire:submit.prevent="save" class="space-y-6">
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-2">
+        <div class="md:col-span-4 text-lg font-semibold dark:text-white">BILL TO:</div>
         <div>
             <flux:label for="customer_type">Select Customer Type: </flux:label>
             <flux:select name="customer_type_id" id="customer_type" wire:model.live="customer.customer_type_id">
@@ -21,15 +23,13 @@
         <flux:input name="contact_phone" label="Contact Phone:" wire:model.defer="customer.contact_phone" />
         <flux:input name="contact_mobile" label="Contact Mobile:" wire:model.defer="customer.contact_mobile" />
         <flux:input name="contact_email" label="Contact Email:" wire:model.defer="customer.contact_email" />
-
-        <div class="md:col-span-4 text-lg font-semibold dark:text-white">BILL TO:</div>
-
         <flux:input name="country" label="Country:" wire:model.defer="customer.country" />
         <flux:input name="city" label="City:" wire:model.defer="customer.city" />
         <flux:input name="postal_code" label="Postal Code:" wire:model.defer="customer.postal_code" />
         <flux:input name="address_line1" label="Full Address:" wire:model.defer="customer.address_line1" class="md:col-span-1 lg:col-span-2" />
-
-        <div class="md:col-span-4 text-lg font-semibold dark:text-white">SHIP TO:</div>
+        
+        <div class="md:col-span-4 mt-3"><flux:separator variant="danger"/> </div>
+        <div class="md:col-span-4 text-lg font-semibold dark:text-white mt-3 mb-3">SHIP TO:</div>
 
         <flux:input name="delivery_country" label="Delivery Country:" wire:model.defer="customer.delivery_country" />
         <flux:input name="delivery_city" label="Delivery City:" wire:model.defer="customer.delivery_city" />
@@ -49,3 +49,4 @@
         </div>
     </div>
 </form>
+</flux:modal>

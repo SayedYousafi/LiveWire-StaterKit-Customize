@@ -13,24 +13,30 @@
 
             @if (!is_null($this->daysDifference))
 
+            @php
+            $noOfDays = $this->daysDifference;
+            $requestYear = \Carbon\Carbon::parse($this->dateFrom)->year;
+            $currentYear = now()->year;
+            $leaveBalance = $this->leaveBalance();
+
+            $remainingPrevious = $leaveBalance['Previous']['remaining'] ?? 0;
+            $remainingCurrent = $leaveBalance['Current']['remaining'] ?? 0;
+            $totalRemaining = $remainingPrevious + $remainingCurrent;
+            @endphp
+
             <div class="flex items-center gap-2">
-                <span>No. of days requested: {{ $noOfDays = $this->daysDifference }}</span>
+                <span>No. of days requested: {{ $noOfDays }}</span>
             </div>
 
             {{-- Insufficient balance warning --}}
-            @php
-            $requestYear = \Carbon\Carbon::parse($this->dateFrom)->year;
-            $currentYear = now()->year;
-            @endphp
-
-            @if ($requestYear == $currentYear)
-            @if($this->daysDifference > $this->leaveBalance())
-            <flux:callout variant="danger" heading="Insufficient leave balance" class="mt-2">
-                You only have <strong>{{ $this->leaveBalance() }}</strong> day(s) remaining.
+            @if ($requestYear == $currentYear && $noOfDays > $totalRemaining)
+            <flux:callout icon="x-circle" variant="danger" heading="Insufficient leave balance" class="mt-2">
+                You only have <strong>{{ $totalRemaining }}</strong> day(s) remaining.
             </flux:callout>
             @endif
+
             @endif
-            @endif
+
             <flux:textarea wire:model='reason' label='Reason:' rows='2' />
             <div class="flex items-center gap-4">
                 <div class="flex items-center justify-end">
@@ -55,12 +61,10 @@
                     <th>Date From</th>
                     <th>Date To</th>
                     <th>Normal Days</th>
-
                     <th>Status</th>
                     <th>Reason</th>
                     <th>Requested</th>
                     <th>Reject remarks</th>
-
                 </tr>
             </thead>
             <tbody>

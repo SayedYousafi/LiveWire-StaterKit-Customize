@@ -2,10 +2,8 @@
     @if (session('success'))
     <flux:callout variant="success" heading="{{ session('success') }}" />
     @endif
+@include('partials.customer-form')
 
-    <flux:modal name="customerEditModal" class="max-w-6xl">
-        @include('partials.customer-form')
-    </flux:modal>
 <div class="flex justify-between mt-3">
         <flux:button icon="plus-circle" class="bg-blue-600! text-white! hover:bg-blue-500!" wire:click="create">
     New customer
@@ -27,9 +25,12 @@
                 <th>ID</th>
                 <th>Customer Type</th>
                 <th>Company</th>
+                <th>Delivery Company</th>
+                <th>Delivery address</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Website</th>
+                
                 <th colspan="2"> Actions</th>
             </tr>
         </thead>
@@ -39,6 +40,8 @@
                 <td>{{ $customer->id }}</td>
                 <td>{{ $customer->customerType?->type_name }}</td>
                 <td>{{ $customer->customer_company_name }}</td>
+                <td>{{ $customer->delivery_company_name }}</td>
+                <td>{{ $customer->delivery_country }}, {{ $customer->delivery_city }}, {{ $customer->delivery_postal_code }}, {{ $customer->delivery_address_line1 }} {{ $customer->delivery_address_line2 }}</td>
                 <td>{{ $customer->email }}</td>
                 <td>{{ $customer->phone }}</td>
                 <td>{{ $customer->website }}</td>

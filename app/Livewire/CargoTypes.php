@@ -25,6 +25,7 @@ class CargoTypes extends Component
     public $time_rec;
 
     public $time_ship;
+    public $duration;
 
     public function render()
     {
@@ -39,9 +40,10 @@ class CargoTypes extends Component
     {
         $this->validate([
             'cargo_type' => 'required|string|max:255',
-            'time_pre' => 'required|integer',
-            'time_rec' => 'required|integer',
-            'time_ship' => 'required|integer',
+            // 'time_pre' => 'required',
+            // 'time_rec' => 'required',
+            // 'time_ship' => 'required',
+            'duration' => 'required'
         ]);
 
         $created = Cargo_type::create($this->getCargoTypeData());
@@ -64,7 +66,7 @@ class CargoTypes extends Component
         $this->cargoTypeId = $id;
         $this->isUpdate = true;
         $this->fill($cargoType->only([
-            'cargo_type', 'time_pre', 'time_rec', 'time_ship',
+            'cargo_type', 'time_pre', 'time_rec', 'time_ship','duration'
         ]));
 
         Flux::modal('myModal')->show();
@@ -74,9 +76,10 @@ class CargoTypes extends Component
     {
         $this->validate([
             'cargo_type' => 'required|string|max:255',
-            'time_pre' => 'required|integer',
-            'time_rec' => 'required|integer',
-            'time_ship' => 'required|integer',
+            // 'time_pre' => 'required',
+            // 'time_rec' => 'required',
+            // 'time_ship' => 'required',
+            'duration' => 'required'
         ]);
 
         $updated = Cargo_type::where('id', $this->cargoTypeId)
@@ -111,6 +114,7 @@ class CargoTypes extends Component
             'time_pre' => $this->time_pre,
             'time_rec' => $this->time_rec,
             'time_ship' => $this->time_ship,
+            'duration' => $this->duration,
         ];
     }
 

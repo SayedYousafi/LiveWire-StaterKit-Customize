@@ -1,6 +1,6 @@
 <div class="container" wire:ignore>
     <div class="card">
-        <div class="flex flex-wrap justify-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm">
+        {{-- <div class="flex flex-wrap justify-center gap-4 bg-gray-100 p-4 rounded-xl shadow-sm">
             <a href="{{ url('warehouse') }}" class="text-blue-700 font-medium hover:underline hover:text-blue-900">
                 Warehouse Items
             </a>
@@ -14,7 +14,7 @@
             <a href="{{ url('stockExport') }}" class="text-blue-700 font-medium hover:underline hover:text-blue-900">
                 Export Value Differences
             </a>
-        </div>
+        </div> --}}
 
 
         <div class="card-body">

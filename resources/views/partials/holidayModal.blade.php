@@ -10,6 +10,7 @@
         <div class="grid grid-cols-4 gap-4">
             <div class="col-span-2">
                 <flux:select size='sm' wire:model="country" label="Country" placeholder="Choose Country...">
+                    <flux:select.option value=''>Select the country</flux:select.option>
                     <flux:select.option>Germany</flux:select.option>
                     <flux:select.option>Cyprus</flux:select.option>
                     <flux:select.option>China</flux:select.option>

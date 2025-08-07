@@ -65,23 +65,22 @@
                         </flux:menu>
                     </flux:dropdown>
                 </div>
-
+                
                 <div class="col-span-1">
-                    <flux:input size="sm" wire:model="dep_date" label="Departure Date" placeholder="YYYY-MM-DD"
+                    <flux:input size="sm" wire:model="dep_date" label="Est. Departure" placeholder="YYYY-MM-DD"
                         type="date" class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
 
                 <div class="col-span-1">
-                    <flux:input size="sm" wire:model="pickup_date" label="Pickup Date" placeholder="YYYY-MM-DD"
-                        type="date" class="w-full" :disabled="$isUpdate && !$enableEdit" />
-                </div>
-
-                <div class="col-span-2">
                     <flux:input size="sm" wire:model="shipped_at" label="Shipped At" placeholder="YYYY-MM-DD HH:MM:SS"
                         type="datetime-local" class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
+                <div class="col-span-1">
+                    <flux:input size="sm" wire:model="eta" label="Esitmated arrival time " placeholder="ETA"
+                        type="datetime-local" class="w-full" :disabled="$isUpdate && !$enableEdit" />
+                </div>
 
-                <div class="col-span-4">
+                <div class="col-span-2">
                     <flux:input size="sm" wire:model="remark" label="Remarks" placeholder="Enter remarks" class="w-full"
                         :disabled="$isUpdate && !$enableEdit" />
                 </div>
@@ -114,11 +113,12 @@
                     <th class="px-6 py-3">ID</th>
                     <th class="px-6 py-3">Cargo No</th>
                     <th class="px-6 py-3">Status</th>
-                    <th class="px-6 py-3">Type</th>
+                    <th class="px-6 py-3">Cargo type</th>
                     <th class="px-6 py-3">Customer</th>
-                    <th class="px-6 py-3">Departure</th>
-                    <th class="px-6 py-3">Pickup</th>
+                    <th class="px-6 py-3">Est. Departure</th>
                     <th class="px-6 py-3">Shipped</th>
+                    <th class="px-6 py-3">Est. Arrival</th>
+                    
                     <th class="px-6 py-3">Remarks</th>
                     <th class="px-6 py-3">Actions</th>
                 </tr>
@@ -130,11 +130,12 @@
                     <td class="px-2 py-1">{{ $cargo->id }}</td>
                     <td class="px-2 py-1">{{ $cargo->cargo_no }}</td>
                     <td class="px-2 py-1">{{ $cargo->cargo_status }}</td>
-                    <td class="px-2 py-1">{{ $cargo->cargo_type_id }}</td>
-                    <td class="px-2 py-1">{{ $cargo->customer_id }}</td>
+                    <td class="px-2 py-1">{{ $cargo->cargoType->cargo_type }}</td>
+                    <td class="px-2 py-1">{{ $cargo->customer->customer_company_name }}</td>
                     <td class="px-2 py-1">{{ $cargo->dep_date }}</td>
-                    <td class="px-2 py-1">{{ $cargo->pickup_date }}</td>
                     <td class="px-2 py-1">{{ $cargo->shipped_at }}</td>
+                    <td class="px-2 py-1">{{ $cargo->eta }}</td>
+                    
                     <td class="px-2 py-1">{{ $cargo->remark }}</td>
                     <td class="px-2 py-1">
                         <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $cargo->id }})"

@@ -1,12 +1,13 @@
 <?php
 namespace App\Livewire\Settings;
 
-use App\Models\Holiday;
-use App\Models\LeaveRequest;
-use App\Models\WorkProfile;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Holiday;
 use Livewire\Component;
+use App\Models\WorkProfile;
+use App\Models\LeaveRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class LeaveRequests extends Component
 {
@@ -55,26 +56,66 @@ class LeaveRequests extends Component
         return null;
     }
 
-    public function leaveBalance()
-    {
-        $user     = Auth::user();
-        $entitled = $user->workProfile->entitlement ?? 0;
+public function leaveBalance()
+{
+     $entitlement = WorkProfile::where('id', Auth::user()->work_profile_id)->value('entitlement');
+        $now    = Carbon::now();
+        $joined = Carbon::parse(Auth::user()->join_date);
 
-        $now      = Carbon::now();
-        $joined   = Carbon::parse($user->join_date); // string → Carbon
-        $annStart = $joined->copy()->year($now->year);
-        if ($now->lt($annStart)) {
-            $annStart->subYear();
+        $startYear   = $joined->year;
+        $currentYear = $now->year;
+
+        $previousEntitled = 0;
+        $previousUsed     = 0;
+
+        $balances = [];
+
+        for ($year = $startYear; $year <= $currentYear; $year++) {
+            $startOfYear = Carbon::parse("$year-01-01");
+            $endOfYear   = Carbon::parse("$year-12-31");
+
+            $daysInYear = $startOfYear->diffInDays($endOfYear) + 1;
+
+            $activeStart = $joined->greaterThan($startOfYear) ? $joined : $startOfYear;
+            $activeEnd   = $now->lessThan($endOfYear) ? $now : $endOfYear;
+
+            if ($activeEnd->lt($activeStart)) {
+                $entitled = 0;
+            } else {
+                $daysWorkedThisYear = $activeStart->diffInDays($activeEnd) + 1;
+               $entitled           = floor($entitlement * $daysWorkedThisYear / $daysInYear);
+               //$entitled =$entitlement;
+            }
+
+            $used = LeaveRequest::with('user.workProfile')
+                ->where('user_id', Auth::user()->id)
+                ->whereIn('status', ['Expired','approved'])
+                ->whereYear('dateFrom', $year)
+                ->sum(DB::raw('noOfDays'));
+
+            if ($year < $currentYear) {
+                $previousEntitled += $entitled;
+                $previousUsed += $used;
+            } else {
+                $balances['Current'] = [
+                    'entitled'  => $entitlement,
+                    'used'      => $used,
+                    'remaining' => max(0, $entitlement - $used),
+                ];
+            }
         }
-        $annEnd = $annStart->copy()->addYear()->subDay();
 
-        $used = LeaveRequest::where('user_id', $user->id)
-            ->whereIn('status', ['approved', 'Expired'])
-            ->whereBetween('dateFrom', [$annStart, $annEnd])
-            ->sum('noOfDays');
-
-        return max($entitled - $used, 0);
-    }
+        // Add the accumulated previous years’ data first
+        $balances = array_merge(
+            ['Previous' => [
+                'entitled'  => $previousEntitled,
+                'used'      => $previousUsed,
+                'remaining' => max(0, $previousEntitled - $previousUsed),
+            ]],
+            $balances
+        );
+        return $balances;
+}
 
     public function leaveRequest()
     {
@@ -87,14 +128,6 @@ class LeaveRequests extends Component
         // Parse years from submitted dates
         $requestYear = Carbon::parse($this->dateFrom)->year;
         $currentYear = now()->year;
-
-        // Only check leave balance if the request is for this year
-        if ($requestYear === $currentYear) {
-            if ($this->daysDifference > $this->leaveBalance()) {
-                $this->addError('noOfDays', 'Insufficient leave balance.');
-                return;
-            }
-        }
 
         $now          = Carbon::now();
         $this->status = ($now > $this->dateTo) ? 'Expired' : 'pending';

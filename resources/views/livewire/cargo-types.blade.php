@@ -7,10 +7,11 @@
                 </flux:button>
             </flux:modal.trigger>
         </div>
-<x-sub-menu :current="$title"/>
+        <x-sub-menu :current="$title" />
         <div class="flex justify-end items-center gap-4 my-2">
             {{-- <flux:text color="blue" class="text-base">Cargo Types</flux:text> --}}
-            <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass" placeholder="Search {{ $title }}" />
+            <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass"
+                placeholder="Search {{ $title }}" />
         </div>
     </div>
 
@@ -20,20 +21,22 @@
             <flux:heading size="lg">Cargo Type Details</flux:heading>
 
             @if ($isUpdate)
-                <div class="flex items-center gap-10 mt-2.5">
-                    <flux:switch wire:click="$toggle('enableEdit')" label="Enable edit" />
-                </div>
+            <div class="flex items-center gap-10 mt-2.5">
+                <flux:switch wire:click="$toggle('enableEdit')" label="Enable edit" />
+            </div>
             @endif
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-3 gap-4">
                 <flux:input size="sm" wire:model="cargo_type" label="Cargo Type" placeholder="Enter name"
                     :disabled="$isUpdate && !$enableEdit" class="w-full" />
-                <flux:input size="sm" type="time" wire:model="time_pre" label="Preparation Time (h:min)"
+                <flux:input size="sm" wire:model="duration" label="Duration (days)" placeholder="Enter duration"
+                    :disabled="$isUpdate && !$enableEdit" class="w-full" />
+                {{-- <flux:input size="sm" type="time" wire:model="time_pre" label="Preparation Time (h:min)"
                     :disabled="$isUpdate && !$enableEdit" class="w-full" />
                 <flux:input size="sm" type="time" wire:model="time_rec" label="Receiving Time (h:min)"
                     :disabled="$isUpdate && !$enableEdit" class="w-full" />
                 <flux:input size="sm" type="time" wire:model="time_ship" label="Shipping Time (h:min)"
-                    :disabled="$isUpdate && !$enableEdit" class="w-full" />
+                    :disabled="$isUpdate && !$enableEdit" class="w-full" /> --}}
             </div>
 
             <div class="flex justify-end">
@@ -51,9 +54,9 @@
 
     {{-- Success Message --}}
     @if (session('success'))
-        <div class="mt-2 text-center">
-            <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
-        </div>
+    <div class="mt-2 text-center">
+        <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
+    </div>
     @endif
 
     {{-- Table --}}
@@ -63,34 +66,36 @@
                 <tr>
                     <th class="px-6 py-3">ID</th>
                     <th class="px-6 py-3">Type</th>
-                    <th class="px-6 py-3">Prep Time</th>
+                    <th class="px-6 py-3">Duration (days)</th>
+                    {{-- <th class="px-6 py-3">Prep Time</th>
                     <th class="px-6 py-3">Recv Time</th>
-                    <th class="px-6 py-3">Ship Time</th>
+                    <th class="px-6 py-3">Ship Time</th> --}}
                     <th class="px-6 py-3" colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($cargoTypes as $cargoType)
-                    <tr wire:key="{{ $cargoType->id }}"
-                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <td class="px-6 py-2">{{ $cargoType->id }}</td>
-                        <td class="px-6 py-2">{{ $cargoType->cargo_type }}</td>
-                        <td class="px-6 py-2">{{ $cargoType->time_pre }} min</td>
-                        <td class="px-6 py-2">{{ $cargoType->time_rec }} min</td>
-                        <td class="px-6 py-2">{{ $cargoType->time_ship }} min</td>
-                        <td class="px-2 py-1">
-                            <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $cargoType->id }})"
-                                size="sm">Edit</flux:button>
-                        </td>
-                        <td class="px-2 py-1">
-                            {{-- <flux:button variant="danger" icon="minus-circle" wire:click="delete({{ $cargoType->id }})"
-                                wire:confirm="Are you sure?" size="sm">Delete</flux:button> --}}
-                        </td>
-                    </tr>
+                <tr wire:key="{{ $cargoType->id }}" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <td class="px-6 py-2">{{ $cargoType->id }}</td>
+                    
+                    <td class="px-6 py-2">{{ $cargoType->cargo_type }}</td>
+                    <td class="px-6 py-2">{{ $cargoType->duration }}</td>
+                    {{-- <td class="px-6 py-2">{{ $cargoType->time_pre }} min</td>
+                    <td class="px-6 py-2">{{ $cargoType->time_rec }} min</td>
+                    <td class="px-6 py-2">{{ $cargoType->time_ship }} min</td> --}}
+                    <td class="px-2 py-1">
+                        <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $cargoType->id }})"
+                            size="sm">Edit</flux:button>
+                    </td>
+                    <td class="px-2 py-1">
+                        {{-- <flux:button variant="danger" icon="minus-circle" wire:click="delete({{ $cargoType->id }})"
+                            wire:confirm="Are you sure?" size="sm">Delete</flux:button> --}}
+                    </td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-2 text-center">No cargo types found.</td>
-                    </tr>
+                <tr>
+                    <td colspan="7" class="px-6 py-2 text-center">No cargo types found.</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>

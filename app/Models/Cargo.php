@@ -14,8 +14,8 @@ class Cargo extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    // public function cargoType():BelongsTo
-    // {
-    //     return $this->belongsTo(CargoType::class);
-    // }
+    public function cargoType():BelongsTo
+    {
+        return $this->belongsTo(Cargo_type::class);
+    }
 }

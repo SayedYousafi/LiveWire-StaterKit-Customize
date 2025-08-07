@@ -16,6 +16,7 @@ class LeaveBalance extends Component
 
     public function render()
     {
+        $this->dispatch('leave-requested');
         $entitlement = WorkProfile::where('id', Auth::user()->work_profile_id)->value('entitlement');
         $now    = Carbon::now();
         $joined = Carbon::parse(Auth::user()->join_date);
