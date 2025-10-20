@@ -11,6 +11,7 @@ class PackingLists extends Component
     public $packToEdit;
     public $packingId;
     public array $packingLists = [];
+    public $title ='PackingList';
 
     protected $listeners = ['listUpdated' => '$refresh'];
 

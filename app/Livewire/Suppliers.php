@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use App\Models\Supplier;
@@ -59,18 +58,28 @@ class Suppliers extends Component
     public $email;
 
     public $website;
+    public $bank_name;
+    public $account_number;
+    public $beneficiary;
+    public $deposit;
+    public $bbgd;
+    public $bagd;
+    public $percentage;
+    public $percentage2;
+    public $percentage3;
 
     protected array $rules = [
-        'name' => 'required',
+        'name'           => 'required',
         'contact_person' => 'required',
-        'full_address' => 'required',
+        'full_address'   => 'required',
+        'order_type_id'  => 'required'
     ];
 
     public function render()
     {
         return view('livewire.suppliers')->with([
-            'suppliers' => Supplier::withCount('items')->search($this->search)->with('orderType')->orderBy('id')->paginate(100),
-            'title' => $this->title,
+            'suppliers'   => Supplier::withCount('items')->search($this->search)->with('orderType')->orderBy('id')->paginate(100),
+            'title'       => $this->title,
             'order_types' => Supplier_type::all(),
         ]);
     }
@@ -96,7 +105,7 @@ class Suppliers extends Component
         $supplier = Supplier::findOrFail($id);
 
         $this->supplierId = $id;
-        $this->isUpdate = true;
+        $this->isUpdate   = true;
         $this->fillSupplierData($supplier);
 
         Flux::modal('myModal')->show();
@@ -141,7 +150,10 @@ class Suppliers extends Component
             'order_type_id', 'province', 'is_fully_prepared', 'is_tax_included',
             'is_freight_included', 'city', 'street', 'full_address',
             'contact_person', 'phone', 'mobile', 'email', 'website',
+            'bank_name', 'account_number', 'beneficiary', 'deposit',
+            'bbgd', 'bagd', 'percentage', 'percentage2', 'percentage3',
         ]));
+        //dd($this->bagd, $this->percentage3);
     }
 
     private function getSupplierData(): array
@@ -151,6 +163,8 @@ class Suppliers extends Component
             'order_type_id', 'province', 'is_fully_prepared', 'is_tax_included',
             'is_freight_included', 'city', 'street', 'full_address',
             'contact_person', 'phone', 'mobile', 'email', 'website',
-        ])->mapWithKeys(fn ($field) => [$field => $this->{$field}])->toArray();
+            'bank_name', 'account_number', 'beneficiary', 'deposit',
+            'bbgd', 'bagd', 'percentage', 'percentage2', 'percentage3',
+        ])->mapWithKeys(fn($field) => [$field => $this->{$field}])->toArray();
     }
 }

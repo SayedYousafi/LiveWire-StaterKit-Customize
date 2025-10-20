@@ -25,8 +25,8 @@
         </div>
         <flux:textarea wire:model='remark' rows="3" label='Adjustment remark:' autofocus
             placeholder="Short description of adjustment" />
-        <flux:input wire:model='qty' label="New QTY" placeholder="Enter New QTY" />
-        <flux:textarea wire:model='remarks_cn' rows="3" label='Lable/CN Remark:' placeholder="cn remarks" />
+        {{-- <flux:input wire:model='qty' label="New QTY" placeholder="Enter New QTY" /> --}}
+        {{-- <flux:textarea wire:model='remarks_cn' rows="3" label='Lable/CN Remark:' placeholder="cn remarks" /> --}}
 
         <div class="flex">
             <flux:spacer />

@@ -1,5 +1,4 @@
 <div>
-
     @if (session('success'))
     <div class="mt-2 text-center">
         <flux:callout variant="success" icon="check-circle" heading="{{ session('success') }}" />
@@ -11,6 +10,10 @@
         {{ $errors->first('pallet_sequence') }}
     </div>
     @endif
+    <div class="flex justify-center mb-3">
+        <x-sub-menu :current="$title" />
+    </div>
+
     <table class="w-full border border-gray-300">
         <thead>
             <tr>
@@ -103,7 +106,7 @@
                     <th>No. </th>
                     <th>Cargo No.</th>
                     <th>Invoice No.</th>
-                    <th>Date Create</th>
+                    <th>Date Created</th>
                     <th>Count Items</th>
                     <th colspan="2">Actions</th>
                 </tr>
@@ -114,7 +117,7 @@
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $pack->cargo_no }}</td>
                     <td>{{ $pack->invoice_no }}</td>
-                    <td>{{ $pack->created_at }}</td>
+                    <td>{{ formatGeneralDate($pack->created_at) }}</td>
                     <td>{{ $pack->CountList }}</td>
                     <td>
                         <flux:button wire:click="getPack({{ $pack->cargo_id }})" icon='pencil-square' variant='primary'>

@@ -7,6 +7,7 @@ use App\Console\Commands\ImportWarehouseValueSummary;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\Storage;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -18,3 +19,4 @@ Schedule::command(DbBackup::class)->daily()
 Schedule::command(ExportStockValueDifference::class)->monthly();
 Schedule::command(ExportWarehouseItemValue::class)->monthly();
 Schedule::command(ImportWarehouseValueSummary::class)->monthly();
+

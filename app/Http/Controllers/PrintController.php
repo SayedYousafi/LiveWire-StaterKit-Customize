@@ -2,10 +2,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order_status;
-use App\Models\PackingList;
+use App\Models\po;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use setasign\Fpdi\Fpdi;
 
 class PrintController extends Controller
 {
@@ -15,6 +16,7 @@ class PrintController extends Controller
 
     public function print($id)
     {
+        //dd(file_exists(storage_path('app/public/pictures/001.jpeg')));
         // dd($id);
         $data = DB::table('items')
             ->join('order_items', 'items.ItemID_DE', '=', 'order_items.ItemID_DE')
@@ -87,12 +89,12 @@ class PrintController extends Controller
         // Create the PDF
         $pdf       = Pdf::loadView('partials.invoice', compact('data'));
         $file_name = 'invoice.pdf';
-        //return $pdf->download();  
+        //return $pdf->download();
         return $pdf->stream($file_name);
     }
     public function packList($id, $name)
     {
-        
+
         $packList = DB::table('packing_lists as t1')
             ->join('cci_customers as c', 'c.customer_id', '=', 't1.customer_id')
             ->where('t1.cargo_id', $id)
@@ -132,5 +134,78 @@ class PrintController extends Controller
         return $pdf->stream("$file_name");
         //return $pdf->download($file_name);
     }
+    // public function download($id)
+    // {
+    //     $po = po::with([
+    //         'purchaseOrders.item.attachments',   // PDFs
+    //         'purchaseOrders.item.itemQualities',
+    //         'supplier',
+    //     ])->findOrFail($id);
+    //     $pdf       = Pdf::loadView('livewire.purchase-order-pic-pdf', ['po' => $po]);
+    //     $file_name = "PO-$po->id.pdf";
+    //     return $pdf->download($file_name);
+    //     //return $pdf->stream($file_name);
+    // }
 
+    public function download($id)
+    {
+        // Load the purchase order with related data
+        $po = Po::with([
+            'purchaseOrders.item.attachments', // PDFs
+            'purchaseOrders.item.itemQualities',
+            'supplier',
+        ])->findOrFail($id);
+//dd($po);
+        // Generate the main PO PDF
+        Pdf::setOption([
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled'     => false,
+            'enable_html5_parser' => true,
+    
+    ]);
+        $pdf       = Pdf::loadView('livewire.purchase-order-pic-pdf', ['po' => $po]);
+        $file_name = "PO-$po->id.pdf";
+
+        // Save the main PO PDF to a temporary file
+        $tempMainPdfPath = storage_path('app/public/temp_main_po.pdf');
+        $pdf->save($tempMainPdfPath);
+
+        // Initialize FPDI for merging PDFs
+        $fpdi  = new Fpdi();
+        $files = [$tempMainPdfPath]; // Start with the main PO PDF
+
+        // Collect all PDF attachments from purchase order items
+        foreach ($po->purchaseOrders as $order) {
+            if ($order->item && $order->item->attachments) {
+                foreach ($order->item->attachments as $attachment) {
+                    // Assuming attachment has a path column pointing to the PDF file
+                    $attachmentPath = storage_path('app/public/' . $attachment->path);
+                    if (file_exists($attachmentPath) && mime_content_type($attachmentPath) === 'application/pdf') {
+                        $files[] = $attachmentPath;
+                    }
+                }
+            }
+        }
+
+        // Merge all PDFs
+        foreach ($files as $file) {
+            $pageCount = $fpdi->setSourceFile($file);
+            for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+                $template = $fpdi->importPage($pageNo);
+                $size     = $fpdi->getTemplateSize($template);
+                $fpdi->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                $fpdi->useTemplate($template);
+            }
+        }
+
+        // Clean up the temporary main PO PDF
+        unlink($tempMainPdfPath);
+
+        // Output the merged PDF for download
+        return response()->streamDownload(function () use ($fpdi, $file_name) {
+            $fpdi->Output('D', $file_name);
+        }, $file_name, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
 }

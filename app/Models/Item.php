@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -38,5 +37,25 @@ class Item extends Model
     public function values()
     {
         return $this->hasMany(VarVal::class, 'item_id', 'id');
+    }
+
+    public function qualities()
+    {
+        return $this->hasMany(ItemQuality::class, 'item_id', 'id');
+    }
+
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'item_id');
+    }
+
+    public function attachments()
+    {
+        return $this->belongsToMany(Attachment::class, 'attachment_item');
+    }
+
+    public function itemQualities()
+    {
+        return $this->hasMany(ItemQuality::class, 'item_id');
     }
 }

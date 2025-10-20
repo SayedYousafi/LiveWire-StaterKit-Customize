@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
@@ -10,7 +9,7 @@ class OrderItemService
     {
         return DB::table('order_items')
             ->join('order_statuses', 'order_statuses.master_id', '=', 'order_items.master_id')
-            ->leftJoin('dimensions','dimensions.status_id','=','order_statuses.id')
+            ->leftJoin('dimensions', 'dimensions.status_id', '=', 'order_statuses.id')
             ->join('items', 'items.ItemID_DE', '=', 'order_items.ItemID_DE')
             ->join('supplier_items', 'supplier_items.item_id', '=', 'items.id')
             ->join('warehouse_items', 'warehouse_items.item_id', '=', 'items.id')
@@ -73,7 +72,7 @@ class OrderItemService
             'supplier_items.url',
             'suppliers.id AS SUPPID',
             'supplier_items.note_cn',
-            'suppliers.name',
+            'suppliers.name as supplierName',
             'suppliers.website',
             'suppliers.order_type_id',
             'supplier_types.type_name',

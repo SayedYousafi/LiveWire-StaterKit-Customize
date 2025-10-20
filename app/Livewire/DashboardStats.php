@@ -1,15 +1,18 @@
 <?php
 namespace App\Livewire;
 
-use App\Models\Customer;
 use App\Models\Item;
-use App\Models\LeaveRequest;
 use App\Models\Order;
-use App\Models\Supplier;
+use App\Models\Holiday;
 use Livewire\Component;
+use App\Models\Customer;
+use App\Models\Supplier;
+use App\Models\LeaveRequest;
+use Livewire\WithPagination;
 
 class DashboardStats extends Component
 {
+    use WithPagination;
     public $ordersCount;
 
     public $itemsCount;
@@ -17,6 +20,22 @@ class DashboardStats extends Component
     public $suppliersCount;
 
     public $customersCount;
+
+    
+
+    public bool $enableEdit = false;
+
+    public bool $isUpdate = false;
+
+    public $holidayId;
+
+    public string $search = '';
+
+    public string $filterByCountry = '';
+
+    public string $title = 'Public Holidays';
+
+    
 
     public function mount()
     {
@@ -37,6 +56,13 @@ class DashboardStats extends Component
             ->get();
         $leaves = $usersOnLeaveToday;
         //dd($leaves);
-        return view('livewire.dashboard-stats', compact('leaves'));
+
+        $holidays = Holiday::search($this->search);
+        if ($this->filterByCountry) {
+            $holidays->where('country', $this->filterByCountry);
+        }
+        $holidays = $holidays->paginate(100);
+
+        return view('livewire.dashboard-stats', compact('leaves', 'holidays'));
     }
 }

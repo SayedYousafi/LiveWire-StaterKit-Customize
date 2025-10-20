@@ -1,46 +1,49 @@
 <?php
 
-use App\Http\Controllers\EtlController;
-use App\Http\Controllers\ExportFullList;
-use App\Http\Controllers\PrintController;
-use App\Livewire\AddItem;
+use App\Livewire\Nso;
 use App\Livewire\Admin;
-use App\Livewire\Auth\Login;
+use App\Livewire\Items;
+use App\Livewire\Teams;
+use Livewire\Volt\Volt;
 use App\Livewire\Cargos;
+use App\Livewire\Charts;
+use App\Livewire\Leaves;
+use App\Livewire\Orders;
+use App\Livewire\Tarics;
+use App\Livewire\AddItem;
+use App\Livewire\Parents;
+use App\Livewire\Controls;
+use App\Livewire\Holidays;
+use App\Livewire\Invoices;
+use App\Livewire\Problems;
+use App\Livewire\Customers;
+use App\Livewire\ItemEdits;
+use App\Livewire\Suppliers;
+use App\Livewire\Warehouse;
+use App\Livewire\Auth\Login;
 use App\Livewire\CargoTypes;
 use App\Livewire\Categories;
-use App\Livewire\Charts;
-use App\Livewire\ClosedInvoices;
-use App\Livewire\Controls;
-use App\Livewire\Customers;
-use App\Livewire\Holidays;
-use App\Livewire\ImportWarehouse;
-use App\Livewire\Invoices;
-use App\Livewire\ItemDescription;
-use App\Livewire\ItemDetails;
-use App\Livewire\ItemEdits;
-use App\Livewire\Items;
-use App\Livewire\MissingImages;
-use App\Livewire\Nso;
 use App\Livewire\OrderItems;
-use App\Livewire\Orders;
-use App\Livewire\PackingLists;
-use App\Livewire\Parents;
-use App\Livewire\Problems;
 use App\Livewire\ReportList;
-use App\Livewire\Leaves;
-use App\Livewire\Settings\Appearance;
-use App\Livewire\Settings\LeaveRequests;
-use App\Livewire\Settings\Password;
-use App\Livewire\Settings\Profile;
+use App\Livewire\ItemDetails;
+use App\Livewire\PackingLists;
+use App\Livewire\DownladBackup;
+use App\Livewire\MissingImages;
 use App\Livewire\SupplierOrder;
-use App\Livewire\Suppliers;
-use App\Livewire\Tarics;
-use App\Livewire\Teams;
-use App\Livewire\Warehouse;
+use App\Livewire\ClosedInvoices;
+use App\Livewire\ImportWarehouse;
+use App\Livewire\ItemDescription;
 use App\Livewire\WorkingProfiles;
+use App\Livewire\Settings\Profile;
+use App\Livewire\Settings\Password;
+use App\Livewire\Settings\Appearance;
 use Illuminate\Support\Facades\Route;
-use Livewire\Volt\Volt;
+use App\Http\Controllers\EtlController;
+use App\Http\Controllers\ExportFullList;
+use App\Livewire\Settings\LeaveRequests;
+use App\Http\Controllers\PrintController;
+use App\Livewire\Pdf2image;
+use App\Livewire\PurchaseOrders;
 
 // Route::get('/', function () { return view('welcome'); })->name('home');
 Route::view('dashboard', 'dashboard')->middleware(['auth', 'verified'])->name('dashboard');
@@ -71,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('invoicesClosed', ClosedInvoices::class)->name('invoicesClosed');
     Route::get('controls', Controls::class)->name('controls');
     
-    Route::get('problems', Problems::class)->name('problems');
+    Route::get('problems/{m_id?}', Problems::class)->name('problems');
     Route::get('customers', Customers::class)->name('customers');
     Route::get('shortdesc/{parent_id?}/{p_no?}', ItemDescription::class)->name('shortdesc');
     Route::get('packingList/{packingId?}', PackingLists::class)->name('packingList');
@@ -96,10 +99,13 @@ Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
     Route::get('settings/profile', Profile::class)->name('settings.profile');
     Route::get('settings/password', Password::class)->name('settings.password');
-    // Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
     Route::get('leaveRequest', LeaveRequests::class)->name('leaveRequest');
     Route::get('holidays', Holidays::class)->name('holidays');
     Route::get('workprofile', WorkingProfiles::class)->name('workprofile');
+
+    //purchase order
+
+    Route::get('purchaseOrders/{supplierOrderId?}/{supplier_id?}', PurchaseOrders::class)->name('purchaseOrders');
 
 });
 
@@ -110,5 +116,7 @@ require __DIR__ . '/auth.php';
     Route::get('updateRecords', [EtlController::class, 'statusRemark']); 
     Route::get('synchIDs', [EtlController::class, 'MisIds']);            
     Route::get('importWareHouse', [EtlController::class, 'whareHouseSync']);
-
-//Route::get('exp', [PrintController::class, 'exportPackingList'])->name('exp');
+    Route::get('download',DownladBackup::class)->name('download');
+    
+Route::get('po/{id}', [PrintController::class, 'download'])->name('po');
+//Route::get('convert', Pdf2image::class);

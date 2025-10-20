@@ -16,7 +16,6 @@
             <th colspan="4">Actions</th>
         </tr>
     </thead>
-
     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
         @php
         $totalQty = 0;
@@ -87,13 +86,14 @@
                     NSO
                 </flux:button>
                 @endif
-                <a href="{{ route('itemEdit', $itemOrder->item_id) }}" target="_blank" class="!text-blue-600 hover:!underline">{{ $itemOrder->ean }}</a>
+                <a href="{{ route('itemEdit', $itemOrder->item_id) }}" target="_blank"
+                    class="!text-blue-600 hover:!underline">{{ $itemOrder->ean }}</a>
             </td>
             <td>{{ $itemOrder->item_name }}</td>
             <td>{{ $itemOrder->remark_de }} / {{ $itemOrder->remarks_cn }} / {{ $itemOrder->remark }}</td>
             <td>{{ $itemOrder->order_no }}</td>
             <td>{{ $itemOrder->cargo_id }}</td>
-            {{-- <td>{{ formatDecimal((($width*$height*$length)*$numericQty)/1000) }}</td> --}}
+
             <td>{{ formatDecimal($volum/1000) }}</td>
             <td>{{ formatDecimal($weight) }}</td>
             <td>
@@ -137,6 +137,14 @@
             @else
             <td> Finished</td>
             @endif
+            @if ($order_state=='SO' && $itemOrder->is_po=='Yes')
+            <td>
+                <flux:button wire:click="purchaseOrder('{{$itemOrder->master_id}}')" size='sm' icon='speaker-wave'
+                    class="bg-amber-500! hover:bg-amber-400! text-white!">
+                    PO
+                </flux:button>
+            </td>
+            @endif
             @if ($order_state=='SO')
             <td>
                 <flux:button wire:click="openDetails('{{$itemOrder->master_id}}')" size='sm' icon='currency-euro'
@@ -144,12 +152,8 @@
                     Purchase
                 </flux:button>
             </td>
-            <td>
-                <flux:button wire:click="pProblem('{{$itemOrder->master_id}}')" size='sm' icon='speaker-wave'
-                    class="bg-amber-500! hover:bg-amber-400! text-white!">
-                    P_Problem
-                </flux:button>
-            </td>
+
+
             @elseif ($count_item==$count_purchased && $order_state=='Purchased')
             <td nowrap>
                 <flux:button wire:click="pProblem('{{$itemOrder->master_id}}', 'problem')" size='sm' icon='speaker-wave'
@@ -175,12 +179,7 @@
                     Check
                 </flux:button>
             </td>
-            <td>
-                <flux:button wire:click="cProblem('{{$itemOrder->master_id}}', 'check')" size='sm' icon='speaker-wave'
-                    class=" bg-violet-500! hover:bg-violet-400! text-white!">
-                    C_Problem
-                </flux:button>
-            </td>
+
             @elseif ($order_state=='Checked' && $itemOrder->cargo_id !=null)
             <td>
                 <flux:button as="a" href="{{ route('print', $itemOrder->ID) }}" size='sm' icon='printer'

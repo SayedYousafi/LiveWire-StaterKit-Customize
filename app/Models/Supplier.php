@@ -34,4 +34,9 @@ class Supplier extends Model
     {
         return $this->belongsToMany(Item::class, 'supplier_items', 'supplier_id', 'item_id');
     }
+
+    public function pos()
+    {
+        return $this->hasMany(po::class, 'supplier_id');
+    }
 }

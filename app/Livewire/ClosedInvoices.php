@@ -9,8 +9,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
-// use DB;
-
 class ClosedInvoices extends Component
 {
     public string $title = 'invoicesClosed';
@@ -46,14 +44,19 @@ class ClosedInvoices extends Component
         $results = DB::table('cci_customers')
             ->join('cci_invoices', 'cci_customers.id', '=', 'cci_invoices.cci_customer_id')
             ->join('cargos', 'cci_invoices.cargo_id', '=', 'cargos.id')
-        // ->join('order_statuses', 'order_statuses.cargo_id', '=', '')
+        
             ->select(
                 'cci_customers.id',
                 'cci_customers.customer_id',
                 'cci_invoices.cargo_id',
                 'cci_invoices.id as myId',
+                'cci_customers.delivery_company_name',
+                'cci_customers.company_subname AS displayName',
+                'cci_customers.delivery_subname AS recieverName',
+                'cci_customers.delivery_contact_person',
                 'cci_invoices.created_at AS InvoiceDate',
                 'cargos.cargo_no',
+                'cargos.note',
                 'cargos.cargo_status',
                 'cargos.shipped_at',
                 'cci_customers.customer_company_name',
@@ -123,17 +126,15 @@ class ClosedInvoices extends Component
 
         // dd($result);
         return $result;
-
     }
 
-    public function shipCI($id)
+    public function shipCI($id, string $how)
     {
         $itemsToShip = DB::table('order_statuses')
             ->where('order_statuses.status', 'Invoiced')
             ->where('order_statuses.cargo_id', $id)
             ->get();
-        // dd($itemsToShip);
-
+        
         if (! empty($itemsToShip)) {
             foreach ($itemsToShip as $item) {
                 Order_status::where('id', $item->id)
@@ -171,6 +172,7 @@ class ClosedInvoices extends Component
                     'cargo_status' => 'Shipped',
                     'shipped_at'   => now(),
                     'eta'          => $eta,
+                    'note' => "$how",
                 ]);
         session()->flash('success', 'Items shipped successfully !!!');
     }
@@ -187,12 +189,11 @@ class ClosedInvoices extends Component
             ->get();
         // dd($results);
         $this->myId = $results->last()->id;
-        // dd(($results->last()->id));
+        
         if ($results->last()->total_price === null && $results->last()->id === $this->myId) {
             session()->flash('error', 'Freight cost is zero, fill the required field below!');
 
         } else {
-            //return redirect('/invoice/'.$this->invNo.'/'.$this->sn);
             return '/invoice/' . $this->invNo . '/' . $this->sn;
         }
     }
@@ -224,7 +225,6 @@ class ClosedInvoices extends Component
             'remark'      => 'required',
         ]);
         Cci_invoice::where('id', $this->myId)
-        // ->whereColumn('cargo_date',$tci_created_at)
             ->update([
                 // 'invSerialNo'=>$this->invSerialNo,
                 'cci_customer_id' => $this->invNo,

@@ -1,5 +1,23 @@
 <?php
 
+if (!function_exists('formatGeneralDate')) {
+    function formatGeneralDate($date) {
+        if (!$date) {
+            return ''; // Return empty string for null or invalid dates
+        }
+
+        // Parse the date if it's not already a Carbon instance
+        $carbonDate = $date instanceof \Carbon\Carbon
+            ? $date
+            : \Carbon\Carbon::parse($date);
+
+        // Return formatted date based on year
+        return $carbonDate->year === now()->year
+            ? $carbonDate->format('d.m')
+            : $carbonDate->format('d.m.Y');
+    }
+}
+
 if (! function_exists('myP')) {
     function myP($data)
     {

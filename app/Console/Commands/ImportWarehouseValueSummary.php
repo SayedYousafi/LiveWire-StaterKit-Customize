@@ -49,7 +49,7 @@ class ImportWarehouseValueSummary extends Command
             Stockvalue::insert($insertData);
             Log::info('Warehouse value summary imported successfully.');
         } else {
-            \Log::info('No data available to import.');
+            Log::info('No data available to import.');
         }
     }
 }

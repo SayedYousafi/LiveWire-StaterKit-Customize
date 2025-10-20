@@ -16,7 +16,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">EAN</label>
                 <div class="mt-1 text-gray-900 dark:text-gray-100">{{ $itemDetail->ean }}</div>
-                
+
             </div>
             <div>
                 <flux:input wire:model="item_name" label="Item Name" placeholder="Item Name" class="w-full" />
@@ -384,7 +384,20 @@
                 wire:click='editSuppItem({{ $itemDetail->supp_id }})'>Save</flux:button>
         </div>
     </fieldset>
-
+    <br>
+    <!-- Item quality criteria -->
+    <fieldset class="border border-gray-300 dark:border-gray-600 p-6">
+        <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">Quality Criteria
+        </legend>
+        <livewire:item-qualities  :itemId="$itemDetail->item_id" :parentId="$itemDetail->par_id" :ItemID_DE="$itemDetail->ItemID_DE"/>
+    </fieldset>
+    <br>
+    <!-- Item Attachments Section -->
+    <fieldset class="border border-gray-300 dark:border-gray-600 p-6">
+        <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">Attachments
+        </legend>
+        <livewire:attachments :itemId="$itemDetail->item_id" />
+    </fieldset>
     <!-- Picture Item Section -->
     <fieldset class="border border-gray-300 dark:border-gray-600 p-4 mt-6 rounded">
         @if($successMessage === 'Pictures applied on Parent successfully !!!')
@@ -392,6 +405,7 @@
         @endif
         <legend class="text-lg font-semibold px-2 bg-white dark:bg-gray-900 text-black dark:text-white">Picture Item
         </legend>
+
         <div class="flex justify-center mb-4">
             <img src="{{ asset('storage/'.$itemDetail->photo) }}" class="max-w-xl rounded shadow" />
         </div>
@@ -444,9 +458,9 @@
 
     <!-- Paths and isNPR Section -->
     <fieldset class="border border-gray-300 dark:border-gray-600 p-4 mt-6 rounded">
-    @if(session('success'))
+        @if(session('success'))
         <flux:callout variant='success' heading="{{ session('success') }}" />
-    @endif
+        @endif
         @if($successMessage === 'Item pix paths updated successfully !!!')
         <flux:callout variant="success" heading="{{ $successMessage }}" class="mb-3" />
         @endif
@@ -466,7 +480,7 @@
                     </flux:menu>
                 </flux:dropdown>
                 <flux:button class="px-4 py-2 bg-gray-800! text-white! rounded! hover:bg-gray-700!"
-                wire:click='editNpr({{ $itemDetail->item_id }})'>Save</flux:button>
+                    wire:click='editNpr({{ $itemDetail->item_id }})'>Save</flux:button>
             </div>
             <div>
                 <flux:input wire:model="npr_remark" label="NPR remark" placeholder="Enter remarks here" />
@@ -483,6 +497,5 @@
             <flux:button class="px-4 py-2 bg-gray-800! text-white! rounded! hover:bg-gray-700!"
                 wire:click='editPixPath({{ $itemDetail->item_id }})'>Save</flux:button>
         </div>
-
     </fieldset>
 </div>

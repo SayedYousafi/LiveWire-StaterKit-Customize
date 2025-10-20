@@ -17,8 +17,7 @@ class Customers extends Component
     public ?Customer $model = null;
 
     public array $customer = [];
-
-
+    //public $displayName;
 
     public function updatedCustomerCustomerTypeId($value): void
     {
@@ -37,14 +36,16 @@ class Customers extends Component
             // Fill the customer form, but preserve the selected customer_type_id
             $this->customer                     = $templateCustomer->toArray();
             $this->customer['customer_type_id'] = 1;
-            $this->customer['customer_company_name'] = 'GT-DE-';
+            $tempName = $this->customer['customer_company_name'] = 'GTech Industries GmbH';
+            $this->customer['company_subname'] = strtok($tempName, " ");
+
         }
     }
 
     public function render()
     {
         return view('livewire.customers')->with([
-            'customers'     => Customer::with('customerType')->search($this->search)->get(),
+            'customers'     => Customer::with('customerType')->search($this->search)->latest()->get(),
             'customerTypes' => CustomerType::all(),
         ]);
     }
@@ -54,6 +55,7 @@ class Customers extends Component
         $validated = $this->validate([
             'customer.customer_type_id'        => 'required|exists:customer_types,id',
             'customer.customer_company_name'   => 'required|string|max:255',
+             'customer.company_subname'   => 'required|string|max:255',
             'customer.phone'                   => 'nullable|string|max:50',
             'customer.tax_no'                  => 'nullable|string|max:50',
             'customer.email'                   => 'nullable|email|max:255',
@@ -71,6 +73,7 @@ class Customers extends Component
             'customer.delivery_postal_code'    => 'nullable|string|max:20',
             'customer.delivery_address_line1'  => 'nullable|string|max:255',
             'customer.delivery_company_name'   => 'nullable|string|max:255',
+            'customer.delivery_subname'   => 'nullable|string|max:50',
             'customer.delivery_contact_person' => 'nullable|string|max:255',
             'customer.delivery_contact_phone'  => 'nullable|string|max:50',
             'customer.remark'                  => 'nullable|string|max:500',
@@ -121,6 +124,7 @@ class Customers extends Component
             'delivery_postal_code'    => '',
             'delivery_address_line1'  => '',
             'delivery_company_name'   => '',
+            'delivery_subname'   => '',
             'delivery_contact_person' => '',
             'delivery_contact_phone'  => '',
             'remark'                  => '',

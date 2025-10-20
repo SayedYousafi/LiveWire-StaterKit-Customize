@@ -10,7 +10,7 @@
         <div class="flex">
             <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass"
                 placeholder="Search {{ $title }}" />
-        
+
         </div>
     </div>
 
@@ -38,6 +38,7 @@
     <table class="table-default mt-2.5">
         <thead class="sticky top-0 z-10 bg-white dark:bg-gray-800">
             <tr>
+                <th>#</th>
                 <th>SOID
                     <flux:button variant="danger" size='sm' wire:click='cancel' icon='x-circle'></flux:button>
                 </th>
@@ -46,28 +47,38 @@
                 <th>Ref No.</th>
                 <th>Remark</th>
                 <th>Date created</th>
-                <th colspan="2">Actions</th>
+                <th colspan="3">Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($sos as $order)
-            <tbody>
+        <tbody>
             <tr wire:key="sos-{{ $order->id }}" @if (str_contains($order->comment, 'Expres')) class='bg-red-50' @endif>
+                <td>{{ $loop->iteration }}</td>
                 <td>
+
                     <flux:button class=" bg-gray-500! hover:bg-gray-400! text-white!" size='sm'
                         icon:trailing='arrow-right-circle' wire:click="showTable({{$order->id }})">
                         {{ $order->id }}
                     </flux:button>
                 </td>
                 <td>{{ $order->supplier->name }} - {{ $order->supplier->id }}</td>
-                <td>{{ $order->orderTypes->type_name }}</td>
+                <td>{{ $order->supplier->orderType->type_name }}</td>
                 <td>{{ $order->ref_no }}</td>
                 <td>{{ $order->remark }}</td>
-                <td>{{ myDate($order->created_at, 'd-m-Y') }}</td>
+                <td>{{ formatGeneralDate($order->created_at) }}</td>
+               
                 <td>
                     <flux:button class=" bg-blue-600! hover:bg-blue-500! text-white!"
                         wire:click="editSO({{ $order->id }})" size="sm" icon="pencil-square">Edit</flux:button>
                 </td>
+                @if ($order->supplier->order_type_id===6)
+                <td>
+                    <flux:button icon='document-currency-euro' size='sm' variant='filled' href="{{ route('purchaseOrders', [$order->id, $order->supplier->id] )}}">PO
+                    </flux:button>
+                </td>
+                @endif
+
                 @if(
                 ($order->paid === 'N' && !is_null($order->ref_no)) ||
                 ($order->status?->status === 'Purchased' && !is_null($order->ref_no))
@@ -87,12 +98,12 @@
                 <td colspan="8">@include('partials.itemOrders')</td>
             </tr>
             @endif
-            </tbody>
-            @empty
-            <tr>
-                <td colspan="8" class="text-center">No records found</td>
-            </tr>
-            @endforelse
+        </tbody>
+        @empty
+        <tr>
+            <td colspan="8" class="text-center">No records found</td>
+        </tr>
+        @endforelse
         </tbody>
     </table>
 </div>

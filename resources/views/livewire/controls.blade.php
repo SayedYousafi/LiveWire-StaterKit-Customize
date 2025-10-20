@@ -81,6 +81,8 @@
                 <x-report-link href="{{ url('items/noSupplier') }}" label="Items without suppliers"
                     :count="$count_supp" />
                 <x-report-link href="{{ url('items/zero') }}" label="Items without RMB Price" :count="$zeroRmb" />
+                <x-report-link href="{{ url('items/isPO') }}" label="Items isPO ='No' with URL='null'" :count="$isPoNo" />
+                <x-report-link href="{{ url('items/isPoNull') }}" label="Suppliers items isPO ='null'" :count="$isPoNull" />
             </div>
         </fieldset>
 

@@ -8,9 +8,18 @@
             </flux:modal.trigger>
         </div>
 
-<x-sub-menu :current="$title"/>
+        <x-sub-menu :current="$title" />
         <div>
-            <flux:input class="md:w-50" wire:model.live="search" icon="magnifying-glass"
+            <flux:select size='sm' wire:model.live='filterByStatus' class="!w-50" placeholder="Filter by status...">
+                <flux:select.option>Open</flux:select.option>
+                <flux:select.option>Arrived</flux:select.option>
+                <flux:select.option>Packed</flux:select.option>
+                <flux:select.option>Shipped</flux:select.option>
+                 <flux:select.option>All</flux:select.option>
+            </flux:select>
+        </div>
+        <div>
+            <flux:input class="md:w-50" size='sm' wire:model.live="search" icon="magnifying-glass"
                 placeholder="Search {{ $title }}" />
         </div>
     </div>
@@ -30,58 +39,46 @@
                 </div>
 
                 <div class="col-span-1">
-                    <flux:input size="sm" wire:model="cargo_status" label="Status" placeholder="Cargo Status"
-                        class="w-full" :disabled="$isUpdate && !$enableEdit" />
+                    <flux:select size='sm' label="Cargo Type" heading="Select Cargo Type" wire:model="cargo_type_id"
+                        :disabled="$isUpdate && !$enableEdit">
+                        <flux:select.option value="">Select Cargo Type</flux:select.option>
+                        @foreach ($cargo_types as $type)
+                        <flux:select.option value="{{ $type->id }}">{{ $type->cargo_type }}</flux:select.option>
+                        <flux:menu.separator />
+                        @endforeach
+                    </flux:select>
                 </div>
 
                 <div class="col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cargo Type</label>
-                    <flux:dropdown>
-                        <flux:button icon:trailing="chevron-down">
-                            {{ $cargo_type_id ? 'Cargo Type: ' . $cargo_type_id : 'Cargo Type' }}
-                        </flux:button>
-                        <flux:menu>
-                            @foreach ($cargo_types as $type)
-                            <flux:menu.item wire:click="$set('cargo_type_id', {{ $type->id }})"
-                                :disabled="$isUpdate && !$enableEdit">{{ $type->cargo_type }}</flux:menu.item>
-                            <flux:menu.separator />
-                            @endforeach
-                        </flux:menu>
-                    </flux:dropdown>
+
+                    <flux:select size='sm' label="Customer" heading="Select Customer" wire:model="customer_id"
+                        :disabled="$isUpdate && !$enableEdit">
+                        <flux:select.option value="">ID - BillTo - ShipTo</flux:select.option>
+                        @foreach ($customers as $customer)
+                        <flux:select.option value="{{ $customer->id }}">
+                            {{ $customer->id }} -
+                            {{ $customer->company_subname }} - {{ $customer->delivery_subname }}</flux:select.option>
+                        <flux:menu.separator />
+                        @endforeach
+                    </flux:select>
+
                 </div>
 
                 <div class="col-span-1">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer</label>
-                    <flux:dropdown>
-                        <flux:button icon:trailing="chevron-down">
-                            {{ $customer_id ? 'Customer: ' . $customer_id : 'Customer' }}
-                        </flux:button>
-                        <flux:menu>
-                            @foreach ($customers as $customer)
-                            <flux:menu.item wire:click="$set('customer_id', {{ $customer->id }})"
-                                :disabled="$isUpdate && !$enableEdit">{{ $customer->customer_company_name }}</flux:menu.item>
-                            <flux:menu.separator />
-                            @endforeach
-                        </flux:menu>
-                    </flux:dropdown>
-                </div>
-                
-                <div class="col-span-1">
-                    <flux:input size="sm" wire:model="dep_date" label="Est. Departure" placeholder="YYYY-MM-DD"
+                    <flux:input size="sm" wire:model="dep_date" label="Est. departure" placeholder="departure at"
                         type="date" class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
-
                 <div class="col-span-1">
-                    <flux:input size="sm" wire:model="shipped_at" label="Shipped At" placeholder="YYYY-MM-DD HH:MM:SS"
-                        type="datetime-local" class="w-full" :disabled="$isUpdate && !$enableEdit" />
-                </div>
-                <div class="col-span-1">
-                    <flux:input size="sm" wire:model="eta" label="Esitmated arrival time " placeholder="ETA"
-                        type="datetime-local" class="w-full" :disabled="$isUpdate && !$enableEdit" />
+                    <flux:input size="sm" wire:model="eta" label="Esitmated arrival time " placeholder="ETA" type="date"
+                        class="w-full" :disabled="!$isUpdate || ($isUpdate && !$enableEdit)" />
                 </div>
 
                 <div class="col-span-2">
                     <flux:input size="sm" wire:model="remark" label="Remarks" placeholder="Enter remarks" class="w-full"
+                        :disabled="$isUpdate && !$enableEdit" />
+                </div>
+                <div class="col-span-4">
+                    <flux:input size="sm" wire:model="online_track" label="Online track" placeholder="Enter online track" class="w-full"
                         :disabled="$isUpdate && !$enableEdit" />
                 </div>
             </div>
@@ -114,13 +111,16 @@
                     <th class="px-6 py-3">Cargo No</th>
                     <th class="px-6 py-3">Status</th>
                     <th class="px-6 py-3">Cargo type</th>
-                    <th class="px-6 py-3">Customer</th>
+
+                    <th class="px-6 py-3">Bill To</th>
+                    <th class="px-6 py-3">Ship To</th>
                     <th class="px-6 py-3">Est. Departure</th>
                     <th class="px-6 py-3">Shipped</th>
                     <th class="px-6 py-3">Est. Arrival</th>
-                    
+                    <th>Arrived (days)</th>
+                    <th>Online track</th>
                     <th class="px-6 py-3">Remarks</th>
-                    <th class="px-6 py-3">Actions</th>
+                    <th class="px-6 py-3" colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -131,17 +131,55 @@
                     <td class="px-2 py-1">{{ $cargo->cargo_no }}</td>
                     <td class="px-2 py-1">{{ $cargo->cargo_status }}</td>
                     <td class="px-2 py-1">{{ $cargo->cargoType->cargo_type }}</td>
-                    <td class="px-2 py-1">{{ $cargo->customer->customer_company_name }}</td>
-                    <td class="px-2 py-1">{{ $cargo->dep_date }}</td>
-                    <td class="px-2 py-1">{{ $cargo->shipped_at }}</td>
-                    <td class="px-2 py-1">{{ $cargo->eta }}</td>
-                    
+                    {{-- <td class="px-2 py-1">{{ $cargo->customer->customer_company_name }}</td> --}}
+                    <td class="px-2 py-1">{{ $cargo->customer->company_subname }}</td>
+                    <td class="px-2 py-1">{{ $cargo->customer->delivery_subname }}</td>
+                    <td class="px-2 py-1">{{ formatGeneralDate($cargo->dep_date) }}</td>
+                    <td class="px-2 py-1">{{$shippedAt= formatGeneralDate($cargo->shipped_at) }}</td>
+                    <td class="px-2 py-1">{{$newAta= formatGeneralDate($cargo->eta) }}</td>
+                    @if ($cargo->cargo_status == 'Arrived')
+
+                    <td>
+                        @php
+                        $shippedAt = new DateTime($cargo->shipped_at);
+                        $eta = new DateTime($cargo->eta);
+                        $interval = $shippedAt->diff($eta);
+                        $duration = $interval->format('%a'); // Customize format as needed
+                        if($duration == $cargo->cargoType->duration ){
+                        $success = 'OnTime';
+                        }
+                        elseif($duration > $cargo->cargoType->duration){
+                        $success = 'Late';
+                        }
+                        else{
+                        $success = 'Early';
+                        }
+                        @endphp
+                        {{ $duration }} - {{ $success }}
+
+                    </td>
+                    @else
+                    <td>-</td>
+                    @endif
+                    <td>
+    <a href="{{ $cargo->online_track }}" target="_blank" class="!text-blue hover:cursor-pointer hover:font-bold hover:underline">
+        {{ $cargo->online_track }}
+    </a>
+</td>
                     <td class="px-2 py-1">{{ $cargo->remark }}</td>
                     <td class="px-2 py-1">
                         <flux:button variant="primary" icon="pencil-square" wire:click="edit({{ $cargo->id }})"
                             size="sm">
                             Edit</flux:button>
                     </td>
+                    @if ($cargo->note !=null AND $cargo->cargo_status !='Arrived')
+                    <td>
+                        <flux:button wire:click='arrive({{ $cargo->id }})' size='sm' icon='stop-circle'
+                            variant='danger'>Arrive</flux:button>
+                    </td>
+                    @elseif ($cargo->cargo_status =='Arrived')
+                    <td>Arrived</td>
+                    @endif
                 </tr>
                 @empty
                 <tr>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Confirm;
 use App\Models\Order_status;
 use App\Services\OrderItemService;
 use Flux\Flux;
@@ -33,15 +34,16 @@ class Problems extends Component
     public $qty;
 
     public $remarks_cn;
+    public $details = false;
+    public $confirms = [];
 
     public function render()
     {
         $problmes = $this->orderItemService->getItemsData()
             ->whereIn('order_statuses.status', ['C_Problem', 'P_Problem', 'D_Problem'])->get();
-
-        // dd($problmes);
         return view('livewire.problems')->with([
             'problmes' => $problmes,
+            'confirms' => $this->confirms,
         ]);
     }
 
@@ -96,6 +98,14 @@ class Problems extends Component
         // Flash success message
         session()->flash('success', 'Problem updated successfully!');
         Flux::modal('adjust-problem')->close();
+    }
 
+    public function more($id)
+    {
+        if ($id) {
+            $this->confirms = Confirm::with('quality')->where('m_id', $id)->get();
+        }
+        $this->details =true;
+        Flux::modal('confirms')->show();
     }
 }

@@ -96,9 +96,9 @@
                 </td>
                 <td class="text-left! whitespace-normal break-words">{{ $order->comment }}</td>
 
-                <td>{{ myDate($order->date_created, "d-m-y") }}</td>
-                <td>{{ myDate($order->date_emailed, "d-m-y") }}</td>
-                <td>{{ myDate($order->date_delivery, "d-m-y") }}</td>
+                <td>{{ formatGeneralDate($order->date_created) }}</td>
+                <td>{{ formatGeneralDate($order->date_emailed) }}</td>
+                <td>{{ formatGeneralDate($order->date_delivery) }}</td>
                 <td>{{ $order->orderItems->count() }}</td>
 
                 @php $nso = $order->status_counts['NSO'] ?? 0; @endphp

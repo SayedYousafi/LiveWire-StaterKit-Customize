@@ -66,6 +66,8 @@ class Controls extends Component
             'parents_results'    => $this->getDuplicatePhotos(),
             'purchaseProblem'    => $this->getStatusCount('P_Problem'),
             'checkProblem'       => $this->getStatusCount('C_Problem'),
+            'isPoNo'            => $this->getIsPoNo(),
+            'isPoNull'            => $this->isPoNull(),
         ]);
     }
 
@@ -260,6 +262,21 @@ class Controls extends Component
                 ->having('parent_no_de_count', '>', 1)
                 ->limit(100)
                 ->get();
+        });
+    }
+
+    protected function getIsPoNo()
+    {
+        return Cache::remember('IsPoNo', 600, function () {
+            return Supplier_item::where('is_po', 'No')->whereNull('url')->count();
+        });
+
+    }
+
+    protected function isPoNull()
+    {
+        return Cache::remember('IsPoNull', 600, function () {
+            return Supplier_item::whereNull('is_po')->count();
         });
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use App\Models\Item;
@@ -39,7 +38,7 @@ class ImageSelector extends Component
         // Flash a success message
         session()->flash('success', 'Picture uploaded successfully!!!');
 
-        // Clear the cache for uploaded files (if necessary)
+                                         // Clear the cache for uploaded files (if necessary)
         Cache::forget('uploaded_files'); // Ensure the cache is updated with the new file list
 
         // Optionally, return the file path or perform additional actions
@@ -53,15 +52,23 @@ class ImageSelector extends Component
         // Cache the files list for 60 minutes
         $files = Cache::remember('uploaded_files', 60, function () use ($directoryPath) {
             if (File::exists($directoryPath)) {
-                return collect(File::allFiles($directoryPath))->sortByDesc(function ($file) {
-                    return $file->getMTime();
-                })->map(function ($file) {
-                    return [
-                        'name' => $file->getFilename(),
-                        'path' => asset('storage/'.$file->getFilename()),
-                        'mtime' => $file->getMTime(),
-                    ];
-                })->toArray();
+                return collect(File::allFiles($directoryPath))
+                    ->reject(function ($file) {
+                        // Exclude files inside 'pdfs' folder
+                        return str_contains($file->getPath(), 'pdfs');
+                    })
+                    ->sortByDesc(function ($file) {
+                        return $file->getMTime();
+                    })
+                    ->map(function ($file) {
+                        return [
+                            'name'  => $file->getFilename(),
+                            // Maintain relative path if needed
+                            'path'  => asset('storage/' . $file->getFilename()),
+                            'mtime' => $file->getMTime(),
+                        ];
+                    })
+                    ->toArray();
             }
 
             return [];
@@ -70,15 +77,17 @@ class ImageSelector extends Component
         // Apply search filter
         if ($this->search) {
             $searchTerm = strtolower($this->search);
-            $files = collect($files)->filter(function ($file) use ($searchTerm) {
+            $files      = collect($files)->filter(function ($file) use ($searchTerm) {
                 return str_contains(strtolower($file['name']), $searchTerm);
-            })->values()->toArray(); // Use values() to reindex the collection
+            })->values()->toArray();
         }
 
         // Pagination logic
-        $perPage = 50;
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $filesForPage = collect($files)->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $perPage      = 50;
+        $currentPage  = LengthAwarePaginator::resolveCurrentPage();
+        $filesForPage = collect($files)
+            ->slice(($currentPage - 1) * $perPage, $perPage)
+            ->values();
 
         return new LengthAwarePaginator(
             $filesForPage,
@@ -97,13 +106,13 @@ class ImageSelector extends Component
     public function saveImage($imageName)
     {
         $shop_image = $imageName;
-        $eBay_image = substr($shop_image, 0, -5).'e.jpg';
+        $eBay_image = substr($shop_image, 0, -5) . 'e.jpg';
 
         Item::where('id', $this->itemId)->update([
-            'photo' => $shop_image,
-            'pix_path' => $shop_image,
+            'photo'         => $shop_image,
+            'pix_path'      => $shop_image,
             'pix_path_eBay' => $eBay_image,
-            'is_npr' => 'N',
+            'is_npr'        => 'N',
         ]);
 
         session()->flash('success', 'Item photo and pix paths updated successfully!');

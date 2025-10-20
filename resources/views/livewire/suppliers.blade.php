@@ -17,7 +17,6 @@
     </div>
 
     <flux:modal name="myModal" class="!w-[70rem] max-w-none">
-
         <div class="space-y-6">
             <flux:heading size="lg">Supplier Details</flux:heading>
             @if ($isUpdate)
@@ -28,74 +27,122 @@
             <div class="grid grid-cols-4 gap-4">
                 <div class="col-span-2">
                     <flux:input size="sm" wire:model="name" label="Supplier Name" placeholder="Supplier Name"
-                        class="w-full" autofocus :disabled="$isUpdate && !$enableEdit"/>
+                        class="w-full" autofocus :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
                     <flux:input size="sm" wire:model="name_cn" label="Supplier Name CN" placeholder="Chinese name"
-                        class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                        class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
                     <flux:input size="sm" wire:model="company_name" label="Company Name" placeholder="Company name"
-                        class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                        class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
                     <flux:input size="sm" wire:model="contact_person" label="Contact Person"
-                        placeholder="Supplier contact" class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                        placeholder="Supplier contact" class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
-                    <flux:input size="sm" wire:model="phone" label="Phone" placeholder="Phone" class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                    <flux:input size="sm" wire:model="phone" label="Phone" placeholder="Phone" class="w-full"
+                        :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
                     <flux:input size="sm" wire:model="mobile" label="QQ - WeChat" placeholder="QQ - WeChat"
-                        class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                        class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
-                    <flux:input size="sm" wire:model="city" label="City" placeholder="City" class="w-full" />
+                    <flux:input size="sm" wire:model="city" label="City" placeholder="City" class="w-full"
+                        :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
-                    <flux:input size="sm" wire:model="province" label="Province" placeholder="Province"
-                        class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                    <flux:input size="sm" wire:model="province" label="Province" placeholder="Province" class="w-full"
+                        :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-2">
-                    <flux:input size="sm" wire:model="email" label="Email" placeholder="Email" class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                    <flux:input size="sm" wire:model="email" label="Email" placeholder="Email" class="w-full"
+                        :disabled="$isUpdate && !$enableEdit" />
                 </div>
-
                 <div class="col-span-2">
                     <flux:input size="sm" wire:model="extra_note" label="Supplier of item (Product name)"
-                        placeholder="Which item supplying?" class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                        placeholder="Which item supplying?" class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
+                <fieldset class="border border-gray-300 dark:border-gray-600 p-6">
+                    <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">
+                        Bank Information
+                    </legend>
 
-                <div class="flex justify-between col-span-4">
-                    <div class="col-span-1">
-                        <flux:switch wire:model="is_fully_prepared" label="Is Prepared?" :disabled="$isUpdate && !$enableEdit"/>
+
+                    <div class="col-span-2">
+                        <flux:input size="sm" wire:model="bank_name" label="Bank Name" placeholder="Bank name"
+                            class="w-full" :disabled="$isUpdate && !$enableEdit" />
                     </div>
-                    <div class="col-span-1">
-                        <flux:switch wire:model="is_tax_included" label="Tax Included?" :disabled="$isUpdate && !$enableEdit"/>
+                    <div class="col-span-2">
+                        <flux:input size="sm" wire:model="account_number" label="Account Number"
+                            placeholder="Account number" class="w-full" :disabled="$isUpdate && !$enableEdit" />
                     </div>
-                    <div class="col-span-1">
-                        <flux:switch wire:model="is_freight_included" label="Freight Included?" :disabled="$isUpdate && !$enableEdit"/>
+                    <div class="col-span-2">
+                        <flux:input size="sm" wire:model="beneficiary" label="Beneficiary" placeholder="Beneficiary"
+                            class="w-full" :disabled="$isUpdate && !$enableEdit" />
                     </div>
-                    <div class="col-span-1">
-                        <flux:dropdown>
-                            <flux:button icon:trailing="chevron-down">
-                                {{ $order_type_id ? "Order Type: $order_type_id" : "Order Type" }}
-                            </flux:button>
-                            <flux:menu>
-                                @foreach ($order_types as $type)
-                                <flux:menu.item wire:click="$set('order_type_id', {{ $type->id }})" :disabled="$isUpdate && !$enableEdit">{{ $type->type_name
-                                    }}</flux:menu.item>
-                                <flux:menu.separator />
-                                @endforeach
-                            </flux:menu>
-                        </flux:dropdown>
-                    </div>
+                </fieldset>
+
+<fieldset class="border border-gray-300 dark:border-gray-600 p-6 col-span-2">
+    <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">
+        Terms of Payment
+    </legend>
+    <div class="space-y-4">
+        <div class="col-span-2 flex items-center gap-4">
+            <flux:switch wire:model="deposit" label="Deposit" class="whitespace-nowrap" :disabled="$isUpdate && !$enableEdit" />
+            <flux:input size="sm" wire:model="percentage" placeholder="%" class="!w-16"
+                :disabled="$isUpdate && !$enableEdit" />
+        </div>
+        <div class="col-span-2 flex items-center gap-4">
+            <flux:switch wire:model="bbgd" label="Balance Before Delivery" class="whitespace-nowrap"
+                :disabled="$isUpdate && !$enableEdit" />
+            <flux:input size="sm" wire:model="percentage2" placeholder="%" class="!w-16"
+                :disabled="$isUpdate && !$enableEdit" />
+        </div>
+        <div class="col-span-2 flex items-center gap-4">
+            <flux:switch wire:model="bagd" label="Balance After Delivery" class="whitespace-nowrap"
+                :disabled="$isUpdate && !$enableEdit" />
+            <flux:input size="sm" wire:model="percentage3" placeholder="%" class="!w-16"
+                :disabled="$isUpdate && !$enableEdit" />
+        </div>
+    </div>
+</fieldset>
+                <fieldset class="border border-gray-300 dark:border-gray-600 p-6">
+    <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">
+        Other Info
+    </legend>
+    <div class="space-y-4">
+        <div class="col-span-2">
+            <flux:switch wire:model="is_fully_prepared" label="Is Prepared?" class="whitespace-nowrap"
+                :disabled="$isUpdate && !$enableEdit" />
+        </div>
+        <div class="col-span-2">
+            <flux:switch wire:model="is_tax_included" label="Tax Included?" class="whitespace-nowrap"
+                :disabled="$isUpdate && !$enableEdit" />
+        </div>
+        <div class="col-span-2">
+            <flux:switch wire:model="is_freight_included" label="Freight Included?" class="whitespace-nowrap"
+                :disabled="$isUpdate && !$enableEdit" />
+        </div>
+        <div class="col-span-2">Select supplier order type:
+            <flux:select size="sm" wire:model="order_type_id" placeholder="Select supplier order type:"
+                :disabled="$isUpdate && !$enableEdit">
+                @foreach ($order_types as $type)
+                <flux:select.option value="{{ $type->id }}">{{ $type->type_name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+        </div>
+    </div>
+</fieldset>
+                <div class="col-span-4">
+                    <flux:input size="sm" wire:model="website" label="Website" placeholder="Website" class="w-full"
+                        :disabled="$isUpdate && !$enableEdit" />
                 </div>
                 <div class="col-span-4">
-                    <flux:input size="sm" wire:model="website" label="Website" placeholder="Website" class="w-full" :disabled="$isUpdate && !$enableEdit"/>
-                </div>
-                <div class="col-span-4">
-                    <flux:input size="sm" wire:model="full_address" label="Address" placeholder="Supplier address"
-                        class="w-full" :disabled="$isUpdate && !$enableEdit"/>
+                    <flux:input size="sm" wire:model="full_address" label="Company Full Address:" placeholder="Supplier address"
+                        class="w-full" :disabled="$isUpdate && !$enableEdit" />
                 </div>
             </div>
 
@@ -136,8 +183,9 @@
                 @forelse ($suppliers as $supplier)
                 <tr wire:key="{{ $supplier->id }}"
                     class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
-                    <td class="px-2 py-1">{{ $supplier->id }} 
-                        <a href="{{ route('items') }}/supplierID-{{ $supplier->id }}" class="text-bold text-blue-700">({{ $supplier->items_count }})</a> 
+                    <td class="px-2 py-1">{{ $supplier->id }}
+                        <a href="{{ route('items') }}/supplierID-{{ $supplier->id }}"
+                            class="text-bold text-blue-700">({{ $supplier->items_count }})</a>
                     </td>
                     <td class="px-2 py-1">{{ $supplier->name }} - {{ $supplier->name_cn }}</td>
                     <td class="px-2 py-1">{{ $supplier->orderType?->type_name }}</td>

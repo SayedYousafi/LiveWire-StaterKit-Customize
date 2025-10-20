@@ -79,8 +79,11 @@
 </style>
 
 <body>
+{{-- 
+<p>this works</p>
+<img src="{{ storage_path('app/public/pictures/001.jpeg') }}" alt="Image"> --}}
 
-  <img src="./images/Header.jpg" alt="Header" class="img header">
+  <img src="{{ public_path('images/Header.jpg') }}" class="img header" />
 
   <div class="content">
 
@@ -112,7 +115,7 @@
             <tr>
               <td>{{ $item->delivery_contact_phone }} </td>
             </tr>
-            
+
           </table>
         </td>
         @endif
@@ -255,5 +258,7 @@
 
   </div>
 
-  <img src="./images/footer.png" alt="Footer" class="img footer">
+  {{-- <img src="./images/footer.png" alt="Footer" class="img footer"> --}}
+  <img src="{{ public_path('images/footer.png') }}" alt="Footer png image" class="img footer">
+
 </body>

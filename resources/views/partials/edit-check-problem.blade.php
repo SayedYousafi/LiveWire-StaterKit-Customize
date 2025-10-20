@@ -1,7 +1,7 @@
 <flux:modal name="edit-check-problem" class="md:w-96">
     <div class="space-y-6">
         <div>
-            <flux:heading size="lg">Update Check Problem</flux:heading>
+            <flux:heading size="lg">Recording Check Problem</flux:heading>
             {{-- <flux:text class="mt-2">Make changes to QTY.</flux:text> --}}
         </div>
 

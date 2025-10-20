@@ -90,7 +90,9 @@ class Items extends Component
                 ->whereRaw("ShippingClass(items.weight, items.length, items.width, items.height) = 'Na'"),
             'edited'     => $query->whereColumn('items.synced_at', '<=', 'items.updated_at'),
             'noSupplier' => $query->whereNull('supplier_items.supplier_id'),
-        //default => $this->handleDefaultCases($query, $param),
+            'isPO'       => $query->where('supplier_items.is_po', 'No')->whereNull('supplier_items.url'),
+            'isPoNull'   => $query->whereNull('supplier_items.is_po'),
+       
             default      => null,
         };
     }

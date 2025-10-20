@@ -15,12 +15,16 @@ class Supplier_order extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id')->with('orderType');
+    }
+
+    public function supplierItem()
+    {
+        return $this->belongsTo(Supplier_item::class, 'supplier_id', 'supplier_id');
     }
 
     public function statuses()
     {
-        // return $this->hasMany(Order_status::class,'id', 'supplier_order_id');
         return $this->hasMany(Order_status::class, 'supplier_order_id', 'id');
     }
 }

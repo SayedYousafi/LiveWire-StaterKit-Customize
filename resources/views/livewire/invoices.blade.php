@@ -20,13 +20,15 @@
                     <th class="">ID
                         <flux:button variant="danger" size='sm' wire:click='cancel' icon='x-circle'></flux:button>
                     </th>
-                    <th class="">ID - Customer name</th>
+                    {{-- <th class="">Customer name</th> --}}
+                    <th>Bill To</th>
+                    <th>Ship To</th>
                     <th class="">ID - Cargo No</th>
                     <th class="">Date created</th>
                     <th class="">Count Item </th>
                     <th class="">QTY</th>
 
-                    <th class="">Actions</th>
+                    <th colspan="2">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -42,10 +44,15 @@
                         </flux:button>
 
                     </td>
-
-                    <td class="">{{ $invoice->customerId }} - {{ $invoice->Name }}</td>
+                    {{-- <td class="">{{ $invoice->customerId }} - {{ $invoice->Name }}</td> --}}
+                    <td>{{ $invoice->Displayame }}</td>
+                    <td>{{ $invoice->Recievername }}</td>
                     <td class="">{{ $invoice->cargo_id }} - {{ $invoice->cargo_no }}</td>
-                    <td class="">{{ $invoice->InvoiceDate }}</td>
+                    <!-- For an invoice date -->
+                    <td class="">
+                        {{ formatGeneralDate($invoice->InvoiceDate) }}
+                    </td>
+
                     <td class="">
                         <flux:text color='blue' size='lg'>
                             <flux:link href="#" wire:click="groupByItem({{ $invoice->cargoId }}, 'listByItem')">
@@ -59,22 +66,24 @@
                             wire:click="verifyAll({{ $invoice->cargoId }})" size="sm">
                             Verify</flux:button>
                     </td>
-                    @if (session('verifiedRow') == $invoice->cargoId)
+
+                    @if (session('verifiedRow') == $invoice->cargoId && Auth::user()->role === 'admin')
                     <td>
                         <flux:button size='sm' icon='lock-closed' class="bg-blue-600! text-white! hover:bg-blue-500!"
                             wire:click='checkStatus({{ $invoice->cargoId }}, {{ $invoice->customerId }})'>
                             Close Invoice</flux:button>
                     </td>
                     @endif
+
                 </tr>
                 @if($tariffNo == $invoice->cargoId)
                 <tr>
-                    <td colspan="8">@include('partials.taric-invoice')</td>
+                    <td colspan="9">@include('partials.taric-invoice')</td>
                 </tr>
                 @endif
                 @if($itemNo == $invoice->cargoId)
                 <tr>
-                    <td colspan="8">@include('partials.item-invoice')</td>
+                    <td colspan="9">@include('partials.item-invoice')</td>
                 </tr>
                 @endif
                 {{-- Set EUR Price --}}

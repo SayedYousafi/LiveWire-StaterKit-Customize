@@ -4,6 +4,7 @@
             <th>Position</th>
             <th>Taric Name EN</th>
             <th>Taric Code</th>
+            <th>Duty rate</th>
             <th>Total Qty</th>
             <th>Unit Price (€)</th>
             <th>Total Price (€)</th>
@@ -50,7 +51,7 @@
                 @endif
             </td>
             @endif
-
+            <td>{{ $item->duty_rate }}</td>
             <td>{{ $item->totalQty }}</td>
             <td>
                 {{ $item->totalQty != 0 ? number_format($item->totalValue / $item->totalQty, 2) : '0.00' }}
@@ -77,7 +78,7 @@
         @endforeach
 
         <tr class="font-semibold bg-gray-50 !dark:bg-gray-800">
-            <th colspan="3" class="border border-gray-300 !dark:border-gray-700 p-1 text-right">Grand Total</th>
+            <th colspan="4" class="border border-gray-300 !dark:border-gray-700 p-1 text-right">Grand Total</th>
             <th class="border border-gray-300 !dark:border-gray-700 p-1 text-right">{{ $tq }}</th>
             <th></th>
             <th class="border border-gray-300 !dark:border-gray-700 p-1 text-right">€{{ number_format($tp, 2) }}</th>

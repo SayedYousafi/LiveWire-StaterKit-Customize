@@ -28,7 +28,7 @@ class Repreints extends Component
     public function render()
     {
         $labels = $this->orderItemService->getItemsData(($this->search))
-            ->where('order_statuses.status', 'Printed')->paginate(50);
+            ->whereIn('order_statuses.status', ['Printed', 'Invoiced'])->paginate(50);
 
         // dd($labels);
         return view('livewire.repreints')->with([

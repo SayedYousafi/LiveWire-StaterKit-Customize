@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Livewire;
 
 use App\Models\Cargo;
@@ -25,7 +24,7 @@ class Cargos extends Component
 
     public $cargo_no;
 
-    public $cargo_status='Open';
+    public $cargo_status = 'Open';
 
     public $cargo_type_id;
 
@@ -38,16 +37,29 @@ class Cargos extends Component
     public $remark;
 
     public $shipped_at;
+    public $online_track;
+    public $filterByStatus = '';
 
     public function render()
     {
-        $cargos = Cargo::with('cargoType', 'customer')->orderBy('id', 'desc')->paginate(25);
-        $customers = Customer::all();
+
+        $query = Cargo::with(['cargoType', 'customer']);
+
+        if ($this->filterByStatus && $this->filterByStatus !== 'All') {
+            $query->where('cargo_status', $this->filterByStatus);
+        } elseif ($this->filterByStatus !== 'All' && ! $this->filterByStatus) {
+            // On page load (no filter selected)
+            $query->where('cargo_status', '!=', 'Arrived');
+        }
+
+        $cargos = $query->orderBy('id', 'desc')->paginate(30);
+
+        $customers   = Customer::select('id', 'customer_company_name', 'company_subname', 'delivery_subname')->get();
         $cargo_types = Cargo_type::all();
 
         return view('livewire.cargos')->with([
-            'cargos' => $cargos,
-            'customers' => $customers,
+            'cargos'      => $cargos,
+            'customers'   => $customers,
             'cargo_types' => $cargo_types,
         ]);
     }
@@ -55,8 +67,8 @@ class Cargos extends Component
     public function save()
     {
         $validate = $this->validate([
-            'cargo_no' => 'required',
-            'customer_id' => 'required',
+            'cargo_no'      => 'required',
+            'customer_id'   => 'required',
             'cargo_type_id' => 'required',
         ]);
 
@@ -75,8 +87,8 @@ class Cargos extends Component
     public function edit($id)
     {
         $cargo = Cargo::findOrFail($id);
-        
-        $this->cargoId = $id;
+
+        $this->cargoId  = $id;
         $this->isUpdate = true;
         $this->fill($cargo->only(array_keys($this->getCargoData())));
 
@@ -86,10 +98,10 @@ class Cargos extends Component
     public function update()
     {
         $validated = $this->validate([
-            'cargo_no' => 'required',
-            'customer_id' => 'required',
+            'cargo_no'      => 'required',
+            'customer_id'   => 'required',
             'cargo_type_id' => 'required',
-            
+
         ]);
 
         $updated = Cargo::where('id', $this->cargoId)->update($this->getCargoData());
@@ -124,14 +136,24 @@ class Cargos extends Component
     private function getCargoData(): array
     {
         return [
-            'cargo_no' => $this->cargo_no,
-            'cargo_status' => $this->cargo_status,
+            'cargo_no'      => $this->cargo_no,
+            'cargo_status'  => $this->cargo_status,
             'cargo_type_id' => $this->cargo_type_id,
-            'customer_id' => $this->customer_id,
-            'dep_date' => $this->dep_date,
-            'eta' =>'12121212',
-            'remark' => $this->remark,
-            'shipped_at' =>'12121212',
+            'customer_id'   => $this->customer_id,
+            'dep_date'      => $this->dep_date,
+            'eta'           => $this->eta,
+            'remark'        => $this->remark,
+            'shipped_at'    => $this->shipped_at,
+            'online_track'  => $this->online_track,
         ];
+    }
+
+    public function arrive($id)
+    {
+        //dd('You need to have a db field to capture date of arrival', $id);
+        $updated = Cargo::where('id', $id)->update([
+            'cargo_status' => 'Arrived',
+            'eta'          => date('Y-m-d'),
+        ]);
     }
 }

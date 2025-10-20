@@ -65,13 +65,13 @@ class ExportFullList extends Controller
         }
 
         $filenamePrefix = match ($exportType) {
-            'updated' => 'updated_Item_List_',
-            'isNew' => 'Export_NewItems_',
-            default => 'Item_Full_List_',
+            'updated' => 'updated_Item_List',
+            'isNew' => 'Export_NewItems',
+            default => 'Item_Full_List',
         };
 
-        $filename = $filenamePrefix . date('Y-m-d_H-i-s') . '.csv';
-
+        $filename = $filenamePrefix . '.csv';
+        $mydate = date('Y-m-d H:i:s');
         $headers = [
             'Content-Type'        => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"$filename\"",
@@ -81,7 +81,7 @@ class ExportFullList extends Controller
 
         $columns = [
 
-            'ID',
+            "$mydate",
             'EAN',
             'Parent No DE',
             'Item No DE',

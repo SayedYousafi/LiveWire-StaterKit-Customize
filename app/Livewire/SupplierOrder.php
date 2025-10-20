@@ -4,12 +4,14 @@ namespace App\Livewire;
 use App\Models\Confirm;
 use App\Models\Dimension;
 use App\Models\Item;
+use App\Models\Order_item;
 use App\Models\Order_status;
 use App\Models\Supplier;
 use App\Models\Supplier_order;
 use App\Models\Supplier_type;
 use App\Services\OrderItemService;
 use Flux\Flux;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
@@ -93,13 +95,14 @@ class SupplierOrder extends Component
 
     public string $search = '';
 
-    public string $title = 'Suppler Orders';
+    public string $title = 'Supplier Orders';
 
     public $param;
 
     public $status;
 
     public $statusId, $ean, $item_id, $weight, $length, $width, $height;
+    public $confirmIssue = null;
 
     protected OrderItemService $orderItemService;
 
@@ -110,13 +113,13 @@ class SupplierOrder extends Component
 
     public function render()
     {
-        $sos = Supplier_order::with(['statuses', 'supplier', 'orderTypes'])
+        $sos = Supplier_order::with(['statuses', 'supplier', 'orderTypes', 'supplierItem'])
             ->whereHas('statuses', function ($query) {
                 $query->whereNotIn('status', ['Shipped', 'Invoiced']);
             })
-            ->latest()
-            ->paginate(50);
-
+            ->latest() ->get();
+            //->paginate(50);
+            //dd($sos);
         return view('livewire.supplier-order')->with(
             [
                 'sos'         => $sos,
@@ -124,13 +127,14 @@ class SupplierOrder extends Component
                 'title'       => $this->title,
                 'order_types' => Supplier_type::all(),
                 'suppliers'   => Supplier::all(),
+                
             ]);
     }
 
     public function refreshItemOrders()
     {
         $items = $this->orderItemService->getItemOrders($this->supplierId)->get();
-        // dd($items);
+        //dd($items);
         $this->itemOrders        = $items;
         $this->count_item        = $items->count();
         $this->count_purchased   = $items->where('status', 'Purchased')->count();
@@ -225,6 +229,7 @@ class SupplierOrder extends Component
         $this->purchaseDetails   = false;
         $this->purchaseDetailsNo = '';
         Flux::modal('itemDimentions')->close();
+        $this->checkId = null;
     }
 
     public function setBackSO($id)
@@ -294,8 +299,8 @@ class SupplierOrder extends Component
 
         Confirm::create(
             [
-                'supp_items_id' => $suppItemId,
-                'confirm_by'    => Auth::user()->name,
+                'item_id'    => $suppItemId,
+                'confirm_by' => Auth::user()->name,
             ]);
 
         session()->flash('success', $name . ' Purchased & confirmed successfully !!!');
@@ -332,7 +337,6 @@ class SupplierOrder extends Component
 
     public function updateRefNo()
     {
-
         Order_status::where('supplier_order_id', '=', $this->supplierOrderId)->update(
             [
                 'ref_no' => $this->ref_no,
@@ -349,17 +353,35 @@ class SupplierOrder extends Component
         $this->refreshItemOrders(); // Fetch items again for next operation
     }
 
+    // Define event listeners
+    protected $listeners = [
+        'confirmationCreated' => 'handleConfirmationCreated',
+    ];
+
+    public function handleConfirmationCreated($masterId)
+    {
+        // Call checkDetails with the masterId from the event
+        $this->openCheck($masterId);
+    }
+
     public function openCheck($id)
     {
-        // dd('Hi', $id);
         $this->chkDetailsNo = $id;
         $this->chkDetails   = true;
         $this->probNo       = null;
+        // show or hide C_Problem button in check-order-details.blade.php
+        $chkConfirm = Confirm::where('m_id', $id)->get('issues')->toArray();
+
+// Extract only the "issues" values
+        $issues = array_column($chkConfirm, 'issues');
+
+        $this->confirmIssue = array_filter($issues, fn($v) => ! is_null($v)) ? 1 : null;
 
     }
 
     public function checkDetails($id)
     {
+
         // dd($id, 'checking strats here');
         Order_status::where('master_id', $id)->update(
             [
@@ -367,6 +389,7 @@ class SupplierOrder extends Component
             ]);
         session()->flash('success', 'Checked successfully !!!');
         $this->chkDetailsNo = null;
+
         $this->refreshItemOrders();
     }
 
@@ -396,11 +419,47 @@ class SupplierOrder extends Component
 
     public function cProblem($id)
     {
-        $this->checkId    = $id;
-        $status           = Order_status::where('master_id', $id)->select('problems')->first();
-        $this->txtProblem = $status->problems ?? '';
-        Flux::modal('edit-check-problem')->show();
+        $this->checkId = $id;
 
+        // Fetch confirms with quality relationship
+        $confirms = Confirm::with('quality')->where('m_id', $id)->get();
+
+        // Fetch ordered quantity with null check
+        $orderedItem = Order_item::where('master_id', $id)->first();
+        if (! $orderedItem) {
+            logger()->warning("No Order_item found for master_id: {$id}");
+            $this->txtProblem = "Error: No order found for the given ID.";
+            Flux::modal('edit-check-problem')->show();
+            return;
+        }
+        $orderedQty = $orderedItem->qty ?? 0;
+
+        $poorRemarks = [];
+        $poorQty     = 0;
+
+        // Process confirms with validation
+        foreach ($confirms as $confirm) {
+            // Check if quality relationship and name exist
+            $qualityName = $confirm->quality && isset($confirm->quality->name)
+            ? $confirm->quality->name
+            : 'Unknown Quality';
+
+            // Ensure poorQty is numeric
+            $currentPoorQty = is_numeric($confirm->poorQty) ? (int) $confirm->poorQty : 0;
+
+            $poorRemarks[] = "{$currentPoorQty}pcs {$qualityName}\n";
+            $poorQty += $currentPoorQty;
+        }
+
+                                                 // Calculate OK quantity with validation
+        $okQty = max(0, $orderedQty - $poorQty); // Ensure no negative quantity
+
+        // Build problem text, handle empty poorRemarks
+        $this->txtProblem = ! empty($poorRemarks)
+        ? implode('', $poorRemarks) . "And OK Qty is: {$okQty}"
+        : "No issues found. OK Qty is: {$okQty}";
+
+        Flux::modal('edit-check-problem')->show();
     }
 
     public function updateStatus()
@@ -496,15 +555,15 @@ class SupplierOrder extends Component
     public function dimensions($id, $ean, $item_id)
     {
         $this->statusId = $id;
-        $this->ean   = $ean;
-        $this->item_id   = $item_id;
+        $this->ean      = $ean;
+        $this->item_id  = $item_id;
         $dim            = Dimension::where('status_id', $id)->first();
 
-        $this->weight   = $dim->weight ?? '';
-        $this->length   = $dim->length ?? '';
-        $this->width    = $dim->width ?? '';
-        $this->height   = $dim->height ?? '';
-        $this->qty      = $dim->dimqty ?? '';
+        $this->weight = $dim->weight ?? '';
+        $this->length = $dim->length ?? '';
+        $this->width  = $dim->width ?? '';
+        $this->height = $dim->height ?? '';
+        $this->qty    = $dim->dimqty ?? '';
 
         Flux::modal('itemDimentions')->show();
     }
@@ -528,3 +587,5 @@ class SupplierOrder extends Component
     }
 
 }
+
+

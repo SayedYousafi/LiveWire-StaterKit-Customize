@@ -13,10 +13,13 @@
     <table class="table-default">
         <thead>
             <tr>
+                <th>#</th>
                 <th class="">ID
                     <flux:button variant="danger" size='sm' wire:click='cancel' icon='x-circle'></flux:button>
                 </th>
-                <th>Customer</th>
+                {{-- <th>Customer</th> --}}
+                <th>Bill To</th>
+                <th>Ship To</th>
                 <th>Cargo No.</th>
                 <th>Closed Date</th>
                 <th>Item Count</th>
@@ -32,7 +35,8 @@
             @php
             $invoice_no = "CI2500".$ci->myId;
             @endphp
-            <tr wire:key={{ $ci->id }}>
+            <tr wire:key="{{ $ci->id }}">
+                <td>{{ $loop->iteration }}</td>
                 <td>
                     <flux:button wire:click="showCiItem({{$ci->customer_id}}, {{$ci->invSerialNo }})"
                         class=" bg-gray-500! hover:bg-gray-400! text-white!" size='sm'
@@ -42,9 +46,11 @@
 
                 </td>
 
-                <td>{{ $ci->customer_company_name }}</td>
+                {{-- <td>{{ $ci->customer_company_name }}</td> --}}
+                <td>{{ $ci->displayName }}</td>
+                <td>{{ $ci->recieverName }}</td>
                 <td>{{ $ci->id }} - {{ $ci->cargo_no }}</td>
-                <td>{{ myDate($ci->InvoiceDate, 'd-m-Y' )}}</td>
+                <td>{{ formatGeneralDate($ci->InvoiceDate )}}</td>
                 <td><a wire:click.prevent="showItems({{$ci->customer_id}}, {{$ci->invSerialNo }})" href="#"
                    class="!text-blue-800 !font-bold hover:!underline" >{{$ci->item_count}}</a></td>
                 <td>{{ $ci->total_qty }}</td>
@@ -76,7 +82,7 @@
                     </flux:button>
 
                     <flux:button wire:confirm='Are you sure? shipment will happen?'
-                        wire:click="shipCI({{ $ci->cargo_id }})" variant='danger' icon='arrow-right-start-on-rectangle'
+                        wire:click="shipCI({{ $ci->cargo_id }}, 'notPackedShipped')" variant='danger' icon='arrow-right-start-on-rectangle'
                         size='sm'>
                         Ship
                     </flux:button>
@@ -87,6 +93,7 @@
                         size='sm' target="_blank">
                         View PL
                     </flux:button>
+
                     - Shipped
 
                     @elseif ($ci->cargo_status=='Packed' AND $ci->shipped_at ==null)
@@ -96,16 +103,26 @@
                         View PL
                     </flux:button>
                     <flux:button wire:confirm='Are you sure? shipment will happen?'
-                        wire:click="shipCI({{ $ci->cargo_id }})" variant='danger' icon='arrow-right-start-on-rectangle'
+                        wire:click="shipCI({{ $ci->cargo_id }}, 'packedAndShipped')" variant='danger' icon='arrow-right-start-on-rectangle'
                         size='sm'>
                         Ship
                     </flux:button>
 
-                    @elseif ($ci->cargo_status=='Shipped')
+                    @elseif ($ci->note =='notPackedShipped')
                     <flux:button wire:confirm='Ready to Make Packing List' wire:navigate
                         href="{{ route('packingList', $ci->cargo_id) }}" icon='numbered-list' size='sm'>
                         Create PL
                     </flux:button>
+                    
+                    - Shipped
+
+                    @elseif ($ci->note =='packedAndShipped')
+                    <flux:button class="bg-pink-400! text-white! hover:bg-pink-500!"
+                        href="{{ route('packList', ['id' => $ci->cargo_id, 'name' => $invoice_no]) }}" icon='eye'
+                        size='sm' target="_blank">
+                        View PL
+                    </flux:button>
+
                     - Shipped
                     @endif
                 </td>
@@ -113,7 +130,7 @@
 
             @if($invNo == $ci->id && $ci->invSerialNo == $sn)
             <tr>
-                <td colspan="10" class="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-6">
+                <td colspan="12" class="bg-yellow-50 dark:bg-yellow-900/20 px-4 py-6">
                     <div class="mx-auto w-1/2">
                         <div
                             class="bg-white dark:bg-gray-800 shadow rounded-2xl p-6 border border-gray-200 dark:border-gray-700">
@@ -148,7 +165,7 @@
 
             @if ($ci->customer_id==$ciNo && $ci->invSerialNo==$sn)
             <tr>
-                <td colspan="11" class="text-center">
+                <td colspan="12" class="text-center">
                     Items to be shown in invoice based on Taric
                     <table class="table-nested">
                         <thead>
@@ -200,7 +217,7 @@
             @endif
             @if ($taricNo==$ci->customer_id && $ci->invSerialNo==$sn)
             <tr>
-                <td colspan="11" class="text-center">
+                <td colspan="12" class="text-center">
                     <table class="table-nested">
                         <thead>
                             <tr class="table-highlighted">

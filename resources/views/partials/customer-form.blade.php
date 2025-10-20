@@ -8,11 +8,11 @@
                 <option value="">-- Select Customer Type --</option>
                 <option value="1">GT-Warehouse</option>
                 <option value="2">Customer</option>
-
             </flux:select>
         </div>
 
         <flux:input name="customer_company_name" label="Company Name:" wire:model.defer="customer.customer_company_name" />
+        <flux:input name="phone" label="Customer display name:" wire:model.defer="customer.company_subname" />
         <flux:input name="phone" label="Phone No:" wire:model.defer="customer.phone" />
         <flux:input name="tax_no" label="Tax No:" wire:model.defer="customer.tax_no" />
 
@@ -31,14 +31,16 @@
         <div class="md:col-span-4 mt-3"><flux:separator variant="danger"/> </div>
         <div class="md:col-span-4 text-lg font-semibold dark:text-white mt-3 mb-3">SHIP TO:</div>
 
+        <flux:input name="delivery_company_name" label="Delivery Company Name:" wire:model.defer="customer.delivery_company_name" />
+        <flux:input name="phone" label="Reciever display name:" wire:model.defer="customer.delivery_subname" />
+        <flux:input name="delivery_contact_person" label="Delivery Contact Person:" wire:model.defer="customer.delivery_contact_person" />
+        <flux:input name="delivery_contact_phone" label="Delivery Contact Phone:" wire:model.defer="customer.delivery_contact_phone" />
+
         <flux:input name="delivery_country" label="Delivery Country:" wire:model.defer="customer.delivery_country" />
         <flux:input name="delivery_city" label="Delivery City:" wire:model.defer="customer.delivery_city" />
         <flux:input name="delivery_postal_code" label="Delivery Postal Code:" wire:model.defer="customer.delivery_postal_code" />
         <flux:input name="delivery_address_line1" label="Delivery Full Address:" wire:model.defer="customer.delivery_address_line1" class="md:col-span-1 lg:col-span-2" />
 
-        <flux:input name="delivery_company_name" label="Delivery Company Name:" wire:model.defer="customer.delivery_company_name" />
-        <flux:input name="delivery_contact_person" label="Delivery Contact Person:" wire:model.defer="customer.delivery_contact_person" />
-        <flux:input name="delivery_contact_phone" label="Delivery Contact Phone:" wire:model.defer="customer.delivery_contact_phone" />
 
         <flux:input name="remark" label="Remarks:" wire:model.defer="customer.remark" class="md:col-span-2" />
 

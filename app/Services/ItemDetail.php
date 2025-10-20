@@ -9,6 +9,8 @@ class ItemDetail
     public function getItemDetial($id)
     {
         return DB::table('items')
+            ->leftJoin('attachment_item', 'items.id', '=', 'attachment_item.item_id')
+            ->leftJoin('attachments','attachments.id', '=', 'attachment_item.attachment_id')
             ->join('parents', 'parents.id', '=', 'items.parent_id')
             ->join('variation_values', 'items.id', '=', 'variation_values.item_id')
             ->join('tarics', 'tarics.id', '=', 'items.taric_id')

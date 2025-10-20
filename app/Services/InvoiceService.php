@@ -19,8 +19,10 @@ class InvoiceService
             ->select(
                 'cargos.cargo_no',
                 'cargos.id AS cargoId',
-                'order_statuses.updated_at AS InvoiceDate',
+                'order_statuses.cargo_date AS InvoiceDate',
                 'customers.customer_company_name AS Name',
+                'customers.company_subname AS Displayame',
+                'customers.delivery_subname AS Recievername',
                 'customers.id as customerId',
                 'order_statuses.*',
                 DB::raw('COUNT(order_items.master_id) AS CountItemOrder'),

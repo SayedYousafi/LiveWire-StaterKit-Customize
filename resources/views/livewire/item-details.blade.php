@@ -17,7 +17,8 @@
           {{ $itemDetail->ItemID }} / {{ $itemDetail->item_name }}
         </div>
         <div>
-          <flux:button href="{{ route('itemEdit',$itemDetail->ItemID) }}" wire:navigate class="float-end" variant='primary'>Edit
+          <flux:button href="{{ route('itemEdit',$itemDetail->ItemID) }}" wire:navigate class="float-end"
+            variant='primary'>Edit
             Data</flux:button>
         </div>
       </div>
@@ -185,6 +186,70 @@
             </div>
           </fieldset>
         </div>
+        <!-- Item Quality Criteria Section -->
+        <fieldset class="border border-gray-300 dark:border-gray-600 p-6">
+          <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">Quality Criteria
+          </legend>
+          <table class="table-default">
+            <thead>
+                <th>Item_ID</th>
+                <th>Name</th>
+                <th>Picture</th>
+                <th>Description</th>
+                <th>Description CN</th>
+                
+            </thead>
+            <tbody>
+                @forelse ($qualities as $quality)
+                <tr>
+                    <td>{{ $quality->item_id }}</td>
+                    <td>{{ $quality->name }}</td>
+                    <td align="center">
+                            <a href="{{ Storage::url('pictures/' . $quality->picture) }}" target="_blank">
+                                <img src="{{ Storage::url('pictures/' . $quality->picture) }}" alt="Image"
+                                    class="w-16 h-16 object-cover rounded border" />
+                            </a>
+                        </td>
+                    <td>{{ $quality->description }}</td>
+                    <td>{{ $quality->full_description }}</td>
+                    
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5">No records found</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+        </fieldset>
+        <!-- Item Attachments Section -->
+        <fieldset class="border border-gray-300 dark:border-gray-600 p-6">
+          <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">Attachments
+          </legend>
+          <table class="table-default w-6xl">
+            <tr><td>#</td>
+              <td>PDF File Name</td>
+              <td>Path/View</td>
+              <td>Download</td>
+            </tr>
+            @forelse($attachments as $att)
+            <tr><td>{{ $loop->iteration }}</td>
+              <td>{{ $att->filename }}</td>
+              {{-- <td>{{ $att->path }}</td> --}}
+              <td><a href="{{asset('storage/'. $att->path) }}" target="_blank" class="!text-blue-700 hover:!underline">{{ $att->filename
+                  }}</a></td>
+              <td>
+                <flux:button wire:click="download('{{$att->path }}')" icon='arrow-down-tray' variant='primary' size='sm'>
+                  <i>Download</i>
+                </flux:button>
+              </td>
+            </tr>
+            @empty
+            <div>No attachments found for this item</div>
+            @endforelse
+
+          </table>
+        </fieldset>
         <!-- Item Picture Section -->
         <fieldset class="border border-gray-300 dark:border-gray-600 p-6">
           <legend class="text-lg font-bold px-2 -mt-4 bg-white dark:bg-gray-900 text-black dark:text-white">Item Picture
@@ -200,7 +265,7 @@
             <div class="col-span-3 text-center content-center">
               <img src="{{ asset('storage/'.$itemDetail->photo) }}" class="max-w-full max-h-[600px] mx-auto" />
             </div>
-             {{-- <div><strong>Picture name:</strong><br>{{ $itemDetail->photo }}</div> --}}
+            {{-- <div><strong>Picture name:</strong><br>{{ $itemDetail->photo }}</div> --}}
           </div>
         </fieldset>
 
